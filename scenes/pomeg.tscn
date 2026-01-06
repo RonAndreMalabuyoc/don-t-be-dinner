@@ -1,0 +1,64 @@
+[gd_scene load_steps=10 format=3 uid="uid://dgtmxlsiu7fn2"]
+
+[ext_resource type="Script" uid="uid://dwalacqplqgkm" path="res://scenes/pomeg.gd" id="1_lc2qg"]
+[ext_resource type="Texture2D" uid="uid://dnhyx284it8wc" path="res://assets/Bullets/14_pomegrenate_ammo-Sheet.png" id="1_vuoix"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lc2qg"]
+atlas = ExtResource("1_vuoix")
+region = Rect2(0, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_48lei"]
+atlas = ExtResource("1_vuoix")
+region = Rect2(42, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_evxkj"]
+atlas = ExtResource("1_vuoix")
+region = Rect2(84, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ojixa"]
+atlas = ExtResource("1_vuoix")
+region = Rect2(126, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5p5qj"]
+atlas = ExtResource("1_vuoix")
+region = Rect2(168, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3r7m0"]
+atlas = ExtResource("1_vuoix")
+region = Rect2(210, 0, 42, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_p358a"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lc2qg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_48lei")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_evxkj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ojixa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5p5qj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3r7m0")
+}],
+"loop": true,
+"name": &"default",
+"speed": 6.0
+}]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_lc2qg")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(23.500002, 16.000002)
+scale = Vector2(2.1190476, 2.0000002)
+sprite_frames = SubResource("SpriteFrames_p358a")
+autoplay = "default"
+frame_progress = 0.7326241

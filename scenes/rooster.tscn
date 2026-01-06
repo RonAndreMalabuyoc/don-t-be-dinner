@@ -1,0 +1,86 @@
+[gd_scene load_steps=10 format=3 uid="uid://buhcwc5fd7jh1"]
+
+[ext_resource type="Texture2D" uid="uid://b2njv5x5ywfd" path="res://assets/Rooster_animation_without_shadow.png" id="1_osi2b"]
+
+[sub_resource type="GDScript" id="GDScript_osi2b"]
+script/source = "extends Node2D
+
+@export var speed := 40
+@export var move_distance := 1000
+
+@onready var sprite := $AnimatedSprite2D
+
+var start_x
+var direction := 1
+
+func _ready():
+	start_x = position.x
+
+func _process(delta):
+	position.x += direction * speed * delta
+
+	if abs(position.x - start_x) >= move_distance:
+		direction *= -1
+		sprite.flip_h = direction < 0
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u4h7j"]
+atlas = ExtResource("1_osi2b")
+region = Rect2(0, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0glkd"]
+atlas = ExtResource("1_osi2b")
+region = Rect2(32, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_whj0i"]
+atlas = ExtResource("1_osi2b")
+region = Rect2(64, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ft6cj"]
+atlas = ExtResource("1_osi2b")
+region = Rect2(96, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m81ij"]
+atlas = ExtResource("1_osi2b")
+region = Rect2(128, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vkted"]
+atlas = ExtResource("1_osi2b")
+region = Rect2(160, 96, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lbbeg"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u4h7j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0glkd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_whj0i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ft6cj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m81ij")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vkted")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[node name="Node2D" type="Node2D"]
+script = SubResource("GDScript_osi2b")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(320.5, 166)
+scale = Vector2(2.8437505, 2.5625)
+sprite_frames = SubResource("SpriteFrames_lbbeg")
+animation = &"walk"
+autoplay = "walk"
+frame_progress = 0.3912606

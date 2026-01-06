@@ -1,0 +1,472 @@
+[gd_scene load_steps=39 format=3 uid="uid://dl6d3lwiivjxg"]
+
+[ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
+[ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
+[ext_resource type="PackedScene" uid="uid://0c7kqgockbqo" path="res://scenes/Bullet_2.tscn" id="1_ogw1n"]
+[ext_resource type="Texture2D" uid="uid://drv57nqyv7011" path="res://assets/jump_right-Sheet.png" id="2_uvl38"]
+[ext_resource type="Texture2D" uid="uid://dio8s4h1seupc" path="res://assets/walk_right-Sheet.png" id="2_wmkwl"]
+[ext_resource type="Texture2D" uid="uid://xfs8i5sosg3v" path="res://assets/shoot_right_duck-Sheet.png" id="6_2v62t"]
+
+[sub_resource type="GDScript" id="GDScript_48ufq"]
+resource_name = "Movement"
+script/source = "extends CharacterBody2D
+
+# ───────── MOVEMENT ─────────
+@export var speed := 400
+@export var jump_force := -600
+@export var gravity := 1200
+
+# ───────── DASH ─────────
+@export var dash_speed := 900.0
+@export var dash_duration := 0.12
+@export var dash_cooldown := 1.5
+
+# ───────── SHOOTING ─────────
+@export var shoot_cooldown := 0.3
+@export var bullet_scene: PackedScene
+const SHOOT_FRAME := 3
+
+# ───────── HEALTH ─────────
+@export var max_health := 30
+var current_health := 100
+var is_dead := false
+var can_take_damage := true
+const INVINCIBILITY_TIME := 0.3
+
+# ───────── NODES ─────────
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var shoot_point: Node2D = $ShootPoint
+@onready var hitbox: Area2D = $Hitbox
+@onready var camera: Camera2D = $Camera2D
+
+# ───────── STATE ─────────
+var facing_right := true
+var is_dashing := false
+var can_dash := true
+var dash_time_left := 0.0
+var dash_dir := 0.0
+
+var can_shoot := true
+var is_emoting := false
+var shot_fired_this_anim := false
+
+# ───────── READY ─────────
+func _ready():
+	Global.playerbody = self
+	Global.player_alive = true
+	current_health = max_health
+
+	hitbox.body_entered.connect(_on_hitbox_body_entered)
+	hitbox.area_entered.connect(_on_hitbox_area_entered)
+	sprite.frame_changed.connect(_on_sprite_frame_changed)
+
+# ───────── PHYSICS ─────────
+func _physics_process(delta):
+	if is_dead:
+		return
+
+	# Gravity
+	if not is_on_floor() and not is_dashing:
+		velocity.y += gravity * delta
+
+	# Emote
+	is_emoting = Input.is_action_pressed(\"dance\") and is_on_floor()
+
+	# Dash
+	if Input.is_action_just_pressed(\"dash\") and can_dash and not is_emoting and not is_dashing:
+		start_dash()
+
+	if is_dashing:
+		dash_time_left -= delta
+		velocity.x = dash_dir * dash_speed
+		velocity.y = 0
+		if dash_time_left <= 0:
+			stop_dash()
+	else:
+		var direction := Input.get_axis(\"Left\", \"Right\")
+		if direction != 0 and not is_emoting:
+			velocity.x = direction * speed
+			facing_right = direction > 0
+		else:
+			velocity.x = move_toward(velocity.x, 0, 40)
+
+		if Input.is_action_just_pressed(\"jump\") and is_on_floor() and not is_emoting:
+			velocity.y = jump_force
+
+	# Shooting
+	if Input.is_action_pressed(\"shoot\") and can_shoot and not is_emoting:
+		shoot()
+		can_shoot = false
+		await get_tree().create_timer(shoot_cooldown).timeout
+		can_shoot = true
+
+	handle_animations()
+	sprite.flip_h = not facing_right
+	move_and_slide()
+
+# ───────── DASH ─────────
+func start_dash():
+	can_dash = false
+	is_dashing = true
+	dash_time_left = dash_duration
+
+	var input_dir := Input.get_axis(\"Left\", \"Right\")
+	if input_dir != 0:
+		dash_dir = sign(input_dir)
+	else:
+		dash_dir = 1 if facing_right else -1
+
+	facing_right = dash_dir > 0
+
+	await get_tree().create_timer(dash_cooldown).timeout
+	can_dash = true
+
+func stop_dash():
+	is_dashing = false
+	velocity.x = move_toward(velocity.x, 0, 200)
+
+# ───────── SHOOTING ─────────
+func shoot():
+	shot_fired_this_anim = false
+	sprite.play(\"shoot\")
+
+func _on_sprite_frame_changed():
+	if sprite.animation != \"shoot\":
+		return
+
+	if sprite.frame == SHOOT_FRAME and not shot_fired_this_anim:
+		shot_fired_this_anim = true
+		if bullet_scene and Global.node_creation_parent:
+			Global.instance_node(
+				bullet_scene,
+				shoot_point.global_position,
+				Global.node_creation_parent
+			)
+
+# ───────── ANIMATIONS ─────────
+func handle_animations():
+	if is_dead:
+		return
+
+	if is_dashing:
+		sprite.play(\"dash\" if sprite.sprite_frames.has_animation(\"dash\") else \"walk\")
+	elif is_emoting:
+		sprite.play(\"dance\")
+	elif Input.is_action_pressed(\"shoot\"):
+		sprite.play(\"shoot\")
+	elif not is_on_floor():
+		sprite.play(\"jump\" if velocity.y < 0 else \"fall\")
+	elif abs(velocity.x) > 10:
+		sprite.play(\"walk\")
+	else:
+		sprite.play(\"idle\")
+
+# ───────── DAMAGE ─────────
+func _on_hitbox_body_entered(body):
+	if is_dead or not can_take_damage:
+		return
+
+	if body.is_in_group(\"Enemy\") and \"damage_amount\" in body:
+		take_damage(body.damage_amount)
+
+func _on_hitbox_area_entered(area):
+	if is_dead or not can_take_damage:
+		return
+
+	if area.is_in_group(\"EnemyDamage\"):
+		take_damage(10)
+
+func take_damage(amount: int):
+	current_health -= amount
+	sprite.modulate = Color.RED
+
+	if current_health <= 0:
+		die()
+	else:
+		start_invincibility()
+
+func start_invincibility():
+	can_take_damage = false
+	await get_tree().create_timer(0.1).timeout
+	sprite.modulate = Color.WHITE
+	await get_tree().create_timer(INVINCIBILITY_TIME).timeout
+	can_take_damage = true
+
+# ───────── DEATH ─────────
+func die():
+	is_dead = true
+	Global.player_alive = false
+	sprite.play(\"death\")
+	sprite.modulate = Color.WHITE
+
+	if camera:
+		create_tween().tween_property(camera, \"zoom\", Vector2(3, 3), 0.5)
+
+	await get_tree().create_timer(3.0).timeout
+	queue_free()
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qthh5"]
+atlas = ExtResource("1_2q423")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1vudk"]
+atlas = ExtResource("1_2q423")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k7f46"]
+atlas = ExtResource("1_2q423")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wtyc1"]
+atlas = ExtResource("1_2q423")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wevls"]
+atlas = ExtResource("1_2q423")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8013f"]
+atlas = ExtResource("1_2q423")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wmkwl"]
+atlas = ExtResource("1_48ufq")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uvl38"]
+atlas = ExtResource("1_48ufq")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2q423"]
+atlas = ExtResource("1_48ufq")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8yqgs"]
+atlas = ExtResource("1_48ufq")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jw0ju"]
+atlas = ExtResource("1_48ufq")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2v62t"]
+atlas = ExtResource("1_48ufq")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_47qjj"]
+atlas = ExtResource("2_uvl38")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dypn8"]
+atlas = ExtResource("2_uvl38")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_07ek2"]
+atlas = ExtResource("2_uvl38")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kg3iu"]
+atlas = ExtResource("2_uvl38")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mjyag"]
+atlas = ExtResource("2_uvl38")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tiulj"]
+atlas = ExtResource("6_2v62t")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bdwkj"]
+atlas = ExtResource("6_2v62t")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pmoru"]
+atlas = ExtResource("6_2v62t")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2g5xf"]
+atlas = ExtResource("6_2v62t")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0yo88"]
+atlas = ExtResource("6_2v62t")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dbwko"]
+atlas = ExtResource("6_2v62t")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ei42f"]
+atlas = ExtResource("6_2v62t")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_auo7h"]
+atlas = ExtResource("6_2v62t")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wcpx6"]
+atlas = ExtResource("2_wmkwl")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u3evn"]
+atlas = ExtResource("2_wmkwl")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5q0wt"]
+atlas = ExtResource("2_wmkwl")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wcpx6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qthh5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1vudk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k7f46")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wtyc1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wevls")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8013f")
+}],
+"loop": true,
+"name": &"dance",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wmkwl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uvl38")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2q423")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8yqgs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jw0ju")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2v62t")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_47qjj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dypn8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_07ek2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kg3iu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mjyag")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tiulj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bdwkj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pmoru")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2g5xf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0yo88")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dbwko")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ei42f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_auo7h")
+}],
+"loop": false,
+"name": &"shoot",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wcpx6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u3evn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5q0wt")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 6.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ogw1n"]
+radius = 36.124783
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0d0nc"]
+radius = 37.0
+
+[node name="Player" type="CharacterBody2D"]
+z_index = 5
+script = SubResource("GDScript_48ufq")
+bullet_scene = ExtResource("1_ogw1n")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0.5, -9.5)
+scale = Vector2(3.15625, 3.21875)
+sprite_frames = SubResource("SpriteFrames_wcpx6")
+animation = &"shoot"
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(1, 5)
+shape = SubResource("CircleShape2D_ogw1n")
+
+[node name="ShootPoint" type="Marker2D" parent="."]
+position = Vector2(-31, -29)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, -141)
+
+[node name="Reload_speed" type="Timer" parent="."]
+wait_time = 0.75
+autostart = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, 5)
+shape = SubResource("CircleShape2D_0d0nc")
+
+[connection signal="timeout" from="Reload_speed" to="." method="_on_timer_timeout"]
