@@ -2828,3 +2828,10 @@ offset_top = 27.0
 offset_right = 123.0
 offset_bottom = 50.0
 text = "Maximum Goon"
+
+[node name="Label4" type="Label" parent="."]
+offset_left = -2.0
+offset_top = 115.0
+offset_right = 144.0
+offset_bottom = 138.0
+text = "Super Saiyan Goon"
