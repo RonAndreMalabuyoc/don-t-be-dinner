@@ -1,16 +1,23 @@
-extends Sprite2D
+extends Area2D
+class_name Bullet
 
-var velocity = Vector2(1, 0)
-var speed = 800
+@export var speed: float = 500
+@export var damage: int = 10
+var direction: Vector2 = Vector2.RIGHT
+@export var lifetime: float = 3.0
 
-var look_once = true 
-
-func _process(delta):
-	if look_once:
-		look_at(get_global_mouse_position())
-		look_once = false	 
-	global_position += velocity.rotated(rotation) * speed * delta
-
-
-func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
+func _ready():
+	monitoring = true
+	monitorable = true
+	connect("body_entered", Callable(self, "_on_body_entered"))
+	await get_tree().create_timer(lifetime).timeout
 	queue_free()
+
+func _physics_process(delta):
+	position += direction * speed * delta
+
+func _on_body_entered(body: Node):
+	# Only hit enemies
+	if body.is_in_group("Enemy") and body.has_method("take_damage"):
+		body.take_damage(damage)
+		queue_free()

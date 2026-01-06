@@ -1,6 +1,9 @@
 extends CharacterBody2D
 class_name Enemy
 
+@export var max_health := 20
+var current_health := 20
+
 @export var hover_speed := 80.0
 @export var dash_speed := 600.0        # faster dash
 @export var dash_distance := 160.0
@@ -19,10 +22,23 @@ var has_hit_player := false  # tracks if player was hit this dash
 
 @onready var sprite := $AnimatedSprite2D
 
+func take_damage(amount: int):
+	current_health -= amount
+	sprite.modulate = Color.RED  # Flash red on hit
+	await get_tree().create_timer(0.1).timeout
+	sprite.modulate = Color.WHITE
+
+	if current_health <= 0:
+		die()
+
+func die():
+	queue_free()
+
 func _ready():
+	current_health = max_health
 	player = Global.playerbody
 	add_to_group("Enemy")
-
+	
 func _physics_process(delta):
 	if player == null:
 		player = Global.playerbody
