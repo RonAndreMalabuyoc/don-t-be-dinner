@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3 uid="uid://dtnai2lsmcq0i"]
+
+[ext_resource type="Script" uid="uid://d0tn2yd8md8k0" path="res://wave_manager.gd" id="1_8fe1o"]
+[ext_resource type="PackedScene" uid="uid://fbiybjbee3yk" path="res://scenes/spider.tscn" id="2_qj452"]
+[ext_resource type="PackedScene" uid="uid://crm27ns2yxn2i" path="res://scenes/enemy.tscn" id="3_na16q"]
+
+[node name="WaveManager" type="Node2D" node_paths=PackedStringArray("spawn_points")]
+script = ExtResource("1_8fe1o")
+spider_scene = ExtResource("2_qj452")
+moth_scene = ExtResource("3_na16q")
+spawn_points = [null, null]

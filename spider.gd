@@ -25,6 +25,17 @@ var _jump_timer: Timer
 
 @onready var sprite := $AnimatedSprite2D
 
+signal enemy_died
+var is_dead := false
+
+func die():
+	if is_dead:
+		return
+
+	is_dead = true
+	emit_signal("enemy_died")
+	queue_free()
+
 func take_damage(amount: int) -> void:
 	current_health -= amount
 
@@ -35,9 +46,6 @@ func take_damage(amount: int) -> void:
 
 	if current_health <= 0:
 		die()
-
-func die() -> void:
-	queue_free()
 
 func _ready():
 	current_health = max_health
@@ -53,21 +61,21 @@ func _physics_process(delta):
 		player = Global.playerbody
 		return
 
-	# Apply gravity
+	# APPLY GRAVITY
 	if not is_on_floor():
 		velocity.y += gravity * delta
-	elif velocity.y > 0:
-		velocity.y = 0
 
 	if is_dashing:
 		_dash_process(delta)
 	elif is_retreating:
-		move_and_slide()
+		pass
 	else:
 		_chase_process(delta)
 
 	move_and_slide()
 	_handle_animation()
+
+
 
 # ---------------- CHASE ----------------
 func _chase_process(_delta):
@@ -77,14 +85,22 @@ func _chase_process(_delta):
 	dir = (target_pos - global_position).normalized()
 	velocity.x = dir.x * walk_speed
 
-	# Jump if player is higher
-	if target_pos.y < global_position.y - 10 and _jump_timer.is_stopped() and is_on_floor():
+	# Jump ONLY if:
+	# - on floor
+	# - not already jumping
+	# - player is above
+	if is_on_floor() \
+	and _jump_timer.is_stopped() \
+	and target_pos.y < global_position.y - 20 \
+	and not is_dashing \
+	and not is_retreating:
 		velocity.y = jump_force
 		_jump_timer.start(jump_cooldown)
 
-	# Automatically start dash if in range
-	if global_position.distance_to(target_pos) <= dash_distance:
+	# Dash check
+	if global_position.distance_to(target_pos) <= dash_distance and not is_dashing:
 		start_dash()
+
 
 # ---------------- DASH ----------------
 func start_dash():

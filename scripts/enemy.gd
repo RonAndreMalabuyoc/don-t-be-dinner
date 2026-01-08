@@ -22,6 +22,18 @@ var has_hit_player := false  # tracks if player was hit this dash
 
 @onready var sprite := $AnimatedSprite2D
 
+signal enemy_died
+var is_dead := false
+
+func die():
+	if is_dead:
+		return
+
+	is_dead = true
+	emit_signal("enemy_died")
+	queue_free()
+
+
 func take_damage(amount: int):
 	current_health -= amount
 	sprite.modulate = Color.RED  # Flash red on hit
@@ -29,10 +41,7 @@ func take_damage(amount: int):
 	sprite.modulate = Color.WHITE
 
 	if current_health <= 0:
-		die()
-
-func die():
-	queue_free()
+		die() 
 
 func _ready():
 	current_health = max_health

@@ -70,15 +70,15 @@ animations = [{
 radius = 6.0
 
 [node name="Spider" type="CharacterBody2D"]
+scale = Vector2(1.492929, 1.6565105)
 script = ExtResource("1_k5hg5")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(26, 27)
 sprite_frames = SubResource("SpriteFrames_8qx0x")
 animation = &"new_animation"
 autoplay = "new_animation"
 frame_progress = 0.56712836
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(27, 26)
+position = Vector2(0, -1)
 shape = SubResource("CircleShape2D_k5hg5")
