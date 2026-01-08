@@ -3,10 +3,14 @@ extends Node2D
 @export var spider_scene: PackedScene
 @export var moth_scene: PackedScene
 @export var spawn_points: Array[Node2D]
+@export var spawn_delay: float = 1.0
+@onready var spawn_timer := Timer.new()
 
 var current_wave := 0
 var enemies_alive := 0
 var wave_in_progress := false
+
+var spawn_queue: Array = []
 
 var waves = [
 	{ "spider": 3, "moth": 2 },
@@ -16,6 +20,11 @@ var waves = [
 ]
 
 func _ready():
+	add_child(spawn_timer)
+	spawn_timer.wait_time = spawn_delay
+	spawn_timer.one_shot = false
+	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
+
 	start_next_wave()
 
 func start_next_wave():
@@ -26,38 +35,37 @@ func start_next_wave():
 		print("ALL WAVES COMPLETE")
 		return
 
-	wave_in_progress = true
 	current_wave += 1
+	wave_in_progress = true
 	enemies_alive = 0
+	spawn_queue.clear()
 
-	print("Starting wave ", current_wave)
+	print("Starting wave", current_wave)
 
 	var wave_data = waves[current_wave - 1]
 
-	spawn_enemies(spider_scene, wave_data.get("spider", 0))
-	spawn_enemies(moth_scene, wave_data.get("moth", 0))
+	for i in range(wave_data.get("spider", 0)):
+		spawn_queue.append(spider_scene)
 
-func spawn_enemies(scene: PackedScene, amount: int):
-	for i in range(amount):
-		var spawn_point = spawn_points.pick_random()
-		var enemy = scene.instantiate()
-		enemy.global_position = spawn_point.global_position
+	for i in range(wave_data.get("moth", 0)):
+		spawn_queue.append(moth_scene)
 
-		enemy.connect("enemy_died", Callable(self, "_on_enemy_died"))
+	spawn_timer.start()
 
-		add_child(enemy)
-		enemies_alive += 1
+func _on_spawn_timer_timeout():
+	if spawn_queue.size() == 0:  # <- fixed here
+		spawn_timer.stop()
+		return
 
-	for i in range(amount):
-		var spawn_point = spawn_points.pick_random()
-		var enemy = scene.instantiate()
-		enemy.global_position = spawn_point.global_position
+	var scene = spawn_queue.pop_front()
+	var spawn_point = spawn_points.pick_random()
+	var enemy = scene.instantiate()
+	enemy.global_position = spawn_point.global_position
+	enemy.connect("enemy_died", Callable(self, "_on_enemy_died"))
 
-		enemy.connect("enemy_died", Callable(self, "_on_enemy_died"))
+	add_child(enemy)
+	enemies_alive += 1
 
-		add_child(enemy)
-		enemies_alive += 1
-		
 func _on_enemy_died():
 	if enemies_alive <= 0:
 		return
@@ -65,6 +73,6 @@ func _on_enemy_died():
 	enemies_alive -= 1
 	print("Enemy died. Remaining:", enemies_alive)
 
-	if enemies_alive == 0:
+	if enemies_alive == 0 and spawn_queue.size() == 0:  # <- fixed here
 		wave_in_progress = false
 		start_next_wave()

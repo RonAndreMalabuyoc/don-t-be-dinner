@@ -101,7 +101,6 @@ func _chase_process(_delta):
 	if global_position.distance_to(target_pos) <= dash_distance and not is_dashing:
 		start_dash()
 
-
 # ---------------- DASH ----------------
 func start_dash():
 	is_dashing = true
