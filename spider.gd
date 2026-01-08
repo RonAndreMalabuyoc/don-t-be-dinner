@@ -11,7 +11,9 @@ class_name LandEnemy
 @export var gravity := 1200.0
 @export var jump_force := -350.0
 @export var jump_cooldown := 1.0
+@export var max_health := 20
 
+var current_health := 20
 var dash_cooldown_left := 0.0
 var is_retreating := false
 var is_dashing := false
@@ -23,12 +25,28 @@ var _jump_timer: Timer
 
 @onready var sprite := $AnimatedSprite2D
 
+func take_damage(amount: int) -> void:
+	current_health -= amount
+
+	# Flash red on hit (same idea as your bat)
+	sprite.modulate = Color.RED
+	await get_tree().create_timer(0.1).timeout
+	sprite.modulate = Color.WHITE
+
+	if current_health <= 0:
+		die()
+
+func die() -> void:
+	queue_free()
+
 func _ready():
+	current_health = max_health
 	player = Global.playerbody
 	add_to_group("Enemy")
 	_jump_timer = Timer.new()
 	_jump_timer.one_shot = true
 	add_child(_jump_timer)
+
 
 func _physics_process(delta):
 	if player == null:

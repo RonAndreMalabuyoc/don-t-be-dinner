@@ -25,6 +25,7 @@ script/source = "extends CharacterBody2D
 @export var shoot_cooldown := 0.3
 @export var bullet_scene: PackedScene
 const SHOOT_FRAME := 3
+var shoot_direction: Vector2 = Vector2.RIGHT
 
 # ───────── HEALTH ─────────
 @export var max_health := 30
@@ -95,7 +96,7 @@ func _physics_process(delta):
 
 	# Shooting
 	if Input.is_action_pressed(\"shoot\") and can_shoot and not is_emoting:
-		shoot()
+		sprite.play(\"shoot\")  # Play the shooting animation
 		can_shoot = false
 		await get_tree().create_timer(shoot_cooldown).timeout
 		can_shoot = true
@@ -103,6 +104,11 @@ func _physics_process(delta):
 	handle_animations()
 	sprite.flip_h = not facing_right
 	move_and_slide()
+	
+func get_shoot_direction() -> Vector2:
+	var mouse_pos = get_global_mouse_position()
+	var dir = (mouse_pos - shoot_point.global_position).normalized()
+	return dir
 
 # ───────── DASH ─────────
 func start_dash():
@@ -127,8 +133,16 @@ func stop_dash():
 
 # ───────── SHOOTING ─────────
 func shoot():
-	shot_fired_this_anim = false
-	sprite.play(\"shoot\")
+	var bullet := Global.instance_node(
+		bullet_scene,
+		shoot_point.global_position,
+		Global.node_creation_parent
+	) as Bullet
+	
+	# Direction from shoot point to mouse
+	var mouse_pos = get_global_mouse_position()
+	bullet.direction = (mouse_pos - shoot_point.global_position).normalized()
+
 
 func _on_sprite_frame_changed():
 	if sprite.animation != \"shoot\":
@@ -137,11 +151,15 @@ func _on_sprite_frame_changed():
 	if sprite.frame == SHOOT_FRAME and not shot_fired_this_anim:
 		shot_fired_this_anim = true
 		if bullet_scene and Global.node_creation_parent:
-			Global.instance_node(
+			var bullet = Global.instance_node(
 				bullet_scene,
 				shoot_point.global_position,
 				Global.node_creation_parent
-			)
+			) as Bullet
+			bullet.direction = get_shoot_direction()
+	if sprite.frame == sprite.sprite_frames.get_frame_count(\"shoot\") - 1:
+		shot_fired_this_anim = false
+
 
 # ───────── ANIMATIONS ─────────
 func handle_animations():
@@ -445,7 +463,7 @@ bullet_scene = ExtResource("1_ogw1n")
 position = Vector2(0.5, -9.5)
 scale = Vector2(3.15625, 3.21875)
 sprite_frames = SubResource("SpriteFrames_wcpx6")
-animation = &"shoot"
+animation = &"dance"
 
 [node name="Hitbox" type="Area2D" parent="."]
 collision_layer = 0
