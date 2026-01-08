@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=27 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://dk4spknv8m3e1" path="res://assets/Full_bgx32.png" id="1_51ehd"]
@@ -2672,12 +2672,20 @@ texture = ExtResource("7_6gd58")
 32:23/0 = 0
 33:23/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fr04l"]
+texture = ExtResource("8_vkg1p")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+
 [sub_resource type="TileSet" id="TileSet_q6r6c"]
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_0hol4")
 sources/1 = SubResource("TileSetAtlasSource_4d7sh")
 sources/2 = SubResource("TileSetAtlasSource_e8dv2")
 sources/3 = SubResource("TileSetAtlasSource_2nhjh")
+sources/4 = SubResource("TileSetAtlasSource_fr04l")
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_nr8wp"]
 
@@ -2727,6 +2735,7 @@ layer_0/tile_data = PackedInt32Array(262126, 1966081, 18, 262127, 4718593, 7, 26
 [node name="Layer1" type="TileMapLayer" parent="TileMap 1"]
 texture_filter = 1
 use_parent_material = true
+position = Vector2(-1.2596029, -1.791148)
 tile_set = SubResource("TileSet_q6r6c")
 
 [node name="Layer2" type="TileMapLayer" parent="TileMap 1"]
@@ -2769,7 +2778,7 @@ scale = Vector2(4.3199997, 1)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Killzone"]
 shape = SubResource("WorldBoundaryShape2D_nr8wp")
 
-[node name="Enemy_Bat3" parent="." instance=ExtResource("15_uag27")]
+[node name="Moth" parent="." instance=ExtResource("15_uag27")]
 position = Vector2(635, 328)
 scale = Vector2(2.1846325, 2.4652896)
 

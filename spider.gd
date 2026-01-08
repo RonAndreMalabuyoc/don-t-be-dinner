@@ -135,7 +135,7 @@ func _on_hitbox_body_entered(body):
 
 # ---------------- ANIMATION ----------------
 func _handle_animation():
-	sprite.play("walk")  # replace "fly" with "walk"
+	sprite.play("walk")
 	if velocity.x < 0:
 		sprite.flip_h = true
 	elif velocity.x > 0:

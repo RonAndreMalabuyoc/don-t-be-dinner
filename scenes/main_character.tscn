@@ -63,15 +63,21 @@ func _ready():
 
 # ───────── PHYSICS ─────────
 func _physics_process(delta):
+	if Input.is_action_just_pressed(\"dance\"):
+		is_emoting = !is_emoting
+	
 	if is_dead:
+		return
+	# Dance lock
+	if is_emoting:
+		velocity.x = 0
+		handle_animations()
+		move_and_slide()
 		return
 
 	# Gravity
 	if not is_on_floor() and not is_dashing:
 		velocity.y += gravity * delta
-
-	# Emote
-	is_emoting = Input.is_action_pressed(\"dance\") and is_on_floor()
 
 	# Dash
 	if Input.is_action_just_pressed(\"dash\") and can_dash and not is_emoting and not is_dashing:
@@ -93,13 +99,6 @@ func _physics_process(delta):
 
 		if Input.is_action_just_pressed(\"jump\") and is_on_floor() and not is_emoting:
 			velocity.y = jump_force
-
-	# Shooting
-	if Input.is_action_pressed(\"shoot\") and can_shoot and not is_emoting:
-		sprite.play(\"shoot\")  # Play the shooting animation
-		can_shoot = false
-		await get_tree().create_timer(shoot_cooldown).timeout
-		can_shoot = true
 
 	handle_animations()
 	sprite.flip_h = not facing_right
@@ -166,19 +165,21 @@ func handle_animations():
 	if is_dead:
 		return
 
+	# Dance overrides animation only
+	if is_emoting:
+		if sprite.animation != \"dance\":
+			sprite.play(\"dance\")
+		return
+
 	if is_dashing:
 		sprite.play(\"dash\" if sprite.sprite_frames.has_animation(\"dash\") else \"walk\")
-	elif is_emoting:
-		sprite.play(\"dance\")
 	elif Input.is_action_pressed(\"shoot\"):
 		sprite.play(\"shoot\")
-	elif not is_on_floor():
-		sprite.play(\"jump\" if velocity.y < 0 else \"fall\")
 	elif abs(velocity.x) > 10:
 		sprite.play(\"walk\")
 	else:
 		sprite.play(\"idle\")
-
+		
 # ───────── DAMAGE ─────────
 func _on_hitbox_body_entered(body):
 	if is_dead or not can_take_damage:
@@ -464,6 +465,8 @@ position = Vector2(0.5, -9.5)
 scale = Vector2(3.15625, 3.21875)
 sprite_frames = SubResource("SpriteFrames_wcpx6")
 animation = &"dance"
+frame = 5
+frame_progress = 1.0
 
 [node name="Hitbox" type="Area2D" parent="."]
 collision_layer = 0
