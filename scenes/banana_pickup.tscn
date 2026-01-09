@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ybpv55j41yvi"]
+
+[ext_resource type="Script" uid="uid://co6l2j1ff0kbe" path="res://scenes/banana_pickup.gd" id="1_b3o8i"]
+
+[node name="banana_pickup" type="Area2D"]
+script = ExtResource("1_b3o8i")

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bovvlaho3qc3p"]
+
+[ext_resource type="Script" uid="uid://cfssb1j1fngtq" path="res://scenes/orange_pickup.gd" id="1_u38le"]
+
+[node name="orange_pickup" type="Area2D"]
+script = ExtResource("1_u38le")

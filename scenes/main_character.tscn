@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://dl6d3lwiivjxg"]
+[gd_scene load_steps=40 format=3 uid="uid://dl6d3lwiivjxg"]
 
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://drv57nqyv7011" path="res://assets/jump_right-Sheet.png" id="2_uvl38"]
 [ext_resource type="Texture2D" uid="uid://dio8s4h1seupc" path="res://assets/walk_right-Sheet.png" id="2_wmkwl"]
 [ext_resource type="Texture2D" uid="uid://xfs8i5sosg3v" path="res://assets/shoot_right_duck-Sheet.png" id="6_2v62t"]
+[ext_resource type="Script" uid="uid://df7jibqo7t6pn" path="res://scripts/weapon_manager.gd" id="7_0d0nc"]
 
 [sub_resource type="GDScript" id="GDScript_48ufq"]
 resource_name = "Movement"
@@ -39,6 +40,7 @@ const INVINCIBILITY_TIME := 0.3
 @onready var shoot_point: Node2D = $ShootPoint
 @onready var hitbox: Area2D = $Hitbox
 @onready var camera: Camera2D = $Camera2D
+@onready var weapon_manager: WeaponManager = $WeaponManager
 
 # ───────── STATE ─────────
 var facing_right := true
@@ -104,10 +106,18 @@ func _physics_process(delta):
 	sprite.flip_h = not facing_right
 	move_and_slide()
 	
+	if Input.is_action_just_pressed(\"shoot\"):
+		weapon_manager.try_shoot()
+
+# Optional: if you want hold-to-fire as well, keep this too:
+# if Input.is_action_pressed(\"shoot\"):
+#     weapon_manager.try_shoot()
+
 func get_shoot_direction() -> Vector2:
 	var mouse_pos = get_global_mouse_position()
 	var dir = (mouse_pos - shoot_point.global_position).normalized()
 	return dir
+
 
 # ───────── DASH ─────────
 func start_dash():
@@ -210,6 +220,12 @@ func start_invincibility():
 	sprite.modulate = Color.WHITE
 	await get_tree().create_timer(INVINCIBILITY_TIME).timeout
 	can_take_damage = true
+	
+# ───────── PICKUP ─────────
+func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = true) -> void:
+	weapon_manager.push_powerup(item_id, duration, auto_fire)
+
+
 
 # ───────── DEATH ─────────
 func die():
@@ -489,5 +505,10 @@ autostart = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(1, 5)
 shape = SubResource("CircleShape2D_0d0nc")
+
+[node name="WeaponManager" type="Node" parent="."]
+script = ExtResource("7_0d0nc")
+shoot_point_path = NodePath("../ShootPoint")
+normal_projectile_scene = ExtResource("1_ogw1n")
 
 [connection signal="timeout" from="Reload_speed" to="." method="_on_timer_timeout"]

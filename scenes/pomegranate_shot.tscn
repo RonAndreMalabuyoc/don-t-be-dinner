@@ -1,0 +1,68 @@
+[gd_scene load_steps=11 format=3 uid="uid://pe36oesm1ua2"]
+
+[ext_resource type="Script" uid="uid://byp6wiqbv2wpf" path="res://scenes/pomegranate_shot.gd" id="1_0rykc"]
+[ext_resource type="Texture2D" uid="uid://dnhyx284it8wc" path="res://assets/Bullets/14_pomegrenate_ammo-Sheet.png" id="2_x1xys"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hlgc4"]
+atlas = ExtResource("2_x1xys")
+region = Rect2(0, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_md4gn"]
+atlas = ExtResource("2_x1xys")
+region = Rect2(42, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0hc6n"]
+atlas = ExtResource("2_x1xys")
+region = Rect2(84, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fci6e"]
+atlas = ExtResource("2_x1xys")
+region = Rect2(126, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b6mtt"]
+atlas = ExtResource("2_x1xys")
+region = Rect2(168, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ijsse"]
+atlas = ExtResource("2_x1xys")
+region = Rect2(210, 0, 42, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_tdxeg"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hlgc4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_md4gn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0hc6n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fci6e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b6mtt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ijsse")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_x1xys"]
+radius = 20.0
+height = 42.0
+
+[node name="pomegranate_shot" type="Area2D"]
+script = ExtResource("1_0rykc")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_tdxeg")
+frame_progress = 0.5724091
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_x1xys")
