@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cf4dnn2jownya"]
+
+[ext_resource type="Script" uid="uid://hk5c478obntl" path="res://banana_nuke.gd" id="1_e653g"]
+
+[node name="banana_nuke" type="Node2D"]
+script = ExtResource("1_e653g")

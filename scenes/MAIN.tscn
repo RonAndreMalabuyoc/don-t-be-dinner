@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://dscb7doug7iqt" path="res://assets/Tileset.png" id="7_6gd58"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="8_vkg1p"]
 [ext_resource type="Script" uid="uid://cccilmvgmxtbp" path="res://scripts/projectiles.gd" id="9_cli15"]
-[ext_resource type="Script" uid="uid://cx8hujvj3jmow" path="res://scripts/pomegranate_pickup.gd" id="10_1c2kf"]
+[ext_resource type="Script" uid="uid://cx8hujvj3jmow" path="res://scripts/fake_pomegranate_pickup.gd" id="10_1c2kf"]
 [ext_resource type="PackedScene" uid="uid://dl6d3lwiivjxg" path="res://scenes/main_character.tscn" id="11_27wxa"]
 [ext_resource type="PackedScene" uid="uid://buhcwc5fd7jh1" path="res://scenes/rooster.tscn" id="12_idstl"]
 [ext_resource type="Texture2D" uid="uid://dh1wyl5t6q5dg" path="res://assets/Grass 2.png" id="13_v426v"]
