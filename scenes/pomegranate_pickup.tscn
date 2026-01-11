@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://dpnvql1qnokoj"]
-
-[ext_resource type="Script" uid="uid://b3ub7wrn8mpgb" path="res://pomegranate_pickup.gd" id="1_t81df"]
-
-[node name="pomegranate_pickup" type="Area2D"]
-script = ExtResource("1_t81df")

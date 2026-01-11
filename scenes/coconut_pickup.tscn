@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://mta61knc6bqn"]
-
-[ext_resource type="Script" uid="uid://jcuq63tov0pp" path="res://scenes/coconut_pickup.gd" id="1_bfuf0"]
-
-[node name="coconut_pickup" type="Area2D"]
-script = ExtResource("1_bfuf0")
