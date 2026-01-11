@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cnsjhs6pdear3" path="res://scenes/fruit_pickup.gd" id="1_611ep"]
 
 [node name="fruit_pickup" type="Area2D"]
+scale = Vector2(4.025, 4.025)
 collision_layer = 2
 script = ExtResource("1_611ep")
 
