@@ -8,6 +8,20 @@ extends Node2D
 @export var max_fruits_alive: int = 3
 
 var _alive_fruits: int = 0
+var _wave_manager: Node = null
+var _last_wave: int = 0
+
+
+func _ready() -> void:
+	_wave_manager = get_tree().get_first_node_in_group("WaveManager")
+	spawn_points.clear()
+
+	var holder := $FruitSpawnPoints
+	for c in holder.get_children():
+		if c is Node2D:
+			spawn_points.append(c)
+
+	print("FruitSpawner points found:", spawn_points.size())
 
 
 func spawn_for_wave(_wave_index: int) -> void:
@@ -23,7 +37,11 @@ func spawn_for_wave(_wave_index: int) -> void:
 
 	for i in range(count):
 		_spawn_one()
-
+	
+	print("spawn_for_wave:", _wave_index,
+	" fruit_pickups=", fruit_pickups.size(),
+	" spawn_points=", spawn_points.size(),
+	" alive=", _alive_fruits)
 
 func _spawn_one() -> void:
 	var scene: PackedScene = fruit_pickups.pick_random() as PackedScene
@@ -47,3 +65,4 @@ func _spawn_one() -> void:
 	inst.tree_exited.connect(func() -> void:
 		_alive_fruits = max(0, _alive_fruits - 1)
 	)
+	

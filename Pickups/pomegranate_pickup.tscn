@@ -1,13 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://d3kv1drkuxprx"]
+[gd_scene load_steps=4 format=3 uid="uid://d3kv1drkuxprx"]
 
 [ext_resource type="Script" uid="uid://cx8hujvj3jmow" path="res://scripts/pick_up.gd" id="1_7jilw"]
+[ext_resource type="Texture2D" uid="uid://cmcje4u1rkuxh" path="res://assets/Fruit_Icons/pomegranate.png" id="1_tbg5g"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tbg5g"]
 
 [node name="PomegranatePickup" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_tbg5g")
 
 [node name="PickupArea" type="Area2D" parent="."]
 script = ExtResource("1_7jilw")
 item_id = "Pomogranate"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PickupArea"]
+shape = SubResource("CircleShape2D_tbg5g")
