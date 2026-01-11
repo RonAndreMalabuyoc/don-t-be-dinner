@@ -25,6 +25,7 @@ func _ready() -> void:
 
 
 func spawn_for_wave(_wave_index: int) -> void:
+	print("FruitSpawner spawn_for_wave called:", _wave_index)
 	if fruit_pickups.is_empty() or spawn_points.is_empty():
 		return
 
@@ -66,3 +67,11 @@ func _spawn_one() -> void:
 		_alive_fruits = max(0, _alive_fruits - 1)
 	)
 	
+func _process(_delta: float) -> void:
+	if _wave_manager == null:
+		return
+
+	var w := int(_wave_manager.get("current_wave"))
+	if w != _last_wave:
+		_last_wave = w
+		spawn_for_wave(w)
