@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://d3kv1drkuxprx"]
+
+[ext_resource type="Script" uid="uid://cx8hujvj3jmow" path="res://scripts/pick_up.gd" id="1_7jilw"]
+
+[node name="PomegranatePickup" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="PickupArea" type="Area2D" parent="."]
+script = ExtResource("1_7jilw")
+item_id = "Pomogranate"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PickupArea"]

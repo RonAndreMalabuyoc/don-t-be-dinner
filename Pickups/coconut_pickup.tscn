@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://v0jy8lu50ja"]
+
+[ext_resource type="Script" uid="uid://cx8hujvj3jmow" path="res://scripts/pick_up.gd" id="1_bldkv"]
+
+[node name="Coconut_Pickup" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="PickupArea" type="Area2D" parent="."]
+script = ExtResource("1_bldkv")
+item_id = "Coconut"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PickupArea"]

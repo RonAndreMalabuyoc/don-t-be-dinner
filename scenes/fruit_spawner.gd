@@ -1,0 +1,49 @@
+extends Node2D
+
+@export var fruit_pickups: Array[PackedScene] = []
+@export var spawn_points: Array[Node2D] = []
+
+@export var min_spawn_per_wave: int = 1
+@export var max_spawn_per_wave: int = 2
+@export var max_fruits_alive: int = 3
+
+var _alive_fruits: int = 0
+
+
+func spawn_for_wave(_wave_index: int) -> void:
+	if fruit_pickups.is_empty() or spawn_points.is_empty():
+		return
+
+	if _alive_fruits >= max_fruits_alive:
+		return
+
+	var count: int = randi_range(min_spawn_per_wave, max_spawn_per_wave)
+	var capacity: int = max_fruits_alive - _alive_fruits
+	count = min(count, capacity)
+
+	for i in range(count):
+		_spawn_one()
+
+
+func _spawn_one() -> void:
+	var scene: PackedScene = fruit_pickups.pick_random() as PackedScene
+	if scene == null:
+		return
+
+	var point: Node2D = spawn_points.pick_random() as Node2D
+	if point == null:
+		return
+
+	# instantiate() returns Node, so we cast it to Node2D
+	var inst: Node2D = scene.instantiate() as Node2D
+	if inst == null:
+		return
+
+	get_tree().current_scene.add_child(inst)
+	inst.global_position = point.global_position
+
+	_alive_fruits += 1
+
+	inst.tree_exited.connect(func() -> void:
+		_alive_fruits = max(0, _alive_fruits - 1)
+	)
