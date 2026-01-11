@@ -15,20 +15,22 @@ func _ready() -> void:
 		spawn_all_4()
 
 func spawn_all_4() -> void:
-	_spawn(FruitPickup.FruitType.POMEGRANATE, icon_pomegranate, 0)
-	_spawn(FruitPickup.FruitType.ORANGE,      icon_orange,      1)
-	_spawn(FruitPickup.FruitType.BANANA,      icon_banana,      2)
-	_spawn(FruitPickup.FruitType.COCONUT,     icon_coconut,     3)
-
-func _spawn(ftype: int, tex: Texture2D, index: int) -> void:
 	if fruit_pickup_scene == null:
 		push_error("FruitSpawner: fruit_pickup_scene is not set.")
 		return
 
-	var inst := fruit_pickup_scene.instantiate() as FruitPickup
+	_spawn_one(FruitPickup.FruitType.POMEGRANATE, icon_pomegranate, 0)
+	_spawn_one(FruitPickup.FruitType.ORANGE,      icon_orange,      1)
+	_spawn_one(FruitPickup.FruitType.BANANA,      icon_banana,      2)
+	_spawn_one(FruitPickup.FruitType.COCONUT,     icon_coconut,     3)
+
+func _spawn_one(ftype: int, icon: Texture2D, index: int) -> void:
+	var inst := fruit_pickup_scene.instantiate() as Area2D
 	add_child(inst)
 
-	inst.global_position = global_position + Vector2(spacing * index, 0)
+	# Position in a row
+	inst.global_position = global_position + Vector2(spacing * float(index), 0.0)
 
-	inst.fruit_type = ftype
-	inst.icon = tex
+	# Set exported vars on FruitPickup
+	inst.set("fruit_type", ftype)
+	inst.set("icon", icon)

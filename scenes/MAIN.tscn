@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=28 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://dk4spknv8m3e1" path="res://assets/Full_bgx32.png" id="1_51ehd"]
@@ -18,11 +18,6 @@
 [ext_resource type="PackedScene" uid="uid://dtnai2lsmcq0i" path="res://scenes/wave_manager.tscn" id="16_fr04l"]
 [ext_resource type="PackedScene" uid="uid://buk1t13n737f3" path="res://scenes/spawn_point.tscn" id="17_jgtwp"]
 [ext_resource type="Script" uid="uid://ba5fqp40phmma" path="res://scenes/fruit_spawner.gd" id="18_jgtwp"]
-[ext_resource type="PackedScene" uid="uid://dsa246bqc4dao" path="res://scenes/fruit_pickup.tscn" id="19_cli15"]
-[ext_resource type="Texture2D" uid="uid://ctppbc1khxsuv" path="res://assets/fruits/pomegranate.png" id="20_1c2kf"]
-[ext_resource type="Texture2D" uid="uid://jl2jwhinma7u" path="res://assets/fruits/orange.png" id="21_27wxa"]
-[ext_resource type="Texture2D" uid="uid://cycnymm0m586v" path="res://assets/fruits/banana.png" id="22_idstl"]
-[ext_resource type="Texture2D" uid="uid://ofvbq5e7wk8b" path="res://assets/fruits/coconut.png" id="23_v426v"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7vxoj"]
 texture = ExtResource("4_jgtwp")
@@ -2699,10 +2694,10 @@ sources/4 = SubResource("TileSetAtlasSource_fr04l")
 script = ExtResource("1_0tikr")
 
 [node name="TextureRect" type="TextureRect" parent="."]
-offset_left = -680.0
-offset_top = -805.0
-offset_right = 2874.0
-offset_bottom = 638.0
+offset_left = -681.0
+offset_top = -807.0
+offset_right = 2873.0
+offset_bottom = 636.0
 texture = ExtResource("1_51ehd")
 
 [node name="WoodenShed" type="Sprite2D" parent="TextureRect"]
@@ -2821,10 +2816,4 @@ position = Vector2(2866, 427)
 position = Vector2(-672, 433)
 
 [node name="FruitSpawner" type="Node2D" parent="."]
-position = Vector2(400, 468.56)
 script = ExtResource("18_jgtwp")
-fruit_pickup_scene = ExtResource("19_cli15")
-icon_pomegranate = ExtResource("20_1c2kf")
-icon_orange = ExtResource("21_27wxa")
-icon_banana = ExtResource("22_idstl")
-icon_coconut = ExtResource("23_v426v")
