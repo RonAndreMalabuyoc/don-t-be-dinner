@@ -1,6 +1,11 @@
 extends CharacterBody2D
 @export var normal_projectile_scene: PackedScene
-@export var special_projectiles: Dictionary
+@export var special_projectiles := {
+	"Pomegranate": preload("res://Pickups/pomegranate_pickup.tscn"),
+	"Orange": preload("res://Pickups/orange_pickup.tscn"),
+	"Banana": preload("res://Pickups/banana_pickup.tscn"),
+	"Coconut": preload("res://Pickups/coconut_pickup.tscn"),
+}
 
 @onready var muzzle: Marker2D = $Muzzle
 
@@ -85,6 +90,8 @@ func _fire_special(item_id: String) -> void:
 	if not special_projectiles.has(item_id):
 		_fire_normal()
 		return
+	print("Firing special:", item_id)
+
 
 	var proj_scene: PackedScene = special_projectiles[item_id]
 	var proj = proj_scene.instantiate()
