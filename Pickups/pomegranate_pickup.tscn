@@ -5,14 +5,14 @@
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_tbg5g"]
 
-[node name="PomegranatePickup" type="Node2D"]
+[node name="PomegranatePickup" type="Area2D"]
+script = ExtResource("1_7jilw")
+item_id = "Pomegranate"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_tbg5g")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_tbg5g")
 
-[node name="PickupArea" type="Area2D" parent="."]
-script = ExtResource("1_7jilw")
-item_id = "Pomogranate"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PickupArea"]
-shape = SubResource("CircleShape2D_tbg5g")
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

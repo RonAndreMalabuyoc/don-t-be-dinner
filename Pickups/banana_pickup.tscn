@@ -4,15 +4,16 @@
 [ext_resource type="Script" uid="uid://cx8hujvj3jmow" path="res://scripts/pick_up.gd" id="1_nvsdu"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_mq1sc"]
+radius = 15.0
 
-[node name="Banana_Pickup" type="Node2D"]
+[node name="Banana_Pickup" type="Area2D"]
+script = ExtResource("1_nvsdu")
+item_id = "Banana"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_mq1sc")
 
-[node name="PickupArea" type="Area2D" parent="."]
-script = ExtResource("1_nvsdu")
-item_id = "Banana"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PickupArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_mq1sc")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
