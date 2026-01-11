@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=27 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://dk4spknv8m3e1" path="res://assets/Full_bgx32.png" id="1_51ehd"]
@@ -17,7 +17,6 @@
 [ext_resource type="PackedScene" uid="uid://bi087ib7mw0kp" path="res://scenes/killzone.tscn" id="14_ue4rg"]
 [ext_resource type="PackedScene" uid="uid://dtnai2lsmcq0i" path="res://scenes/wave_manager.tscn" id="16_fr04l"]
 [ext_resource type="PackedScene" uid="uid://buk1t13n737f3" path="res://scenes/spawn_point.tscn" id="17_jgtwp"]
-[ext_resource type="Script" uid="uid://ba5fqp40phmma" path="res://scenes/fruit_spawner.gd" id="18_jgtwp"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7vxoj"]
 texture = ExtResource("4_jgtwp")
@@ -2814,6 +2813,3 @@ position = Vector2(2866, 427)
 
 [node name="BugSpawn2" type="Marker2D" parent="."]
 position = Vector2(-672, 433)
-
-[node name="FruitSpawner" type="Node2D" parent="."]
-script = ExtResource("18_jgtwp")
