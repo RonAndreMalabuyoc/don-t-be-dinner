@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://dl6d3lwiivjxg"]
+[gd_scene load_steps=40 format=3 uid="uid://dl6d3lwiivjxg"]
 
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
@@ -7,7 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://dio8s4h1seupc" path="res://assets/walk_right-Sheet.png" id="2_wmkwl"]
 [ext_resource type="Texture2D" uid="uid://xfs8i5sosg3v" path="res://assets/shoot_right_duck-Sheet.png" id="6_2v62t"]
 [ext_resource type="Script" uid="uid://df7jibqo7t6pn" path="res://scripts/weapon_manager.gd" id="7_0d0nc"]
-[ext_resource type="PackedScene" uid="uid://pe36oesm1ua2" path="res://scenes/pomegranate_shot.tscn" id="8_d3a2h"]
 
 [sub_resource type="GDScript" id="GDScript_48ufq"]
 resource_name = "Movement"
@@ -510,6 +509,6 @@ shape = SubResource("CircleShape2D_0d0nc")
 [node name="WeaponManager" type="Node" parent="."]
 script = ExtResource("7_0d0nc")
 shoot_point_path = NodePath("../ShootPoint")
-normal_projectile_scene = ExtResource("8_d3a2h")
+normal_projectile_scene = ExtResource("1_ogw1n")
 
 [connection signal="timeout" from="Reload_speed" to="." method="_on_timer_timeout"]

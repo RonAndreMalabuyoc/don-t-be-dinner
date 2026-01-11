@@ -5,7 +5,7 @@ class_name WeaponManager
 @export var normal_projectile_scene: PackedScene
 
 # Map: "orange" -> OrangeProjectileScene, etc.
-@export var special_projectiles: Dictionary = {"pomegranate":"res://scenes/pomegranate_shot.tscn", "orange":"res://scenes/orange_beam.tscn", "coconut":"res://scenes/coconut_shot.tscn", "banana":"res://scenes/banana_nuke.tscn"}
+@export var special_projectiles: Dictionary = {"pomegranate":"res://scenes/pomegranate_shot.tscn"}
 
 # Base cooldown (breadcrumbs)
 @export var base_cooldown := 0.30
@@ -108,4 +108,4 @@ func try_shoot() -> void:
 	_cooldown_timer.start(cooldown)
 	
 	print("weapon:", current_weapon_id(), "has:", special_projectiles.has(current_weapon_id()))
-	
+	print("Projectile setup called")
