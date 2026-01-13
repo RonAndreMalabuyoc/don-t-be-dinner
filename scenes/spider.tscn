@@ -1,7 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://fbiybjbee3yk"]
+[gd_scene load_steps=17 format=3 uid="uid://fbiybjbee3yk"]
 
 [ext_resource type="Script" uid="uid://b22642aqqf5n7" path="res://spider.gd" id="1_k5hg5"]
 [ext_resource type="Texture2D" uid="uid://dbyo53wv1ptyx" path="res://assets/17_spdr_right-Sheet.png" id="2_d613k"]
+[ext_resource type="Texture2D" uid="uid://drnt4vcheqjve" path="res://assets/Enemy/21_jumpspdr_right-Sheet (1).png" id="3_d613k"]
 [ext_resource type="Texture2D" uid="uid://1ygpnsjbms1l" path="res://assets/Enemy/18_spdrwalk_right-Sheet.png" id="3_evcmw"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_txxy0"]
@@ -19,6 +20,18 @@ region = Rect2(64, 0, 32, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_wj5t3"]
 atlas = ExtResource("2_d613k")
 region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oaama"]
+atlas = ExtResource("3_d613k")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_aopah"]
+atlas = ExtResource("3_d613k")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1wupe"]
+atlas = ExtResource("3_d613k")
+region = Rect2(128, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wghsh"]
 atlas = ExtResource("3_evcmw")
@@ -53,6 +66,20 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_oaama")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_aopah")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1wupe")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_wghsh")
 }, {
 "duration": 1.0,
@@ -62,25 +89,26 @@ animations = [{
 "texture": SubResource("AtlasTexture_it4vu")
 }],
 "loop": true,
-"name": &"new_animation",
+"name": &"walk",
 "speed": 5.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_k5hg5"]
-radius = 6.0
+radius = 13.518345
 
 [node name="Spider" type="CharacterBody2D"]
 scale = Vector2(1.492929, 1.6565105)
-collision_layer = 17
-collision_mask = 5
+collision_mask = 6
 script = ExtResource("1_k5hg5")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(24.300072, 0.22575116)
+scale = Vector2(1.9978226, 2.061036)
 sprite_frames = SubResource("SpriteFrames_8qx0x")
-animation = &"new_animation"
-autoplay = "new_animation"
-frame_progress = 0.56712836
+animation = &"jump"
+autoplay = "walk"
+frame_progress = 0.9934063
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -1)
+position = Vector2(23.443848, -1.2073573)
 shape = SubResource("CircleShape2D_k5hg5")

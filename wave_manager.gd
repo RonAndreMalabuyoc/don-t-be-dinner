@@ -2,7 +2,8 @@ extends Node2D
 
 @export var spider_scene: PackedScene
 @export var moth_scene: PackedScene
-@export var spawn_points: Array[Node2D]
+@export var spider_spawn_points: Array[Node2D]
+@export var moth_spawn_points: Array[Node2D]
 @export var spawn_delay: float = 1.0
 @onready var spawn_timer := Timer.new()
 
@@ -68,15 +69,26 @@ func start_next_wave():
 	spawn_timer.start()
 
 func _on_spawn_timer_timeout():
-	if spawn_queue.size() == 0:  # <- fixed here
+	if spawn_queue.is_empty():
 		spawn_timer.stop()
 		return
 
-	var scene = spawn_queue.pop_front()
-	var spawn_point = spawn_points.pick_random()
-	var enemy = scene.instantiate()
+	var scene: PackedScene = spawn_queue.pop_front()
+	var enemy: Node2D = scene.instantiate()
+
+	var spawn_point: Node2D = null
+
+	if scene == spider_scene:
+		spawn_point = spider_spawn_points.pick_random()
+	elif scene == moth_scene:
+		spawn_point = moth_spawn_points.pick_random()
+
+	if spawn_point == null:
+		push_warning("No spawn point assigned for this enemy type!")
+		return
+
 	enemy.global_position = spawn_point.global_position
-	enemy.connect("enemy_died", Callable(self, "_on_enemy_died"))
+	enemy.enemy_died.connect(_on_enemy_died)
 
 	add_child(enemy)
 	enemies_alive += 1

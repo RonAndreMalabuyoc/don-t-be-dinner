@@ -1,11 +1,179 @@
-[gd_scene load_steps=4 format=3 uid="uid://dtnai2lsmcq0i"]
+[gd_scene load_steps=29 format=3 uid="uid://dtnai2lsmcq0i"]
 
 [ext_resource type="Script" uid="uid://d0tn2yd8md8k0" path="res://wave_manager.gd" id="1_8fe1o"]
 [ext_resource type="PackedScene" uid="uid://fbiybjbee3yk" path="res://scenes/spider.tscn" id="2_qj452"]
-[ext_resource type="PackedScene" uid="uid://crm27ns2yxn2i" path="res://scenes/enemy.tscn" id="3_na16q"]
+[ext_resource type="Script" uid="uid://b0gfd4pdhyci0" path="res://scripts/enemy.gd" id="3_gsp50"]
+[ext_resource type="Texture2D" uid="uid://6frmptbta4kc" path="res://assets/Enemy/33_moth_attack_right-Sheet.png" id="4_x3ylx"]
+[ext_resource type="Texture2D" uid="uid://bb8qphodrg1u1" path="res://assets/Enemy/BatStandard_Death.png" id="5_ountb"]
+[ext_resource type="Texture2D" uid="uid://csamuywrlr781" path="res://assets/Enemy/31_idle_moth_right-Sheet.png" id="6_r5yun"]
+[ext_resource type="Texture2D" uid="uid://bqsnfej5jbqpq" path="res://assets/Enemy/BatStandard_Hurt.png" id="7_hxgtx"]
 
-[node name="WaveManager" type="Node2D" node_paths=PackedStringArray("spawn_points")]
+[sub_resource type="CircleShape2D" id="CircleShape2D_nenq2"]
+radius = 22.69107
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nenq2"]
+atlas = ExtResource("4_x3ylx")
+region = Rect2(0, 0, 60, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_md484"]
+atlas = ExtResource("4_x3ylx")
+region = Rect2(60, 0, 60, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ipns3"]
+atlas = ExtResource("4_x3ylx")
+region = Rect2(120, 0, 60, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g0wcc"]
+atlas = ExtResource("5_ountb")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s1ycm"]
+atlas = ExtResource("5_ountb")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_shcg2"]
+atlas = ExtResource("5_ountb")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ile5s"]
+atlas = ExtResource("5_ountb")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1x4g4"]
+atlas = ExtResource("5_ountb")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2pwtc"]
+atlas = ExtResource("5_ountb")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rogs8"]
+atlas = ExtResource("5_ountb")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8qclf"]
+atlas = ExtResource("6_r5yun")
+region = Rect2(0, 0, 60, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w8i8w"]
+atlas = ExtResource("6_r5yun")
+region = Rect2(60, 0, 60, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_otmr2"]
+atlas = ExtResource("6_r5yun")
+region = Rect2(120, 0, 60, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wtq4b"]
+atlas = ExtResource("6_r5yun")
+region = Rect2(180, 0, 60, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2mchx"]
+atlas = ExtResource("7_hxgtx")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t3vcr"]
+atlas = ExtResource("7_hxgtx")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qaulx"]
+atlas = ExtResource("7_hxgtx")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1f82d"]
+atlas = ExtResource("7_hxgtx")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_otmr2"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nenq2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_md484")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ipns3")
+}],
+"loop": true,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g0wcc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s1ycm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_shcg2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ile5s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1x4g4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2pwtc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rogs8")
+}],
+"loop": false,
+"name": &"death",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8qclf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w8i8w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_otmr2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wtq4b")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2mchx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t3vcr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qaulx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1f82d")
+}],
+"loop": false,
+"name": &"hurt",
+"speed": 5.0
+}]
+
+[sub_resource type="PackedScene" id="PackedScene_2xf3a"]
+_bundled = {
+"conn_count": 1,
+"conns": PackedInt32Array(1073741828, 1073741827, 21, 20, 2, 0, 0),
+"editable_instances": [],
+"names": PackedStringArray("Node2D", "CharacterBody2D", "Enemy", "collision_layer", "collision_mask", "script", "CollisionShape2D", "CollisionShape2D", "position", "scale", "shape", "AnimatedSprite2D", "AnimatedSprite2D", "position", "scale", "sprite_frames", "animation", "Timer", "Timer", "autostart", "_on_timer_timeout", "timeout"),
+"node_count": 4,
+"node_paths": [NodePath("."), NodePath("."), NodePath("."), NodePath("."), NodePath("Timer")],
+"nodes": PackedInt32Array(-1, -1, 1, 0, -1, 3, 3, 0, 4, 1, 5, 2, 1, 2, 1073741824, 0, 7, 6, -1, 3, 8, 3, 9, 4, 10, 5, 0, 1073741825, 0, 12, 11, -1, 4, 13, 6, 14, 7, 15, 8, 16, 9, 0, 1073741826, 0, 18, 17, -1, 1, 19, 10, 0),
+"variants": [2, 4, ExtResource("3_gsp50"), Vector2(3.8146973e-06, 2), Vector2(0.79326344, 0.6325645), SubResource("CircleShape2D_nenq2"), Vector2(-1.5, 3.5), Vector2(2.9464245, 1.84375), SubResource("SpriteFrames_otmr2"), &"attack", true],
+"version": 3
+}
+
+[node name="WaveManager" type="Node2D"]
 script = ExtResource("1_8fe1o")
 spider_scene = ExtResource("2_qj452")
-moth_scene = ExtResource("3_na16q")
-spawn_points = [null, null]
+moth_scene = SubResource("PackedScene_2xf3a")

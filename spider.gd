@@ -12,6 +12,8 @@ class_name LandEnemy
 @export var jump_force := -350.0
 @export var jump_cooldown := 1.0
 @export var max_health := 20
+@export var min_jump_delay := 0.6
+@export var max_jump_delay := 1.8
 
 var current_health := 20
 var dash_cooldown_left := 0.0
@@ -22,6 +24,8 @@ var player: CharacterBody2D
 var dir := Vector2.ZERO
 var has_hit_player := false
 var _jump_timer: Timer
+var can_jump := true
+var is_jumping := false
 
 @onready var sprite := $AnimatedSprite2D
 
@@ -51,15 +55,29 @@ func _ready():
 	current_health = max_health
 	player = Global.playerbody
 	add_to_group("Enemy")
+
+	randomize()
+
 	_jump_timer = Timer.new()
 	_jump_timer.one_shot = true
+	_jump_timer.timeout.connect(_on_jump_cooldown_finished)
 	add_child(_jump_timer)
 
+	_start_random_jump_cooldown()
+
+func _start_random_jump_cooldown():
+	can_jump = false
+	_jump_timer.start(randf_range(min_jump_delay, max_jump_delay))
+
+func _on_jump_cooldown_finished():
+	can_jump = true
 
 func _physics_process(delta):
 	if player == null:
 		player = Global.playerbody
 		return
+	if dash_cooldown_left > 0:
+		dash_cooldown_left -= delta
 
 	# APPLY GRAVITY
 	if not is_on_floor():
@@ -73,6 +91,10 @@ func _physics_process(delta):
 		_chase_process(delta)
 
 	move_and_slide()
+	
+	if is_jumping and is_on_floor():
+		is_jumping = false
+
 	_handle_animation()
 
 
@@ -84,22 +106,39 @@ func _chase_process(_delta):
 
 	dir = (target_pos - global_position).normalized()
 	velocity.x = dir.x * walk_speed
+	
+	if global_position.distance_to(target_pos) <= dash_distance and not is_dashing and dash_cooldown_left <= 0:  
+			start_dash()
 
-	# Jump ONLY if:
-	# - on floor
-	# - not already jumping
-	# - player is above
-	if is_on_floor() \
-	and _jump_timer.is_stopped() \
-	and target_pos.y < global_position.y - 20 \
-	and not is_dashing \
-	and not is_retreating:
-		velocity.y = jump_force
-		_jump_timer.start(jump_cooldown)
+	_try_jump(target_pos)
 
 	# Dash check
 	if global_position.distance_to(target_pos) <= dash_distance and not is_dashing:
 		start_dash()
+
+func _try_jump(target_pos: Vector2):
+	if not can_jump:
+		return
+	if not is_on_floor():
+		return
+	if is_dashing or is_retreating:
+		return
+	if target_pos.y >= global_position.y - 20:
+		return
+
+	# Random chance
+	if randf() > 0.6:
+		_start_random_jump_cooldown()
+		return
+
+	# JUMP
+	velocity.y = jump_force
+	is_jumping = true
+	can_jump = false
+	sprite.play("jump")
+
+	_start_random_jump_cooldown()
+
 
 # ---------------- DASH ----------------
 func start_dash():
@@ -137,9 +176,8 @@ func end_dash():
 	is_retreating = false
 	velocity = Vector2.ZERO
 
-	# Immediately attack again if player is in range
-	if player and global_position.distance_to(player.global_position) <= dash_distance:
-		start_dash()
+	dash_cooldown_left = dash_cooldown 
+
 
 # ---------------- DAMAGE ----------------
 func _on_hitbox_body_entered(body):
@@ -150,7 +188,27 @@ func _on_hitbox_body_entered(body):
 
 # ---------------- ANIMATION ----------------
 func _handle_animation():
-	sprite.play("walk")
+	# Jump animation has highest priority
+	if is_jumping:
+		if sprite.animation != "jump":
+			sprite.play("jump")
+		return
+
+	# Dash animation
+	if is_dashing:
+		if sprite.animation != "dash":
+			sprite.play("dash")
+		return
+
+	# Walk / Idle
+	if abs(velocity.x) > 5:
+		if sprite.animation != "walk":
+			sprite.play("walk")
+	else:
+		if sprite.animation != "idle":
+			sprite.play("idle")
+
+	# Flip sprite
 	if velocity.x < 0:
 		sprite.flip_h = true
 	elif velocity.x > 0:

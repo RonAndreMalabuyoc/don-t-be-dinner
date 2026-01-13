@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=33 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://dk4spknv8m3e1" path="res://assets/Full_bgx32.png" id="1_51ehd"]
@@ -16,6 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://dh1wyl5t6q5dg" path="res://assets/Grass 2.png" id="13_v426v"]
 [ext_resource type="PackedScene" uid="uid://bi087ib7mw0kp" path="res://scenes/killzone.tscn" id="14_ue4rg"]
 [ext_resource type="PackedScene" uid="uid://dtnai2lsmcq0i" path="res://scenes/wave_manager.tscn" id="16_fr04l"]
+[ext_resource type="PackedScene" uid="uid://crm27ns2yxn2i" path="res://scenes/enemy.tscn" id="17_cli15"]
 [ext_resource type="PackedScene" uid="uid://buk1t13n737f3" path="res://scenes/spawn_point.tscn" id="17_jgtwp"]
 [ext_resource type="Script" uid="uid://ba5fqp40phmma" path="res://scenes/fruit_spawner.gd" id="18_jgtwp"]
 [ext_resource type="PackedScene" uid="uid://d3kv1drkuxprx" path="res://Pickups/pomegranate_pickup.tscn" id="19_vkg1p"]
@@ -2788,36 +2789,30 @@ collision_layer = 2
 collision_mask = 2
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BatOnlyCollision"]
+position = Vector2(-4, 9.999999)
+scale = Vector2(0.9951344, 0.9914352)
 polygon = PackedVector2Array(-687, 465, -682, 472, -301, 478, 479, 472, 1031, 468, 1373, 471, 1914, 470, 2452, 464, 2866, 459, 2873, -666, -677, -657, -682, 458, -799, 429, -786, -812, 2967, -808, 2961, 751, -807, 785, -801, 425)
 
-[node name="WaveManager" parent="." node_paths=PackedStringArray("spawn_points") groups=["WaveManager"] instance=ExtResource("16_fr04l")]
-spawn_points = [NodePath("SpawnPoint"), NodePath("SpawnPoint2")]
+[node name="WaveManager" parent="." node_paths=PackedStringArray("spider_spawn_points", "moth_spawn_points") groups=["WaveManager"] instance=ExtResource("16_fr04l")]
+moth_scene = ExtResource("17_cli15")
+spider_spawn_points = [NodePath("spider_spawn_points"), NodePath("spider_spawn_points2")]
+moth_spawn_points = [NodePath("moth_spawn_points"), NodePath("moth_spawn_points2")]
 
-[node name="SpawnPoint2" parent="WaveManager" instance=ExtResource("17_jgtwp")]
-position = Vector2(1469.9999, 474)
+[node name="spider_spawn_points2" parent="WaveManager" instance=ExtResource("17_jgtwp")]
+position = Vector2(-628, 442.99997)
+scale = Vector2(3.9671378, 4.630005)
+
+[node name="spider_spawn_points" parent="WaveManager" instance=ExtResource("17_jgtwp")]
+position = Vector2(2792, 421)
 scale = Vector2(1.9917675, 2.1517446)
 
-[node name="SpawnPoint" parent="WaveManager" instance=ExtResource("17_jgtwp")]
-position = Vector2(385, 474)
+[node name="moth_spawn_points" parent="WaveManager" instance=ExtResource("17_jgtwp")]
+position = Vector2(390, 30)
 scale = Vector2(2.6666667, 2)
 
-[node name="BeetleSpawn" type="Marker2D" parent="."]
-position = Vector2(-416, -591)
-
-[node name="BeetleSpawn2" type="Marker2D" parent="."]
-position = Vector2(2742, -725)
-
-[node name="BeetleSpawn3" type="Marker2D" parent="."]
-position = Vector2(5626, -462)
-
-[node name="BeetleSpawn4" type="Marker2D" parent="."]
-position = Vector2(-559, -352)
-
-[node name="BugSpawn1" type="Marker2D" parent="."]
-position = Vector2(2866, 427)
-
-[node name="BugSpawn2" type="Marker2D" parent="."]
-position = Vector2(-672, 433)
+[node name="moth_spawn_points2" parent="WaveManager" instance=ExtResource("17_jgtwp")]
+position = Vector2(1438, 20)
+scale = Vector2(2.6666667, 2)
 
 [node name="FruitSpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawn_points")]
 script = ExtResource("18_jgtwp")
