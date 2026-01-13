@@ -70,6 +70,8 @@ var is_emoting := false
 var shot_fired_this_anim := false
 
 # ───────── READY ─────────
+var fruit_hud: Node = null
+
 func _ready():
 	Global.playerbody = self
 	Global.player_alive = true
@@ -84,6 +86,10 @@ func _ready():
 	_powerup_timer.one_shot = true
 	add_child(_powerup_timer)
 	_powerup_timer.timeout.connect(_on_powerup_timeout)
+	
+	fruit_hud = get_tree().get_first_node_in_group(\"fruit_hud\")
+	print(\"FruitHUD found:\", fruit_hud)
+	_refresh_fruit_hud()
 
 # ───────── PHYSICS ─────────
 func _physics_process(delta):
@@ -295,7 +301,7 @@ func _apply_projectile_direction(proj: Object, dir: Vector2) -> void:
 
 
 # ───────── INVENTORY API (called by pickups) ─────────
-func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = true) -> void:
+func push_powerup(item_id: String, duration: float = -1.0, _auto_fire: bool = true) -> void:
 	print(\">>> PLAYER push_powerup HIT with:\", item_id)
 
 	if duration < 0.0:
@@ -308,16 +314,17 @@ func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = tru
 		if fruit_slots[i][\"id\"] == item_id:
 			fruit_slots[i][\"time\"] = duration
 			_debug_inventory(\"After pickup (refresh reserve): \" + item_id)
+			_refresh_fruit_hud()
 			return
 
 	# Add to a free slot
 	if fruit_slots.size() < 2:
 		fruit_slots.append({\"id\": item_id, \"time\": duration})
 		_debug_inventory(\"After pickup (add reserve): \" + item_id)
+		_refresh_fruit_hud()
 		return
 
-	# Full: replace the OLDEST reserve (slot 0) if nothing is active
-	# If something IS active, replace the inactive slot so you don’t lose the active fruit.
+	# Full: replace inactive slot
 	var replace_index := 0
 	if active_slot == 0:
 		replace_index = 1
@@ -326,8 +333,7 @@ func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = tru
 
 	fruit_slots[replace_index] = {\"id\": item_id, \"time\": duration}
 	_debug_inventory(\"After pickup (replace reserve): \" + item_id)
-
-
+	_refresh_fruit_hud()
 
 func switch_fruit() -> void:
 	if fruit_slots.is_empty():
@@ -355,6 +361,7 @@ func switch_fruit() -> void:
 	print(\"Switched equipped fruit\")
 	_debug_inventory(\"After switch\")
 
+	_refresh_fruit_hud()
 
 
 func _on_powerup_timeout() -> void:
@@ -375,6 +382,8 @@ func _on_powerup_timeout() -> void:
 
 	_start_active_timer()
 	_debug_inventory(\"After timeout (still has fruit)\")
+
+	_refresh_fruit_hud()
 
 
 func _save_active_remaining() -> void:
@@ -427,6 +436,10 @@ func _debug_inventory(context: String = \"\") -> void:
 		print(\"Timer stopped\")
 
 	print(\"============================\\n\")
+
+func _refresh_fruit_hud() -> void:
+	if fruit_hud and fruit_hud.has_method(\"update_fruit_ui\"):
+		fruit_hud.call(\"update_fruit_ui\", fruit_slots, active_slot)
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qthh5"]

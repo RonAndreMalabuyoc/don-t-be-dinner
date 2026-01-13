@@ -1,6 +1,9 @@
-[gd_scene format=3 uid="uid://bi267n5gwq4gq"]
+[gd_scene load_steps=2 format=3 uid="uid://bi267n5gwq4gq"]
 
-[node name="FruitHUD" type="CanvasLayer"]
+[ext_resource type="Script" uid="uid://ca1ty8lqst2sy" path="res://UI/fruit_hud.gd" id="1_cqr8k"]
+
+[node name="FruitHUD" type="CanvasLayer" groups=["fruit_hud"]]
+script = ExtResource("1_cqr8k")
 
 [node name="Panel" type="PanelContainer" parent="."]
 offset_right = 40.0
