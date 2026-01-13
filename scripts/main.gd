@@ -12,6 +12,11 @@ extends CharacterBody2D
 @export var powerup_default_duration := 5.0
 var _powerup_timer: Timer
 
+# Two-slot fruit inventory:
+# each slot is {"id": String, "time": float}
+var fruit_slots: Array[Dictionary] = []
+var active_slot: int = -1
+
 var shot_stack: Array[String] = []
 var can_shoot := true
 @export var shoot_cooldown := 0.15
@@ -54,20 +59,31 @@ func _physics_process(delta: float) -> void:
 		
 	if Input.is_action_just_pressed("shoot"):
 		shoot()
+		
+	if Input.is_action_just_pressed("switch_fruit"):
+		switch_fruit()
+
+
+
 
 func shoot() -> void:
 	if not can_shoot:
 		return
-	print("SHOOT CALLED")
 
 	can_shoot = false
 
-	if shot_stack.size() > 0:
-		var item_id: String = shot_stack[-1]
+	print("Shoot pressed")
+
+	if active_slot != -1 and active_slot < fruit_slots.size():
+		print("Using fruit:", fruit_slots[active_slot]["id"])
+	else:
+		print("Using normal ammo")
+
+	if active_slot != -1 and active_slot < fruit_slots.size():
+		var item_id: String = fruit_slots[active_slot]["id"]
 		_fire_special(item_id)
 	else:
 		_fire_normal()
-
 
 	await get_tree().create_timer(shoot_cooldown).timeout
 	can_shoot = true
@@ -113,26 +129,119 @@ func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = tru
 	if duration < 0.0:
 		duration = powerup_default_duration
 
-	# Pause current top powerup by storing remaining time (stack-friendly behavior)
-	if shot_stack.size() > 0 and not _powerup_timer.is_stopped():
-		# Store remaining time alongside the id
-		# Convert shot_stack items to dictionaries if you want true pausing.
-		# For the simple version, we just let the new powerup override the old timer.
-		_powerup_timer.stop()
+	# If the fruit already exists in a slot, refresh its time and make it active
+	for i in range(fruit_slots.size()):
+		if fruit_slots[i]["id"] == item_id:
+			_save_active_remaining()
+			fruit_slots[i]["time"] = duration
+			active_slot = i
+			_start_active_timer()
+			if auto_fire:
+				shoot()
+			return
 
-	shot_stack.push_back(item_id)
-	_powerup_timer.wait_time = duration
-	_powerup_timer.start()
+	# Otherwise add/replace
+	if fruit_slots.size() < 2:
+		_save_active_remaining()
+		fruit_slots.append({"id": item_id, "time": duration})
+		active_slot = fruit_slots.size() - 1
+		_start_active_timer()
+		if auto_fire:
+			shoot()
+		return
 
+	# Full: replace the inactive slot if possible
+	var replace_index := 0
+	if active_slot == 0:
+		replace_index = 1
+	elif active_slot == 1:
+		replace_index = 0
+
+	_save_active_remaining()
+	fruit_slots[replace_index] = {"id": item_id, "time": duration}
+	active_slot = replace_index
+	_start_active_timer()
 	if auto_fire:
 		shoot()
 
+	_debug_inventory("After pickup: " + item_id)
 
 func _on_powerup_timeout() -> void:
-	if shot_stack.is_empty():
+	print("Powerup expired on slot:", active_slot)
+
+	if active_slot == -1:
 		return
 
-	shot_stack.pop_back()
+	fruit_slots.remove_at(active_slot)
 
-	# If you want stacked timers (pause/resume) later, we’ll enhance this part.
-	# For now: when top expires, you revert to previous (which stays until replaced).
+	if fruit_slots.is_empty():
+		active_slot = -1
+		_debug_inventory("After timeout (empty)")
+		return
+
+	if active_slot >= fruit_slots.size():
+		active_slot = 0
+
+	_start_active_timer()
+	_debug_inventory("After timeout (still has fruit)")
+
+
+func switch_fruit() -> void:
+	if fruit_slots.size() < 2:
+		print("Switch ignored: only one or zero fruits")
+		return
+
+	_save_active_remaining()
+	active_slot = (active_slot + 1) % fruit_slots.size()
+	_start_active_timer()
+
+	print("Switched fruit")
+	_debug_inventory("After switch")
+
+
+func _save_active_remaining() -> void:
+	if active_slot == -1:
+		return
+	if _powerup_timer == null:
+		return
+
+	if not _powerup_timer.is_stopped() and active_slot < fruit_slots.size():
+		fruit_slots[active_slot]["time"] = _powerup_timer.time_left
+
+	_powerup_timer.stop()
+
+
+func _start_active_timer() -> void:
+	if _powerup_timer == null:
+		return
+	if active_slot == -1:
+		return
+	if active_slot >= fruit_slots.size():
+		return
+
+	var t: float = float(fruit_slots[active_slot]["time"])
+	if t <= 0.0:
+		t = powerup_default_duration
+
+	_powerup_timer.wait_time = t
+	_powerup_timer.start()
+
+func _debug_inventory(context: String = "") -> void:
+	print("\n=== FRUIT DEBUG:", context, "===")
+
+	if fruit_slots.is_empty():
+		print("Slots: EMPTY")
+	else:
+		for i in range(fruit_slots.size()):
+			var marker = " (ACTIVE)" if i == active_slot else ""
+			print("Slot ", i, ": ", fruit_slots[i]["id"], 
+				  " | time left: ", fruit_slots[i]["time"], marker)
+
+	print("Active slot index:", active_slot)
+
+	if _powerup_timer and not _powerup_timer.is_stopped():
+		print("Timer running. Time left:", _powerup_timer.time_left)
+	else:
+		print("Timer stopped")
+
+	print("============================\n")
