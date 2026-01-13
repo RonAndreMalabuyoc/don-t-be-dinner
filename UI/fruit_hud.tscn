@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bi267n5gwq4gq"]
+
+[node name="FruitHUD" type="CanvasLayer"]
+
+[node name="Panel" type="PanelContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Slots" type="HBoxContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="Slot0" type="VBoxContainer" parent="Panel/Slots"]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="Panel/Slots/Slot0"]
+layout_mode = 2
+
+[node name="Status" type="Label" parent="Panel/Slots/Slot0"]
+layout_mode = 2
+
+[node name="Slot1" type="VBoxContainer" parent="Panel/Slots"]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="Panel/Slots/Slot1"]
+layout_mode = 2
+
+[node name="Status" type="Label" parent="Panel/Slots/Slot1"]
+layout_mode = 2

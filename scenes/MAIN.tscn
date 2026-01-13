@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=33 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://dk4spknv8m3e1" path="res://assets/Full_bgx32.png" id="1_51ehd"]
@@ -22,6 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://v0jy8lu50ja" path="res://Pickups/coconut_pickup.tscn" id="20_cli15"]
 [ext_resource type="PackedScene" uid="uid://dsq147a63qiui" path="res://Pickups/banana_pickup.tscn" id="21_1c2kf"]
 [ext_resource type="PackedScene" uid="uid://ba72iadkq2qr2" path="res://Pickups/orange_pickup.tscn" id="22_27wxa"]
+[ext_resource type="PackedScene" uid="uid://bi267n5gwq4gq" path="res://UI/fruit_hud.tscn" id="23_cli15"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7vxoj"]
 texture = ExtResource("4_jgtwp")
@@ -2831,3 +2832,5 @@ position = Vector2(387, 440)
 
 [node name="SpawnPoint2" type="Marker2D" parent="FruitSpawner/FruitSpawnPoints"]
 position = Vector2(700, 437)
+
+[node name="FruitHUD" parent="." instance=ExtResource("23_cli15")]
