@@ -27,6 +27,24 @@ script/source = "extends CharacterBody2D
 const SHOOT_FRAME := 3
 var shoot_direction: Vector2 = Vector2.RIGHT
 
+# ───────── FRUIT INVENTORY ─────────
+@export var powerup_default_duration := 5.0
+
+# Use bullet_scene as your normal projectile (already in your script)
+@export var special_projectiles := {
+	\"pomegranate\": preload(\"res://Pickups/pomegranate_pickup.tscn\"),
+	\"orange\": preload(\"res://Pickups/orange_pickup.tscn\"),
+	\"banana\": preload(\"res://Pickups/banana_pickup.tscn\"),
+	\"coconut\": preload(\"res://Pickups/coconut_pickup.tscn\"),
+}
+
+var _powerup_timer: Timer
+
+# each slot is {\"id\": String, \"time\": float}
+var fruit_slots: Array[Dictionary] = []
+var active_slot: int = -1
+
+
 # ───────── HEALTH ─────────
 @export var max_health := 30
 var current_health := 100
@@ -60,6 +78,12 @@ func _ready():
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 	hitbox.area_entered.connect(_on_hitbox_area_entered)
 	sprite.frame_changed.connect(_on_sprite_frame_changed)
+	print(\">>> PLAYER READY: \", get_path(), \" script=\", get_script().resource_path)
+	
+	_powerup_timer = Timer.new()
+	_powerup_timer.one_shot = true
+	add_child(_powerup_timer)
+	_powerup_timer.timeout.connect(_on_powerup_timeout)
 
 # ───────── PHYSICS ─────────
 func _physics_process(delta):
@@ -103,6 +127,10 @@ func _physics_process(delta):
 	handle_animations()
 	sprite.flip_h = not facing_right
 	move_and_slide()
+	
+	if Input.is_action_just_pressed(\"switch_fruit\"):
+		switch_fruit()
+
 	
 func get_shoot_direction() -> Vector2:
 	var mouse_pos = get_global_mouse_position()
@@ -149,13 +177,19 @@ func _on_sprite_frame_changed():
 
 	if sprite.frame == SHOOT_FRAME and not shot_fired_this_anim:
 		shot_fired_this_anim = true
-		if bullet_scene and Global.node_creation_parent:
-			var bullet = Global.instance_node(
-				bullet_scene,
-				shoot_point.global_position,
-				Global.node_creation_parent
-			) as Bullet
-			bullet.direction = get_shoot_direction()
+
+		var scene_to_fire: PackedScene = _get_current_projectile_scene()
+		if scene_to_fire == null or Global.node_creation_parent == null:
+			return
+
+		var proj = Global.instance_node(
+			scene_to_fire,
+			shoot_point.global_position,
+			Global.node_creation_parent
+		)
+
+		_apply_projectile_direction(proj, get_shoot_direction())
+
 	if sprite.frame == sprite.sprite_frames.get_frame_count(\"shoot\") - 1:
 		shot_fired_this_anim = false
 
@@ -223,6 +257,176 @@ func die():
 
 	await get_tree().create_timer(3.0).timeout
 	queue_free()
+	
+	# ───────── FRUIT SHOOT HELPERS ─────────
+func _get_current_projectile_scene() -> PackedScene:
+	# If we have an active fruit and it exists in dictionary, use it.
+	if active_slot != -1 and active_slot < fruit_slots.size():
+		var item_id: String = str(fruit_slots[active_slot][\"id\"])
+		item_id = _normalize_item_id(item_id)
+
+		if special_projectiles.has(item_id):
+			print(\"Firing special:\", item_id)
+			return special_projectiles[item_id]
+		else:
+			print(\"Special not found for:\", item_id, \" -> firing normal\")
+
+	# Fallback = normal bullet
+	return bullet_scene
+
+
+func _apply_projectile_direction(proj: Object, dir: Vector2) -> void:
+	# Works for your Bullet class, and for other scenes that use \"direction\" or setup(dir)
+	if proj == null:
+		return
+
+	if proj.has_method(\"setup\"):
+		proj.call(\"setup\", dir)
+		return
+
+	# common pattern
+	if \"direction\" in proj:
+		proj.direction = dir
+		return
+
+	# If it's your Bullet script type, this also works
+	if proj is Bullet:
+		proj.direction = dir
+
+
+# ───────── INVENTORY API (called by pickups) ─────────
+func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = true) -> void:
+	print(\">>> PLAYER push_powerup HIT with:\", item_id)
+
+	if duration < 0.0:
+		duration = powerup_default_duration
+
+	item_id = _normalize_item_id(item_id)
+
+	# If already in slots: refresh time only (do NOT auto-activate)
+	for i in range(fruit_slots.size()):
+		if fruit_slots[i][\"id\"] == item_id:
+			fruit_slots[i][\"time\"] = duration
+			_debug_inventory(\"After pickup (refresh reserve): \" + item_id)
+			return
+
+	# Add to a free slot
+	if fruit_slots.size() < 2:
+		fruit_slots.append({\"id\": item_id, \"time\": duration})
+		_debug_inventory(\"After pickup (add reserve): \" + item_id)
+		return
+
+	# Full: replace the OLDEST reserve (slot 0) if nothing is active
+	# If something IS active, replace the inactive slot so you don’t lose the active fruit.
+	var replace_index := 0
+	if active_slot == 0:
+		replace_index = 1
+	elif active_slot == 1:
+		replace_index = 0
+
+	fruit_slots[replace_index] = {\"id\": item_id, \"time\": duration}
+	_debug_inventory(\"After pickup (replace reserve): \" + item_id)
+
+
+
+func switch_fruit() -> void:
+	if fruit_slots.is_empty():
+		print(\"No fruits in reserve\")
+		return
+
+	# If no active fruit yet, equip the first one
+	if active_slot == -1:
+		active_slot = 0
+		_start_active_timer()
+		print(\"Equipped fruit slot 0\")
+		_debug_inventory(\"After equip\")
+		return
+
+	# If only one fruit, nothing to switch
+	if fruit_slots.size() < 2:
+		print(\"Only one fruit, already equipped\")
+		return
+
+	# Switch between 0 and 1 while preserving remaining time
+	_save_active_remaining()
+	active_slot = 1 if active_slot == 0 else 0
+	_start_active_timer()
+
+	print(\"Switched equipped fruit\")
+	_debug_inventory(\"After switch\")
+
+
+
+func _on_powerup_timeout() -> void:
+	print(\"Powerup expired on slot:\", active_slot)
+
+	if active_slot == -1:
+		return
+
+	fruit_slots.remove_at(active_slot)
+
+	if fruit_slots.is_empty():
+		active_slot = -1
+		_debug_inventory(\"After timeout (empty)\")
+		return
+
+	if active_slot >= fruit_slots.size():
+		active_slot = 0
+
+	_start_active_timer()
+	_debug_inventory(\"After timeout (still has fruit)\")
+
+
+func _save_active_remaining() -> void:
+	if active_slot == -1:
+		return
+	if _powerup_timer == null:
+		return
+
+	if not _powerup_timer.is_stopped() and active_slot < fruit_slots.size():
+		fruit_slots[active_slot][\"time\"] = _powerup_timer.time_left
+
+	_powerup_timer.stop()
+
+
+func _start_active_timer() -> void:
+	if _powerup_timer == null:
+		return
+	if active_slot == -1:
+		return
+	if active_slot >= fruit_slots.size():
+		return
+
+	var t: float = float(fruit_slots[active_slot][\"time\"])
+	if t <= 0.0:
+		t = powerup_default_duration
+
+	_powerup_timer.wait_time = t
+	_powerup_timer.start()
+
+
+func _normalize_item_id(id: String) -> String:
+	return id.strip_edges().to_lower()
+
+
+func _debug_inventory(context: String = \"\") -> void:
+	print(\"\\n=== FRUIT DEBUG:\", context, \"===\")
+
+	if fruit_slots.is_empty():
+		print(\"Slots: EMPTY\")
+	else:
+		for i in range(fruit_slots.size()):
+			var marker = \" (ACTIVE)\" if i == active_slot else \"\"
+			print(\"Slot \", i, \": \", fruit_slots[i][\"id\"], \" | time left: \", fruit_slots[i][\"time\"], marker)
+
+	print(\"Active slot index:\", active_slot)
+
+	if _powerup_timer and not _powerup_timer.is_stopped():
+		print(\"Timer running. Time left:\", _powerup_timer.time_left)
+	else:
+		print(\"Timer stopped\")
+
+	print(\"============================\\n\")
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qthh5"]

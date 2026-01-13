@@ -7,7 +7,7 @@
 
 [node name="PomegranatePickup" type="Area2D"]
 script = ExtResource("1_7jilw")
-item_id = "Pomegranate"
+item_id = "pomegranate"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_tbg5g")

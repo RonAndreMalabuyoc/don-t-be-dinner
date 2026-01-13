@@ -1,10 +1,10 @@
 extends CharacterBody2D
 @export var normal_projectile_scene: PackedScene
 @export var special_projectiles := {
-	"Pomegranate": preload("res://Pickups/pomegranate_pickup.tscn"),
-	"Orange": preload("res://Pickups/orange_pickup.tscn"),
-	"Banana": preload("res://Pickups/banana_pickup.tscn"),
-	"Coconut": preload("res://Pickups/coconut_pickup.tscn"),
+	"pomegranate": preload("res://Pickups/pomegranate_pickup.tscn"),
+	"orange": preload("res://Pickups/orange_pickup.tscn"),
+	"banana": preload("res://Pickups/banana_pickup.tscn"),
+	"coconut": preload("res://Pickups/coconut_pickup.tscn"),
 }
 
 @onready var muzzle: Marker2D = $Muzzle
@@ -103,12 +103,14 @@ func _fire_normal() -> void:
 
 
 func _fire_special(item_id: String) -> void:
+	item_id = _normalize_item_id(item_id)
+
 	if not special_projectiles.has(item_id):
+		print("Special not found for:", item_id, " -> firing normal")
 		_fire_normal()
 		return
+
 	print("Firing special:", item_id)
-
-
 	var proj_scene: PackedScene = special_projectiles[item_id]
 	var proj = proj_scene.instantiate()
 	_spawn_projectile(proj, facing_dir)
@@ -126,8 +128,12 @@ func _spawn_projectile(proj: Node, dir: Vector2) -> void:
 		proj.direction = dir
 		
 func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = true) -> void:
+	
 	if duration < 0.0:
 		duration = powerup_default_duration
+
+	# normalize ids to match dictionary keys (see Fix 2)
+	item_id = _normalize_item_id(item_id)
 
 	# If the fruit already exists in a slot, refresh its time and make it active
 	for i in range(fruit_slots.size()):
@@ -138,9 +144,10 @@ func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = tru
 			_start_active_timer()
 			if auto_fire:
 				shoot()
+			_debug_inventory("After pickup (refresh): " + item_id)
 			return
 
-	# Otherwise add/replace
+	# Otherwise add
 	if fruit_slots.size() < 2:
 		_save_active_remaining()
 		fruit_slots.append({"id": item_id, "time": duration})
@@ -148,6 +155,7 @@ func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = tru
 		_start_active_timer()
 		if auto_fire:
 			shoot()
+		_debug_inventory("After pickup (add): " + item_id)
 		return
 
 	# Full: replace the inactive slot if possible
@@ -164,7 +172,8 @@ func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = tru
 	if auto_fire:
 		shoot()
 
-	_debug_inventory("After pickup: " + item_id)
+	_debug_inventory("After pickup (replace): " + item_id)
+
 
 func _on_powerup_timeout() -> void:
 	print("Powerup expired on slot:", active_slot)
@@ -225,6 +234,9 @@ func _start_active_timer() -> void:
 
 	_powerup_timer.wait_time = t
 	_powerup_timer.start()
+
+func _normalize_item_id(id: String) -> String:
+	return id.strip_edges().to_lower()
 
 func _debug_inventory(context: String = "") -> void:
 	print("\n=== FRUIT DEBUG:", context, "===")

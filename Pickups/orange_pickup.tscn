@@ -7,7 +7,7 @@
 
 [node name="OrangePickup" type="Area2D"]
 script = ExtResource("1_23opr")
-item_id = "Orange"
+item_id = "orange"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_abw3f")
