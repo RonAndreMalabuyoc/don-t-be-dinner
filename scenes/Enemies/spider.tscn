@@ -1,9 +1,10 @@
 [gd_scene load_steps=17 format=3 uid="uid://fbiybjbee3yk"]
 
-[ext_resource type="Script" uid="uid://b22642aqqf5n7" path="res://spider.gd" id="1_k5hg5"]
+[ext_resource type="Script" uid="uid://b22642aqqf5n7" path="res://scripts/Enemies/spider.gd" id="1_k5hg5"]
 [ext_resource type="Texture2D" uid="uid://dbyo53wv1ptyx" path="res://assets/17_spdr_right-Sheet.png" id="2_d613k"]
 [ext_resource type="Texture2D" uid="uid://drnt4vcheqjve" path="res://assets/Enemy/21_jumpspdr_right-Sheet (1).png" id="3_d613k"]
 [ext_resource type="Texture2D" uid="uid://1ygpnsjbms1l" path="res://assets/Enemy/18_spdrwalk_right-Sheet.png" id="3_evcmw"]
+
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_txxy0"]
 atlas = ExtResource("2_d613k")

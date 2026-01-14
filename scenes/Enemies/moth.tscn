@@ -1,10 +1,11 @@
 [gd_scene load_steps=26 format=3 uid="uid://crm27ns2yxn2i"]
 
-[ext_resource type="Script" uid="uid://b0gfd4pdhyci0" path="res://scripts/enemy.gd" id="1_xwavj"]
+[ext_resource type="Script" uid="uid://b0gfd4pdhyci0" path="res://scripts/Enemies/moth.gd" id="1_xwavj"]
 [ext_resource type="Texture2D" uid="uid://6frmptbta4kc" path="res://assets/Enemy/33_moth_attack_right-Sheet.png" id="2_c4w8v"]
 [ext_resource type="Texture2D" uid="uid://bb8qphodrg1u1" path="res://assets/Enemy/BatStandard_Death.png" id="2_xwavj"]
 [ext_resource type="Texture2D" uid="uid://bqsnfej5jbqpq" path="res://assets/Enemy/BatStandard_Hurt.png" id="4_md484"]
 [ext_resource type="Texture2D" uid="uid://csamuywrlr781" path="res://assets/Enemy/31_idle_moth_right-Sheet.png" id="4_xwavj"]
+
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_nenq2"]
 atlas = ExtResource("2_c4w8v")

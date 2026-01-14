@@ -1,6 +1,11 @@
 extends Node2D
 
-@export var fruit_pickups: Array[PackedScene] = []
+@export var fruit_pickups : Array[PackedScene] = [
+	preload("res://scenes/Pickups/pomegranate_pickup.tscn"),
+	preload("res://scenes/Pickups/orange_pickup.tscn"),
+	preload("res://scenes/Pickups/banana_pickup.tscn"),
+	preload("res://scenes/Pickups/coconut_pickup.tscn"),
+]
 @export var spawn_points: Array[Node2D] = []
 
 @export var min_spawn_per_wave: int = 1
@@ -25,14 +30,19 @@ func _ready() -> void:
 
 
 func spawn_for_wave(_wave_index: int) -> void:
-	print("FruitSpawner spawn_for_wave called:", _wave_index)
 	if fruit_pickups.is_empty() or spawn_points.is_empty():
 		return
 
 	if _alive_fruits >= max_fruits_alive:
 		return
 
-	var count: int = randi_range(min_spawn_per_wave, max_spawn_per_wave)
+	# SAFE CHECK: Look for the upgrade bonus
+	var bonus: int = 0
+	if Global.playerbody and "extra_spawn_chance" in Global.playerbody:
+		bonus = Global.playerbody.extra_spawn_chance
+
+	# Apply the bonus to the spawn count
+	var count: int = randi_range(min_spawn_per_wave, max_spawn_per_wave) + bonus
 	var capacity: int = max_fruits_alive - _alive_fruits
 	count = min(count, capacity)
 
