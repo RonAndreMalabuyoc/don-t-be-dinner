@@ -1,0 +1,67 @@
+[gd_scene load_steps=10 format=3 uid="uid://bxoyjeh1ikeop"]
+
+[ext_resource type="Texture2D" uid="uid://dnhyx284it8wc" path="res://assets/Bullets/14_pomegrenate_ammo-Sheet.png" id="1_j1aer"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0kn6f"]
+atlas = ExtResource("1_j1aer")
+region = Rect2(1, 0, 31, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_obm0i"]
+atlas = ExtResource("1_j1aer")
+region = Rect2(45, 0, 31, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rxub2"]
+atlas = ExtResource("1_j1aer")
+region = Rect2(89, 0, 31, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_10btt"]
+atlas = ExtResource("1_j1aer")
+region = Rect2(133, 0, 31, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5kybc"]
+atlas = ExtResource("1_j1aer")
+region = Rect2(177, 0, 31, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q5ofx"]
+atlas = ExtResource("1_j1aer")
+region = Rect2(221, 0, 31, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ieo0p"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0kn6f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_obm0i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rxub2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_10btt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5kybc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q5ofx")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qj0rx"]
+radius = 7.0
+height = 22.0
+
+[node name="PomegranteBulletThrow" type="Area2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_ieo0p")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2, 0)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_qj0rx")

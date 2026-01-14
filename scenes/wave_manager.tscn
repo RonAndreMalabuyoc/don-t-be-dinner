@@ -1,12 +1,13 @@
 [gd_scene load_steps=29 format=3 uid="uid://dtnai2lsmcq0i"]
 
-[ext_resource type="Script" uid="uid://d0tn2yd8md8k0" path="res://wave_manager.gd" id="1_8fe1o"]
-[ext_resource type="PackedScene" uid="uid://fbiybjbee3yk" path="res://scenes/spider.tscn" id="2_qj452"]
-[ext_resource type="Script" uid="uid://b0gfd4pdhyci0" path="res://scripts/enemy.gd" id="3_gsp50"]
+[ext_resource type="Script" uid="uid://d0tn2yd8md8k0" path="res://scripts/wave_manager.gd" id="1_8fe1o"]
+[ext_resource type="PackedScene" uid="uid://fbiybjbee3yk" path="res://scenes/Enemies/spider.tscn" id="2_qj452"]
+[ext_resource type="Script" uid="uid://b0gfd4pdhyci0" path="res://scripts/Enemies/moth.gd" id="3_gsp50"]
 [ext_resource type="Texture2D" uid="uid://6frmptbta4kc" path="res://assets/Enemy/33_moth_attack_right-Sheet.png" id="4_x3ylx"]
 [ext_resource type="Texture2D" uid="uid://bb8qphodrg1u1" path="res://assets/Enemy/BatStandard_Death.png" id="5_ountb"]
 [ext_resource type="Texture2D" uid="uid://csamuywrlr781" path="res://assets/Enemy/31_idle_moth_right-Sheet.png" id="6_r5yun"]
 [ext_resource type="Texture2D" uid="uid://bqsnfej5jbqpq" path="res://assets/Enemy/BatStandard_Hurt.png" id="7_hxgtx"]
+
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_nenq2"]
 radius = 22.69107

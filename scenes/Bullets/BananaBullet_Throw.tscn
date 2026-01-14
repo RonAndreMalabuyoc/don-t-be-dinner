@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8kgelwwb81f6"]
+
+[ext_resource type="Script" uid="uid://ck6b8xxrq7cm3" path="res://scripts/Bullets/Banana/Banana.gd" id="1_vb2wd"]
+
+[node name="BananaBreadThrow" type="Node2D"]
+script = ExtResource("1_vb2wd")

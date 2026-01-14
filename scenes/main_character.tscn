@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
-[ext_resource type="PackedScene" uid="uid://0c7kqgockbqo" path="res://scenes/Bullet_2.tscn" id="1_ogw1n"]
+[ext_resource type="PackedScene" uid="uid://0c7kqgockbqo" path="res://scenes/Bullets/BreadBullet_Throw.tscn" id="1_ogw1n"]
 [ext_resource type="Texture2D" uid="uid://drv57nqyv7011" path="res://assets/jump_right-Sheet.png" id="2_uvl38"]
 [ext_resource type="Texture2D" uid="uid://dio8s4h1seupc" path="res://assets/walk_right-Sheet.png" id="2_wmkwl"]
 [ext_resource type="Texture2D" uid="uid://dcku5knbb872k" path="res://assets/Duck/24_hurtduck_left-Sheet.png" id="4_0d0nc"]

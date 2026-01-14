@@ -1,0 +1,62 @@
+[gd_scene load_steps=10 format=3 uid="uid://meo6ufnbv3xp"]
+
+[ext_resource type="Texture2D" uid="uid://0k477isdq3kp" path="res://assets/Bullets/15_coconut_ammo-Sheet.png" id="1_24by7"]
+[ext_resource type="Script" uid="uid://kjvdnpp3usqe" path="res://scripts/Bullets/Coconut/Coconut.gd" id="1_t7u5d"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t7u5d"]
+atlas = ExtResource("1_24by7")
+region = Rect2(0, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tvy4q"]
+atlas = ExtResource("1_24by7")
+region = Rect2(42, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rk4cu"]
+atlas = ExtResource("1_24by7")
+region = Rect2(84, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a4pqj"]
+atlas = ExtResource("1_24by7")
+region = Rect2(126, 0, 42, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kifas"]
+atlas = ExtResource("1_24by7")
+region = Rect2(168, 0, 42, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fywwe"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t7u5d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tvy4q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rk4cu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a4pqj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kifas")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_emcmq"]
+radius = 15.0
+
+[node name="CoconutBulletThrow" type="Area2D"]
+script = ExtResource("1_t7u5d")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(9.536743e-07, 0)
+scale = Vector2(2.2291665, 2.2265625)
+sprite_frames = SubResource("SpriteFrames_fywwe")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-23, 0)
+shape = SubResource("CircleShape2D_emcmq")
