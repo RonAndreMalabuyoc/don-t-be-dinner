@@ -19,7 +19,7 @@ extends Node2D
 var _alive_fruits: int = 0
 var _last_wave: int = 0
 var _wave_manager: Node = null
-
+var wave_scale := 0
 var current_wave := 0
 var enemies_alive := 0
 var wave_in_progress := false
@@ -27,10 +27,26 @@ var wave_in_progress := false
 var spawn_queue: Array = []
 
 var waves = [
-	{ "spider": 3, "moth": 2, "wasp": 1 },
-	{ "spider": 5, "moth": 4, "wasp": 2 },
-	{ "spider": 8, "moth": 6, "wasp": 3 },
-	{ "spider": 12, "moth": 10, "wasp": 4 }
+	# Phase 1 — Land only
+	{ "spider": 3 },
+	{ "spider": 5 },
+
+	# Phase 2 — Air melee only
+	{ "moth": 3 },
+	{ "moth": 5 },
+
+	# Phase 3 — Land + Air melee
+	{ "spider": 4, "moth": 3 },
+	{ "spider": 6, "moth": 4 },
+
+	# Phase 4 — Wasp intro
+	{ "wasp": 2 },
+
+	# Phase 5 — Air combo
+	{ "wasp": 3, "moth": 3 },
+
+	# Phase 6 — Full mix
+	{ "spider": 6, "moth": 4, "wasp": 3 }
 ]
 
 
@@ -45,7 +61,15 @@ func _ready():
 	_wave_manager = get_tree().get_first_node_in_group("WaveManager")
 	if _wave_manager == null:
 		push_warning("FruitSpawner: WaveManager not found. Add WaveManager node to group 'WaveManager'.")
-		
+	
+	wave_scale = current_wave - waves.size() + 1
+
+	waves.append({
+	"spider": 5 + wave_scale,
+	"moth": 4 + int(wave_scale * 0.8),
+	"wasp": 3 + int(wave_scale * 0.6)
+})
+
 func start_next_wave():
 	if wave_in_progress:
 		return

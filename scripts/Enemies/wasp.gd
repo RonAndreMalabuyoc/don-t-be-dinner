@@ -4,6 +4,11 @@ class_name WaspEnemy
 # ---------------- EXPORTS ----------------
 @export var max_health := 15
 @export var hover_speed := 90.0
+@export var strafe_speed := 70.0
+@export var strafe_switch_time := 1.5
+
+var strafe_dir := 1
+var strafe_timer := 0.0
 
 @export var shoot_range := 220.0
 @export var too_close_range := 120.0
@@ -34,6 +39,7 @@ signal enemy_died
 func _ready():
 	current_health = max_health
 	player = Global.playerbody
+	strafe_timer = strafe_switch_time
 	if player:
 		player_hitbox = player.get_node("Hitbox") as Area2D
 		
@@ -63,22 +69,35 @@ func _process_movement() -> void:
 		return
 
 	var target_pos := player_hitbox.global_position
-	var distance := global_position.distance_to(target_pos)
-	var dir := (target_pos - global_position).normalized()
+	var to_player := target_pos - global_position
+	var distance := to_player.length()
+	var dir := to_player.normalized()
 
 	# Too far → chase
 	if distance > shoot_range:
 		velocity = dir * hover_speed
+		return
 
 	# Too close → back away
-	elif distance < too_close_range:
+	if distance < too_close_range:
 		velocity = -dir * hover_speed
+		return
 
-	# In shooting zone → stop & shoot
-	else:
-		velocity = Vector2.ZERO
-		if shoot_timer <= 0:
-			shoot(dir)
+	# ---------------- STRAFING ZONE ----------------
+	# Perpendicular direction (circle player)
+	var strafe_vec := Vector2(-dir.y, dir.x) * strafe_dir
+	velocity = strafe_vec * strafe_speed
+
+	# Switch strafe direction occasionally
+	strafe_timer -= get_physics_process_delta_time()
+	if strafe_timer <= 0:
+		strafe_dir *= -1
+		strafe_timer = strafe_switch_time
+
+	# Shooting while strafing
+	if shoot_timer <= 0:
+		shoot(dir)
+
 
 # ---------------- SHOOTING ----------------
 func shoot(direction: Vector2) -> void:
