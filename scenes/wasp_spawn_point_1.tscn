@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://sw714r3465t0"]
+
+[ext_resource type="Texture2D" uid="uid://juqkgdhdl6cr" path="res://assets/Grass 3.png" id="1_8v683"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jmq8n"]
+atlas = ExtResource("1_8v683")
+region = Rect2(0, 0, 35, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_825dc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jmq8n")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="wasp_spawn_point1" type="Node2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_825dc")

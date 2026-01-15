@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=35 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://dk4spknv8m3e1" path="res://assets/Full_bgx32.png" id="1_51ehd"]
@@ -18,7 +18,9 @@
 [ext_resource type="PackedScene" uid="uid://dtnai2lsmcq0i" path="res://scenes/wave_manager.tscn" id="16_fr04l"]
 [ext_resource type="PackedScene" uid="uid://crm27ns2yxn2i" path="res://scenes/Enemies/moth.tscn" id="17_cli15"]
 [ext_resource type="PackedScene" uid="uid://buk1t13n737f3" path="res://scenes/spawn_point.tscn" id="17_jgtwp"]
+[ext_resource type="PackedScene" uid="uid://ue1gjypir4va" path="res://scenes/Enemies/wasp.tscn" id="18_27wxa"]
 [ext_resource type="Script" uid="uid://ba5fqp40phmma" path="res://scripts/fruit_spawner.gd" id="18_jgtwp"]
+[ext_resource type="PackedScene" uid="uid://sw714r3465t0" path="res://scenes/wasp_spawn_point_1.tscn" id="19_1c2kf"]
 [ext_resource type="PackedScene" uid="uid://d3kv1drkuxprx" path="res://scenes/Pickups/pomegranate_pickup.tscn" id="19_vkg1p"]
 [ext_resource type="PackedScene" uid="uid://v0jy8lu50ja" path="res://scenes/Pickups/coconut_pickup.tscn" id="20_cli15"]
 [ext_resource type="PackedScene" uid="uid://dsq147a63qiui" path="res://scenes/Pickups/banana_pickup.tscn" id="21_1c2kf"]
@@ -2793,8 +2795,10 @@ position = Vector2(-4, 9.999999)
 scale = Vector2(0.9951344, 0.9914352)
 polygon = PackedVector2Array(-687, 465, -682, 472, -301, 478, 479, 472, 1031, 468, 1373, 471, 1914, 470, 2452, 464, 2866, 459, 2873, -666, -677, -657, -682, 458, -799, 429, -786, -812, 2967, -808, 2961, 751, -807, 785, -801, 425)
 
-[node name="WaveManager" parent="." node_paths=PackedStringArray("spider_spawn_points", "moth_spawn_points") groups=["WaveManager"] instance=ExtResource("16_fr04l")]
+[node name="WaveManager" parent="." node_paths=PackedStringArray("wasp_spawn_points", "spider_spawn_points", "moth_spawn_points") groups=["WaveManager"] instance=ExtResource("16_fr04l")]
 moth_scene = ExtResource("17_cli15")
+wasp_scene = ExtResource("18_27wxa")
+wasp_spawn_points = [NodePath("wasp_spawn_point1"), NodePath("wasp_spawn_point2")]
 spider_spawn_points = [NodePath("spider_spawn_points"), NodePath("spider_spawn_points2")]
 moth_spawn_points = [NodePath("moth_spawn_points"), NodePath("moth_spawn_points2")]
 
@@ -2807,12 +2811,18 @@ position = Vector2(2792, 421)
 scale = Vector2(1.9917675, 2.1517446)
 
 [node name="moth_spawn_points" parent="WaveManager" instance=ExtResource("17_jgtwp")]
-position = Vector2(390, 30)
+position = Vector2(912, -18)
 scale = Vector2(2.6666667, 2)
 
 [node name="moth_spawn_points2" parent="WaveManager" instance=ExtResource("17_jgtwp")]
 position = Vector2(1438, 20)
 scale = Vector2(2.6666667, 2)
+
+[node name="wasp_spawn_point1" parent="WaveManager" instance=ExtResource("19_1c2kf")]
+position = Vector2(966, -202)
+
+[node name="wasp_spawn_point2" parent="WaveManager" instance=ExtResource("19_1c2kf")]
+position = Vector2(1204, -93)
 
 [node name="FruitSpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawn_points")]
 script = ExtResource("18_jgtwp")

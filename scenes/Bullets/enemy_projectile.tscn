@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://bjeebfuqqc7ss"]
+
+[ext_resource type="Script" uid="uid://20eydhtvfj61" path="res://enemy_projectile.gd" id="1_sw2of"]
+[ext_resource type="Texture2D" uid="uid://d0bh8ww5yd85v" path="res://assets/Cloud 1.png" id="2_cb0yd"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ckbrt"]
+atlas = ExtResource("2_cb0yd")
+region = Rect2(141, 0, 47, 26)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fo7rs"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ckbrt")
+}],
+"loop": true,
+"name": &"stinger",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g5ffh"]
+size = Vector2(46, 15)
+
+[node name="EnemyProjectile" type="CharacterBody2D"]
+collision_layer = 15
+collision_mask = 15
+script = ExtResource("1_sw2of")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_fo7rs")
+animation = &"stinger"
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, 3)
+shape = SubResource("RectangleShape2D_g5ffh")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

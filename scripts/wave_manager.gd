@@ -2,6 +2,8 @@ extends Node2D
 
 @export var spider_scene: PackedScene
 @export var moth_scene: PackedScene
+@export var wasp_scene: PackedScene
+@export var wasp_spawn_points: Array[Node2D]
 @export var spider_spawn_points: Array[Node2D]
 @export var moth_spawn_points: Array[Node2D]
 @export var spawn_delay: float = 1.0
@@ -25,11 +27,12 @@ var wave_in_progress := false
 var spawn_queue: Array = []
 
 var waves = [
-	{ "spider": 3, "moth": 2 },
-	{ "spider": 5, "moth": 4 },
-	{ "spider": 8, "moth": 6 },
-	{ "spider": 12, "moth": 10 }
+	{ "spider": 3, "moth": 2, "wasp": 1 },
+	{ "spider": 5, "moth": 4, "wasp": 2 },
+	{ "spider": 8, "moth": 6, "wasp": 3 },
+	{ "spider": 12, "moth": 10, "wasp": 4 }
 ]
+
 
 func _ready():
 	add_child(spawn_timer)
@@ -59,6 +62,9 @@ func start_next_wave():
 	print("Starting wave", current_wave)
 
 	var wave_data = waves[current_wave - 1]
+	
+	for i in range(wave_data.get("wasp", 0)):
+		spawn_queue.append(wasp_scene)
 
 	for i in range(wave_data.get("spider", 0)):
 		spawn_queue.append(spider_scene)
@@ -82,7 +88,9 @@ func _on_spawn_timer_timeout():
 		spawn_point = spider_spawn_points.pick_random()
 	elif scene == moth_scene:
 		spawn_point = moth_spawn_points.pick_random()
-
+	elif scene == wasp_scene:
+		spawn_point = wasp_spawn_points.pick_random()
+	
 	if spawn_point == null:
 		push_warning("No spawn point assigned for this enemy type!")
 		return
