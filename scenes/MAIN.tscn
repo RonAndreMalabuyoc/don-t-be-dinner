@@ -2834,3 +2834,22 @@ position = Vector2(387, 440)
 
 [node name="SpawnPoint2" type="Marker2D" parent="FruitSpawner/FruitSpawnPoints"]
 position = Vector2(700, 437)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="FruitUI" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Current_fruit" type="Label" parent="HUD/FruitUI"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Reserve_fruit" type="Label" parent="HUD/FruitUI"]
+layout_mode = 0
+offset_top = 35.0
+offset_right = 40.0
+offset_bottom = 58.0

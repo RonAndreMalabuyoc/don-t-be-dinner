@@ -15,11 +15,11 @@ func _on_body_entered(body: Node2D) -> void:
 
 	# try to grant powerup
 	if body.has_method("push_powerup"):
-		body.call("push_powerup", item_id, duration, true)
+		body.call("push_powerup", item_id, duration, false)
 	else:
 		# common case: the body is a child collider, but the player script is on the parent
 		var p := body.get_parent()
 		if p and p.has_method("push_powerup"):
-			p.call("push_powerup", item_id, duration, true)
+			p.call("push_powerup", item_id, duration, false)
 
 	queue_free()

@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" uid="uid://bg8u26x0mqiy0" path="res://scripts/Bullets/Orange/OrangeBullet_Throw.gd" id="1_vhjqu"]
 
-[node name="OrangeBulletThrow" type="Node2D"]
+[node name="OrangeBulletThrow" type="Area2D"]
 script = ExtResource("1_vhjqu")
