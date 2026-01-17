@@ -86,6 +86,9 @@ func _physics_process(delta):
 		move_and_slide()
 		return
 
+	# ───────── SHOOT INPUT ─────────
+	if Input.is_action_pressed(\"shoot\") and can_shoot and not is_emoting and not is_hurt:
+		start_shoot()
 
 
 	if Input.is_action_just_pressed(\"dance\"):
@@ -182,10 +185,20 @@ func _on_sprite_frame_changed():
 				Global.node_creation_parent
 			) as Bullet
 			bullet.direction = get_shoot_direction()
-	if sprite.frame == sprite.sprite_frames.get_frame_count(\"shoot\") - 1:
-		shot_fired_this_anim = false
+		
+func start_shoot():
+	can_shoot = false
+	shot_fired_this_anim = false
 
+	# Face mouse
+	facing_right = get_global_mouse_position().x > global_position.x
 
+	sprite.play(\"shoot\")
+
+	await get_tree().create_timer(shoot_cooldown).timeout
+	can_shoot = true
+
+	
 # ───────── ANIMATIONS ─────────
 
 func handle_animations():
@@ -221,9 +234,9 @@ func handle_animations():
 		return
 
 	# Shoot
-	if Input.is_action_pressed(\"shoot\"):
-		sprite.play(\"shoot\")
+	if sprite.animation == \"shoot\":
 		return
+
 
 	# Walk / Idle
 	if abs(velocity.x) > 10:
