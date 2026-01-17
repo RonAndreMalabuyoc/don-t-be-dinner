@@ -118,14 +118,16 @@ func _physics_process(delta):
 		is_emoting = !is_emoting
 
 	# ───────── FRUIT INPUT ─────────
-	if Input.is_action_just_pressed(\"fruit_shoot\"):
+	if Input.is_action_just_pressed(\"fruit_shoot\") and not is_emoting and not is_hurt:
 		print(\"INPUT: fruit_shoot pressed\")
 		shoot_fruit()
 
-	if Input.is_action_just_pressed(\"swap_fruit\"):
+	if Input.is_action_just_pressed(\"swap_fruit\") and not is_emoting and not is_hurt:
 		print(\"INPUT: swap_fruit pressed\")
 		swap_fruit_slots()
-	# ──────────────────────────────
+# ──────────────────────────────
+
+
 
 	if is_dead:
 		return
@@ -233,12 +235,27 @@ func _on_sprite_frame_changed():
 			bullet.direction = get_shoot_direction()
 		
 func start_shoot():
+	if not can_shoot:
+		return
+
 	can_shoot = false
 	is_shooting = true
 	shot_fired_this_anim = false
 
 	# Face mouse
 	facing_right = get_global_mouse_position().x > global_position.x
+
+	# IMPORTANT: this triggers _on_sprite_frame_changed() to spawn the bullet on SHOOT_FRAME
+	sprite.play(\"shoot\")
+
+	# Wait until the shoot anim ends, then allow animations again
+	await sprite.animation_finished
+	is_shooting = false
+
+	# Cooldown before allowing the next shot
+	await get_tree().create_timer(shoot_cooldown).timeout
+	can_shoot = true
+
 
 # ───────── FRUIT SHOOTING ─────────
 func shoot_fruit() -> void:
@@ -259,9 +276,10 @@ func shoot_fruit() -> void:
 		print(\"No projectile scene set for fruit:\", fruit_id)
 		return
 
+	# start fruit cooldown
 	can_shoot_fruit = false
 
-	# Spawn fruit projectile like normal bullets
+	# Spawn fruit projectile
 	var proj_scene: PackedScene = fruit_projectiles[fruit_id]
 	var proj := Global.instance_node(
 		proj_scene,
@@ -269,22 +287,36 @@ func shoot_fruit() -> void:
 		Global.node_creation_parent
 	)
 
-	# Set direction for common bullet scripts
+	# direction
 	var dir := get_shoot_direction()
 	if proj != null:
 		if \"direction\" in proj:
 			proj.direction = dir
 		elif proj.has_method(\"setup\"):
 			proj.call(\"setup\", dir)
+
+	# play shoot anim
+	is_shooting = true
 	sprite.play(\"shoot\")
-
 	await sprite.animation_finished
-
 	is_shooting = false
 
-	await get_tree().create_timer(shoot_cooldown).timeout
-	can_shoot = true
+	# Consume current fruit AFTER successful fire
+	current_fruit = \"\"
+	print(\"Consumed fruit:\", fruit_id)
 
+	# Auto-load reserve into current
+	if reserve_fruit != \"\":
+		current_fruit = reserve_fruit
+		reserve_fruit = \"\"
+		print(\"Auto-loaded reserve into current:\", current_fruit)
+
+	_debug_slots(\"After Fruit Shoot\")
+	_update_fruit_ui()
+
+	await get_tree().create_timer(fruit_shoot_cooldown).timeout
+	can_shoot_fruit = true
+	print(\"Fruit shoot cooldown finished\")
 	
 func _on_timer_timeout():
 	# Put reload / shoot reset logic here
@@ -292,12 +324,6 @@ func _on_timer_timeout():
 
 	
 # ───────── ANIMATIONS ─────────
-
-	# Consume current fruit
-	current_fruit = \"\"
-	print(\"Consumed fruit:\", fruit_id)
-
-	# Auto-load reserve into current
 	if reserve_fruit != \"\":
 		current_fruit = reserve_fruit
 		reserve_fruit = \"\"
