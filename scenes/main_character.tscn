@@ -54,8 +54,9 @@ const INVINCIBILITY_TIME := 1.3
 @onready var shoot_point: Node2D = $ShootPoint
 @onready var hitbox: Area2D = $Hitbox
 @onready var camera: Camera2D = $Camera2D
-@onready var fruit_ui_current: Label = $\"../HUD/FruitUI/CurrentLabel\"
-@onready var fruit_ui_reserve: Label = $\"../HUD/FruitUI/ReserveLabel\"
+@onready var fruit_ui_current: Label = get_tree().current_scene.get_node(\"HUD/FruitUI/Current_fruit\")
+@onready var fruit_ui_reserve: Label = get_tree().current_scene.get_node_or_null(\"HUD/FruitUI/Reserve_fruit\")
+
 # ───────── STATE ─────────
 var facing_right := true
 var is_dashing := false
@@ -86,6 +87,9 @@ func _ready():
 	_debug_slots(\"Ready\")
 	
 	_update_fruit_ui()
+	print(\"UI current path:\", fruit_ui_current.get_path() if is_instance_valid(fruit_ui_current) else \"MISSING\")
+	print(\"UI reserve path:\", fruit_ui_reserve.get_path() if is_instance_valid(fruit_ui_reserve) else \"MISSING\")
+
 
 # ───────── PHYSICS ─────────
 func _physics_process(delta):
@@ -434,10 +438,12 @@ func swap_fruit_slots() -> void:
 func _fruit_name_or_empty(v: String) -> String:
 	return v if v != \"\" else \"(empty)\"
 
+
 func _update_fruit_ui() -> void:
-	if fruit_ui_current:
+	if is_instance_valid(fruit_ui_current):
 		fruit_ui_current.text = \"Current: \" + _fruit_name_or_empty(current_fruit)
-	if fruit_ui_reserve:
+
+	if is_instance_valid(fruit_ui_reserve):
 		fruit_ui_reserve.text = \"Reserve: \" + _fruit_name_or_empty(reserve_fruit)
 "
 
