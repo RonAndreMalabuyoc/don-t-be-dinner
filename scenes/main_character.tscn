@@ -29,6 +29,15 @@ script/source = "extends CharacterBody2D
 const SHOOT_FRAME := 3
 var shoot_direction: Vector2 = Vector2.RIGHT
 
+# ───────── FRUIT SHOOTING ─────────
+@export var fruit_shoot_cooldown := 0.3
+@export var fruit_projectiles := {
+	\"Pomegranate\": preload(\"res://scenes/Bullets/PomegranateBullet_Throw.tscn\"),
+	\"Orange\": preload(\"res://scenes/Bullets/OrangeBullet_Throw.tscn\"),
+	\"Banana\": preload(\"res://scenes/Bullets/BananaBullet_Throw.tscn\"),
+	\"Coconut\": preload(\"res://scenes/Bullets/CoconutBullet_Throw.tscn\"),
+}
+
 # ───────── HEALTH ─────────
 @export var max_health := 30
 @export var hurt_lock_time := 0.25
@@ -45,7 +54,8 @@ const INVINCIBILITY_TIME := 1.3
 @onready var shoot_point: Node2D = $ShootPoint
 @onready var hitbox: Area2D = $Hitbox
 @onready var camera: Camera2D = $Camera2D
-
+@onready var fruit_ui_current: Label = $\"../HUD/FruitUI/CurrentLabel\"
+@onready var fruit_ui_reserve: Label = $\"../HUD/FruitUI/ReserveLabel\"
 # ───────── STATE ─────────
 var facing_right := true
 var is_dashing := false
@@ -60,6 +70,8 @@ var can_shoot := true
 var is_emoting := false
 var shot_fired_this_anim := false
 
+var can_shoot_fruit := true
+
 # ───────── READY ─────────
 func _ready():
 	Global.playerbody = self
@@ -70,9 +82,10 @@ func _ready():
 	hitbox.area_entered.connect(_on_hitbox_area_entered)
 	sprite.frame_changed.connect(_on_sprite_frame_changed)
 
-	# FRUIT DEBUG
 	print(\"PLAYER READY:\", get_path())
 	_debug_slots(\"Ready\")
+	
+	_update_fruit_ui()
 
 # ───────── PHYSICS ─────────
 func _physics_process(delta):
@@ -90,13 +103,10 @@ func _physics_process(delta):
 		move_and_slide()
 		return
 
-
-
 	if Input.is_action_just_pressed(\"dance\"):
 		is_emoting = !is_emoting
 
-	# ───────── FRUIT INPUT (RIGHT CLICK / Q) ─────────
-	# Keeps it reliable even if _input isn't firing for some reason.
+	# ───────── FRUIT INPUT ─────────
 	if Input.is_action_just_pressed(\"fruit_shoot\"):
 		print(\"INPUT: fruit_shoot pressed\")
 		shoot_fruit()
@@ -104,7 +114,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed(\"swap_fruit\"):
 		print(\"INPUT: swap_fruit pressed\")
 		swap_fruit_slots()
-	# ────────────────────────────────────────────────
+	# ──────────────────────────────
 
 	if is_dead:
 		return
@@ -183,7 +193,6 @@ func shoot():
 	var mouse_pos = get_global_mouse_position()
 	bullet.direction = (mouse_pos - shoot_point.global_position).normalized()
 
-
 func _on_sprite_frame_changed():
 	if sprite.animation != \"shoot\":
 		return
@@ -200,9 +209,62 @@ func _on_sprite_frame_changed():
 	if sprite.frame == sprite.sprite_frames.get_frame_count(\"shoot\") - 1:
 		shot_fired_this_anim = false
 
+# ───────── FRUIT SHOOTING ─────────
+func shoot_fruit() -> void:
+	print(\"shoot_fruit() called\")
+
+	if not can_shoot_fruit:
+		print(\"Fruit shoot blocked by cooldown\")
+		return
+
+	if current_fruit == \"\":
+		print(\"No current fruit to shoot.\")
+		return
+
+	var fruit_id := current_fruit
+	print(\"Shooting fruit:\", fruit_id)
+
+	if not fruit_projectiles.has(fruit_id) or fruit_projectiles[fruit_id] == null:
+		print(\"No projectile scene set for fruit:\", fruit_id)
+		return
+
+	can_shoot_fruit = false
+
+	# Spawn fruit projectile like normal bullets
+	var proj_scene: PackedScene = fruit_projectiles[fruit_id]
+	var proj := Global.instance_node(
+		proj_scene,
+		shoot_point.global_position,
+		Global.node_creation_parent
+	)
+
+	# Set direction for common bullet scripts
+	var dir := get_shoot_direction()
+	if proj != null:
+		if \"direction\" in proj:
+			proj.direction = dir
+		elif proj.has_method(\"setup\"):
+			proj.call(\"setup\", dir)
+
+	# Consume current fruit
+	current_fruit = \"\"
+	print(\"Consumed fruit:\", fruit_id)
+
+	# Auto-load reserve into current
+	if reserve_fruit != \"\":
+		current_fruit = reserve_fruit
+		reserve_fruit = \"\"
+		print(\"Auto-loaded reserve into current:\", current_fruit)
+
+	_debug_slots(\"After Fruit Shoot\")
+
+	_update_fruit_ui()
+
+	await get_tree().create_timer(fruit_shoot_cooldown).timeout
+	can_shoot_fruit = true
+	print(\"Fruit shoot cooldown finished\")
 
 # ───────── ANIMATIONS ─────────
-
 func handle_animations():
 	if is_hurt:
 		return
@@ -263,7 +325,6 @@ func _on_hitbox_area_entered(area):
 		hurt_dir = sign(global_position.x - area.global_position.x)
 		take_damage(10)
 
-
 func take_damage(amount: int):
 	if is_dead or is_hurt or is_invulnerable:
 		return
@@ -275,7 +336,6 @@ func take_damage(amount: int):
 		return
 
 	start_hurt_and_invincibility()
-
 
 func start_hurt_and_invincibility():
 	is_hurt = true
@@ -303,7 +363,6 @@ func start_hurt_and_invincibility():
 
 	# Start invulnerability blinking
 	start_blinking()
-
 
 func start_blinking():
 	var elapsed := 0.0
@@ -336,14 +395,13 @@ func die():
 	await get_tree().create_timer(3.0).timeout
 	queue_free()
 
-# ───────── FRUIT SYSTEM ─────────
+# ───────── FRUIT SLOTS ─────────
 var current_fruit: String = \"\"
 var reserve_fruit: String = \"\"
 
 func _debug_slots(context: String) -> void:
 	print(\"[\" + context + \"] Current:\", current_fruit, \" | Reserve:\", reserve_fruit)
 
-# Called by pick_up.gd (make sure pickup calls auto_fire=false)
 func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = false) -> void:
 	print(\"push_powerup called with:\", item_id, \" auto_fire:\", auto_fire)
 
@@ -357,9 +415,7 @@ func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = fal
 		reserve_fruit = item_id
 		_debug_slots(\"Pickup -> Replaced Reserve\")
 
-	if auto_fire:
-		print(\"Auto-fire requested, shooting immediately\")
-		shoot_fruit()
+	_update_fruit_ui()
 
 func swap_fruit_slots() -> void:
 	print(\"Swap key pressed\")
@@ -372,52 +428,17 @@ func swap_fruit_slots() -> void:
 	current_fruit = reserve_fruit
 	reserve_fruit = tmp
 	_debug_slots(\"After Swap\")
+	
+	_update_fruit_ui()
 
-func shoot_fruit() -> void:
-	print(\"shoot_fruit() called\")
+func _fruit_name_or_empty(v: String) -> String:
+	return v if v != \"\" else \"(empty)\"
 
-	if current_fruit == \"\":
-		print(\"No current fruit to shoot.\")
-		return
-
-	# If you want to reuse your existing cooldown gate, do it here
-	if not can_shoot:
-		print(\"Cannot shoot fruit: can_shoot is false\")
-		return
-
-	var item := current_fruit
-	print(\"Shooting fruit:\", item)
-
-	# NOTE:
-	# This script does not have your special projectile scenes map.
-	# So for now we just debug-consume the fruit.
-	# Once you point this to your WeaponManager/special projectile logic,
-	# replace this block with that spawn call.
-	#
-	# Example if you have a method somewhere:
-	# weapon_manager.fire_special(item)
-	#
-	# For now:
-	print(\"DEBUG: (hook your special projectile spawn here for:\", item, \")\")
-
-	# Consume current
-	current_fruit = \"\"
-	print(\"Consumed fruit:\", item)
-
-	# Auto-load reserve
-	if reserve_fruit != \"\":
-		current_fruit = reserve_fruit
-		reserve_fruit = \"\"
-		print(\"Auto-loaded reserve into current:\", current_fruit)
-
-	_debug_slots(\"After Shoot\")
-
-# Optional: keep _input prints too, but physics already handles actions reliably.
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed(\"fruit_shoot\"):
-		print(\"EVENT: fruit_shoot pressed\")
-	if event.is_action_pressed(\"swap_fruit\"):
-		print(\"EVENT: swap_fruit pressed\")
+func _update_fruit_ui() -> void:
+	if fruit_ui_current:
+		fruit_ui_current.text = \"Current: \" + _fruit_name_or_empty(current_fruit)
+	if fruit_ui_reserve:
+		fruit_ui_reserve.text = \"Reserve: \" + _fruit_name_or_empty(reserve_fruit)
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qthh5"]
