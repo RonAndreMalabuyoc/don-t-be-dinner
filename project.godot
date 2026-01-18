@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Don't be Dinner"
-run/main_scene="uid://bmlbg8vdwq538"
+run/main_scene="uid://cbc78coh6olmy"
 config/features=PackedStringArray("4.5", "Forward Plus")
 
 [autoload]
