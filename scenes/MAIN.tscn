@@ -2790,9 +2790,9 @@ collision_layer = 2
 collision_mask = 2
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BatOnlyCollision"]
-position = Vector2(-4, 9.999999)
+position = Vector2(1.0000005, 40.999992)
 scale = Vector2(0.9951344, 0.9914352)
-polygon = PackedVector2Array(-687, 465, -682, 472, -301, 478, 479, 472, 1031, 468, 1373, 471, 1914, 470, 2452, 464, 2866, 459, 2873, -666, -677, -657, -682, 458, -799, 429, -786, -812, 2967, -808, 2961, 751, -807, 785, -801, 425)
+polygon = PackedVector2Array(-687, 465, -681.31506, 465.99115, -304.4815, 466.9998, 488.3763, 466.9998, 1031, 468, 1375.6937, 466.9998, 1908.2852, 465.99115, 2472.028, 464.98254, 2887.0474, 462.9652, 2873, -666, -677, -657, -682, 458, -799, 429, -786, -812, 2967, -808, 2961, 751, -807, 785, -801, 425)
 
 [node name="WaveManager" parent="." node_paths=PackedStringArray("wasp_spawn_points", "spider_spawn_points", "moth_spawn_points") groups=["WaveManager"] instance=ExtResource("16_fr04l")]
 moth_scene = ExtResource("17_cli15")

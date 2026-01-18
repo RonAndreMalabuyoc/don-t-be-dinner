@@ -26,6 +26,11 @@ var shootpoint_offset_x := 0.0
 
 var player: CharacterBody2D
 var player_hitbox: Area2D
+# ---------------- ANIMATION ----------------
+const SHOOT_FRAME := 2   # change if needed
+var is_shooting := false
+var shot_fired := false
+var shoot_dir_cache := Vector2.ZERO
 
 # ---------------- NODES ----------------
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -47,23 +52,10 @@ func _ready():
 	
 	add_to_group("Enemy")
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
+	sprite.frame_changed.connect(_on_sprite_frame_changed)
+	sprite.animation_finished.connect(_on_animation_finished)
 
 # ---------------- PHYSICS PROCESS ----------------
-func _physics_process(delta: float) -> void:
-	if not player:
-		player = Global.playerbody
-		if player:
-			player_hitbox = player.get_node("Hitbox") as Area2D
-		return
-
-	if shoot_timer > 0:
-		shoot_timer -= delta
-
-	_process_movement()
-	move_and_slide()
-	_handle_animation()
-
-# ---------------- MOVEMENT & SHOOT LOGIC ----------------
 func _process_movement() -> void:
 	if not player_hitbox:
 		return
@@ -84,11 +76,10 @@ func _process_movement() -> void:
 		return
 
 	# ---------------- STRAFING ZONE ----------------
-	# Perpendicular direction (circle player)
 	var strafe_vec := Vector2(-dir.y, dir.x) * strafe_dir
 	velocity = strafe_vec * strafe_speed
 
-	# Switch strafe direction occasionally
+	# Switch strafe direction
 	strafe_timer -= get_physics_process_delta_time()
 	if strafe_timer <= 0:
 		strafe_dir *= -1
@@ -99,10 +90,44 @@ func _process_movement() -> void:
 		shoot(dir)
 
 
+	# ---------------- STRAFING ZONE ----------------
+func _physics_process(delta: float) -> void:
+	if not player:
+		player = Global.playerbody
+		if player:
+			player_hitbox = player.get_node("Hitbox") as Area2D
+		return
+
+	if shoot_timer > 0:
+		shoot_timer -= delta
+
+	_process_movement()
+	move_and_slide()
+	_handle_animation()
+
 # ---------------- SHOOTING ----------------
 func shoot(direction: Vector2) -> void:
+	if is_shooting:
+		return
+
+	is_shooting = true
+	shot_fired = false
 	shoot_timer = shoot_cooldown
 
+	sprite.play("shoot")
+
+	# Store direction for frame callback
+	shoot_dir_cache = direction
+	
+func _on_sprite_frame_changed() -> void:
+	if sprite.animation != "shoot":
+		return
+
+	if sprite.frame == SHOOT_FRAME and not shot_fired:
+		shot_fired = true
+		_fire_projectile()
+
+func _fire_projectile():
 	if not projectile_scene:
 		return
 
@@ -112,12 +137,16 @@ func shoot(direction: Vector2) -> void:
 	bullet.global_position = shoot_point.global_position
 
 	if bullet.has_method("setup"):
-		bullet.setup(direction, projectile_speed, damage_amount)
+		bullet.setup(shoot_dir_cache, projectile_speed, damage_amount)
 	else:
-		bullet.velocity = direction * projectile_speed
+		bullet.velocity = shoot_dir_cache * projectile_speed
+
 
 # ---------------- ANIMATION ----------------
 func _handle_animation() -> void:
+	if is_shooting:
+		return
+
 	sprite.play("fly")
 
 	if player and player.global_position.x < global_position.x:
@@ -126,6 +155,11 @@ func _handle_animation() -> void:
 	else:
 		sprite.flip_h = false
 		shoot_point.position.x = shootpoint_offset_x
+
+func _on_animation_finished():
+	if sprite.animation == "shoot":
+		is_shooting = false
+		sprite.play("fly")
 
 # ---------------- HITBOX DAMAGE ----------------
 func _on_hitbox_body_entered(body: Node) -> void:

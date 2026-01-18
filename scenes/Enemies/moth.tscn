@@ -1,11 +1,8 @@
-[gd_scene load_steps=26 format=3 uid="uid://crm27ns2yxn2i"]
+[gd_scene load_steps=13 format=3 uid="uid://crm27ns2yxn2i"]
 
 [ext_resource type="Script" uid="uid://b0gfd4pdhyci0" path="res://scripts/Enemies/moth.gd" id="1_xwavj"]
 [ext_resource type="Texture2D" uid="uid://6frmptbta4kc" path="res://assets/Enemy/33_moth_attack_right-Sheet.png" id="2_c4w8v"]
-[ext_resource type="Texture2D" uid="uid://bb8qphodrg1u1" path="res://assets/Enemy/BatStandard_Death.png" id="2_xwavj"]
-[ext_resource type="Texture2D" uid="uid://bqsnfej5jbqpq" path="res://assets/Enemy/BatStandard_Hurt.png" id="4_md484"]
 [ext_resource type="Texture2D" uid="uid://csamuywrlr781" path="res://assets/Enemy/31_idle_moth_right-Sheet.png" id="4_xwavj"]
-
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_nenq2"]
 atlas = ExtResource("2_c4w8v")
@@ -18,34 +15,6 @@ region = Rect2(60, 0, 60, 50)
 [sub_resource type="AtlasTexture" id="AtlasTexture_ipns3"]
 atlas = ExtResource("2_c4w8v")
 region = Rect2(120, 0, 60, 50)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_g0wcc"]
-atlas = ExtResource("2_xwavj")
-region = Rect2(0, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_s1ycm"]
-atlas = ExtResource("2_xwavj")
-region = Rect2(32, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_shcg2"]
-atlas = ExtResource("2_xwavj")
-region = Rect2(64, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ile5s"]
-atlas = ExtResource("2_xwavj")
-region = Rect2(96, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_1x4g4"]
-atlas = ExtResource("2_xwavj")
-region = Rect2(128, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_2pwtc"]
-atlas = ExtResource("2_xwavj")
-region = Rect2(160, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rogs8"]
-atlas = ExtResource("2_xwavj")
-region = Rect2(192, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8qclf"]
 atlas = ExtResource("4_xwavj")
@@ -62,22 +31,6 @@ region = Rect2(120, 0, 60, 50)
 [sub_resource type="AtlasTexture" id="AtlasTexture_wtq4b"]
 atlas = ExtResource("4_xwavj")
 region = Rect2(180, 0, 60, 50)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_2mchx"]
-atlas = ExtResource("4_md484")
-region = Rect2(0, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_t3vcr"]
-atlas = ExtResource("4_md484")
-region = Rect2(32, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qaulx"]
-atlas = ExtResource("4_md484")
-region = Rect2(64, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_1f82d"]
-atlas = ExtResource("4_md484")
-region = Rect2(96, 0, 32, 32)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_otmr2"]
 animations = [{
@@ -97,32 +50,6 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_g0wcc")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_s1ycm")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_shcg2")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ile5s")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_1x4g4")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_2pwtc")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_rogs8")
-}],
-"loop": false,
-"name": &"death",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_8qclf")
 }, {
 "duration": 1.0,
@@ -136,23 +63,6 @@ animations = [{
 }],
 "loop": true,
 "name": &"fly",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_2mchx")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_t3vcr")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qaulx")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_1f82d")
-}],
-"loop": false,
-"name": &"hurt",
 "speed": 5.0
 }]
 
@@ -168,8 +78,8 @@ script = ExtResource("1_xwavj")
 position = Vector2(-24.000004, 10.999999)
 scale = Vector2(1.1231492, 1.138623)
 sprite_frames = SubResource("SpriteFrames_otmr2")
-animation = &"fly"
-frame_progress = 0.5601383
+animation = &"attack"
+frame_progress = 0.43970105
 
 [node name="Hitbox" type="Area2D" parent="."]
 collision_mask = 6

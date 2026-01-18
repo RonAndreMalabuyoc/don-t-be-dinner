@@ -813,6 +813,9 @@ radius = 37.0
 [node name="Player" type="CharacterBody2D"]
 z_index = 5
 script = SubResource("GDScript_48ufq")
+jump_force = -900
+gravity = 1800
+dash_duration = 0.25
 bullet_scene = ExtResource("1_ogw1n")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
