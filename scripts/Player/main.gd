@@ -115,6 +115,8 @@ func shoot_normal() -> void:
 	can_shoot = true
 
 func shoot_fruit() -> void:
+	# Fires the currently equipped fruit, then consumes it.
+	# Pomegranate special: 3 bursts of 3 shots.
 	if not can_shoot:
 		return
 	if current_fruit == "":
@@ -122,45 +124,56 @@ func shoot_fruit() -> void:
 
 	var item := current_fruit
 	can_shoot = false
-	_fire_special(item)
 
-	# Consume current fruit
+	# Consume current fruit immediately
 	current_fruit = ""
+
+	# Fire
+	if item == "Pomegranate":
+		call_deferred("_pomegranate_attack_sequence")
+	else:
+		_fire_special(item)
+		call_deferred("_shoot_fruit_cooldown_async", item)
 
 	# Auto-load reserve into current
 	if reserve_fruit != "":
 		current_fruit = reserve_fruit
 		reserve_fruit = ""
 
-	await get_tree().create_timer(_get_cooldown_for(item))
-	can_shoot = truefunc shoot_fruit() -> void:
-	if not can_shoot:
-		print("Tried to shoot but still on cooldown")
-		return
 
-	if current_fruit == "":
-		print("Right click pressed but no fruit in current slot")
-		return
+const POME_BURSTS := 3
+const POME_SHOTS_PER_BURST := 3
+const POME_SHOT_INTERVAL := 0.05
+const POME_BURST_INTERVAL := 0.12
 
-	var item := current_fruit
-	print("Shooting fruit:", item)
 
-	can_shoot = false
-	_fire_special(item)
-
-	current_fruit = ""
-	print("Consumed fruit:", item)
-
-	if reserve_fruit != "":
-		current_fruit = reserve_fruit
-		reserve_fruit = ""
-		print("Reserve moved to current:", current_fruit)
-
-	_debug_slots("After Shoot")
-
-	await get_tree().create_timer(_get_cooldown_for(item))
+func _pomegranate_attack_sequence() -> void:
+	# Fire the burst pattern first, then start the usual cooldown.
+	await _fire_pomegranate_burst_pattern_async()
+	await get_tree().create_timer(_get_cooldown_for("Pomegranate")).timeout
 	can_shoot = true
-	print("Shoot cooldown finished")
+
+
+func _fire_pomegranate_burst_pattern_async() -> void:
+	# Spawns 3 bursts of 3 pomegranate projectiles using the same scene/animation.
+	if not special_projectiles.has("Pomegranate"):
+		return
+	var proj_scene: PackedScene = special_projectiles["Pomegranate"]
+
+	for b in range(POME_BURSTS):
+		for i in range(POME_SHOTS_PER_BURST):
+			var proj = proj_scene.instantiate()
+			_spawn_projectile(proj, facing_dir)
+			if i < POME_SHOTS_PER_BURST - 1:
+				await get_tree().create_timer(POME_SHOT_INTERVAL).timeout
+		if b < POME_BURSTS - 1:
+			await get_tree().create_timer(POME_BURST_INTERVAL).timeout
+
+
+func _shoot_fruit_cooldown_async(item_id: String) -> void:
+	await get_tree().create_timer(_get_cooldown_for(item_id)).timeout
+	can_shoot = true
+
 
 
 func _spawn_projectile(proj: Node, dir: Vector2, skip_setup: bool = false) -> void:

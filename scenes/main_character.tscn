@@ -258,8 +258,13 @@ func start_shoot():
 
 
 # ───────── FRUIT SHOOTING ─────────
+var _fruit_shot_seq := 0
+
 func shoot_fruit() -> void:
-	print(\"shoot_fruit() called\")
+	_fruit_shot_seq += 1
+	var seq := _fruit_shot_seq
+
+	print(\"shoot_fruit() called seq:\", seq)
 
 	if not can_shoot_fruit:
 		print(\"Fruit shoot blocked by cooldown\")
@@ -276,10 +281,9 @@ func shoot_fruit() -> void:
 		print(\"No projectile scene set for fruit:\", fruit_id)
 		return
 
-	# start fruit cooldown
 	can_shoot_fruit = false
 
-	# Spawn fruit projectile
+	# Spawn projectile
 	var proj_scene: PackedScene = fruit_projectiles[fruit_id]
 	var proj := Global.instance_node(
 		proj_scene,
@@ -287,7 +291,6 @@ func shoot_fruit() -> void:
 		Global.node_creation_parent
 	)
 
-	# direction
 	var dir := get_shoot_direction()
 	if proj != null:
 		if \"direction\" in proj:
@@ -295,17 +298,20 @@ func shoot_fruit() -> void:
 		elif proj.has_method(\"setup\"):
 			proj.call(\"setup\", dir)
 
-	# play shoot anim
+	# Play anim
 	is_shooting = true
 	sprite.play(\"shoot\")
 	await sprite.animation_finished
 	is_shooting = false
 
-	# Consume current fruit AFTER successful fire
+	# IMPORTANT: consume RIGHT NOW, not later
+	# Also protect against an older coroutine finishing late
+	if seq != _fruit_shot_seq:
+		return
+
 	current_fruit = \"\"
 	print(\"Consumed fruit:\", fruit_id)
 
-	# Auto-load reserve into current
 	if reserve_fruit != \"\":
 		current_fruit = reserve_fruit
 		reserve_fruit = \"\"
@@ -315,27 +321,18 @@ func shoot_fruit() -> void:
 	_update_fruit_ui()
 
 	await get_tree().create_timer(fruit_shoot_cooldown).timeout
+
+	# Still protect against late finishes
+	if seq != _fruit_shot_seq:
+		return
+
 	can_shoot_fruit = true
 	print(\"Fruit shoot cooldown finished\")
+
 	
 func _on_timer_timeout():
 	# Put reload / shoot reset logic here
 	can_shoot = true
-
-	
-# ───────── ANIMATIONS ─────────
-	if reserve_fruit != \"\":
-		current_fruit = reserve_fruit
-		reserve_fruit = \"\"
-		print(\"Auto-loaded reserve into current:\", current_fruit)
-
-	_debug_slots(\"After Fruit Shoot\")
-
-	_update_fruit_ui()
-
-	await get_tree().create_timer(fruit_shoot_cooldown).timeout
-	can_shoot_fruit = true
-	print(\"Fruit shoot cooldown finished\")
 
 # ───────── ANIMATIONS ─────────
 func handle_animations():
