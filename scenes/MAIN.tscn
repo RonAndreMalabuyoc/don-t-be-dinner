@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=38 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://dk4spknv8m3e1" path="res://assets/Full_bgx32.png" id="1_51ehd"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://din53kv6dqfko" path="res://assets/Objects.png" id="4_jgtwp"]
 [ext_resource type="Texture2D" uid="uid://ctd5xxvgiufnm" path="res://assets/Terrain (16x16).png" id="5_ql6cl"]
 [ext_resource type="Texture2D" uid="uid://55h8se0yolal" path="res://assets/world_tileset.png" id="6_1rw4c"]
+[ext_resource type="Script" uid="uid://d2od54k7001ao" path="res://scenes/userpause_quit.gd" id="6_jgtwp"]
 [ext_resource type="Texture2D" uid="uid://dscb7doug7iqt" path="res://assets/Tileset.png" id="7_6gd58"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="8_vkg1p"]
 [ext_resource type="Script" uid="uid://cccilmvgmxtbp" path="res://scripts/projectiles.gd" id="9_cli15"]
@@ -17,6 +18,91 @@
 [ext_resource type="PackedScene" uid="uid://bi087ib7mw0kp" path="res://scenes/killzone.tscn" id="14_ue4rg"]
 [ext_resource type="PackedScene" uid="uid://crm27ns2yxn2i" path="res://scenes/enemy.tscn" id="15_uag27"]
 [ext_resource type="PackedScene" uid="uid://fbiybjbee3yk" path="res://scenes/spider.tscn" id="17_fr04l"]
+[ext_resource type="FontFile" uid="uid://dwu5dg2ta5rl2" path="res://assets/planet_jumbo/Planet Jumbo.otf" id="19_ql6cl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ql6cl"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1rw4c"]
+bg_color = Color(0.68307734, 0.6830774, 0.68307734, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6gd58"]
+bg_color = Color(0.3779188, 0.37791887, 0.37791884, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vkg1p"]
+bg_color = Color(0.3553136, 0.35531354, 0.35531357, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v426v"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cli15"]
+bg_color = Color(0.96474224, 0.96474224, 0.9647421, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1c2kf"]
+bg_color = Color(0.63375264, 0.63375854, 0.6337557, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_27wxa"]
+bg_color = Color(0.31431273, 0.3143175, 0.3143152, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_idstl"]
+bg_color = Color(0.32915488, 0.32915995, 0.32915753, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 5
+shadow_offset = Vector2(0, 3.41)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ue4rg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7vxoj"]
 texture = ExtResource("4_jgtwp")
@@ -2685,10 +2771,10 @@ sources/3 = SubResource("TileSetAtlasSource_2nhjh")
 script = ExtResource("1_0tikr")
 
 [node name="TextureRect" type="TextureRect" parent="."]
-offset_left = -681.0
-offset_top = -807.0
-offset_right = 2873.0
-offset_bottom = 636.0
+offset_left = -672.0
+offset_top = -806.0
+offset_right = 2866.0
+offset_bottom = 672.0
 texture = ExtResource("1_51ehd")
 
 [node name="WoodenShed" type="Sprite2D" parent="TextureRect"]
@@ -2709,6 +2795,53 @@ position = Vector2(9, -150)
 limit_bottom = 635
 limit_smoothed = true
 position_smoothing_enabled = true
+
+[node name="userpause_quit" type="Control" parent="player"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("6_jgtwp")
+
+[node name="Pause_Button" type="Button" parent="player/userpause_quit"]
+layout_mode = 0
+offset_left = 407.0
+offset_top = -463.0
+offset_right = 481.0
+offset_bottom = -403.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_ql6cl")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_ql6cl")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_1rw4c")
+theme_override_styles/hover = SubResource("StyleBoxFlat_6gd58")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_vkg1p")
+theme_override_styles/focus = SubResource("StyleBoxFlat_v426v")
+text = "Pause"
+
+[node name="Quit_Button" type="Button" parent="player/userpause_quit"]
+layout_mode = 0
+offset_left = 497.0
+offset_top = -463.0
+offset_right = 571.0
+offset_bottom = -403.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0.000113827744, 0.00011382807, 0.00011382859, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_ql6cl")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_cli15")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_1c2kf")
+theme_override_styles/hover = SubResource("StyleBoxFlat_27wxa")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_idstl")
+theme_override_styles/focus = SubResource("StyleBoxFlat_ue4rg")
+text = "Quit"
 
 [node name="TileMap" type="TileMap" parent="."]
 scale = Vector2(4, 4)
@@ -2778,6 +2911,7 @@ collision_layer = 2
 collision_mask = 2
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BatOnlyCollision"]
+position = Vector2(0, 29)
 polygon = PackedVector2Array(-687, 465, -682, 472, -301, 478, 479, 472, 1031, 468, 1373, 471, 1914, 470, 2452, 464, 2866, 459, 2873, -666, -677, -657, -682, 458, -799, 429, -786, -812, 2967, -808, 2961, 751, -807, 785, -801, 425)
 
 [node name="Spider" parent="." instance=ExtResource("17_fr04l")]
@@ -2835,3 +2969,6 @@ offset_top = 115.0
 offset_right = 144.0
 offset_bottom = 138.0
 text = "Super Saiyan Goon"
+
+[connection signal="pressed" from="player/userpause_quit/Pause_Button" to="." method="_on_pause_button_pressed"]
+[connection signal="pressed" from="player/userpause_quit/Quit_Button" to="." method="_on_quit_button_pressed"]
