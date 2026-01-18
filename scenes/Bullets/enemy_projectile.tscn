@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://bjeebfuqqc7ss"]
 
-[ext_resource type="Script" uid="uid://20eydhtvfj61" path="res://enemy_projectile.gd" id="1_sw2of"]
+[ext_resource type="Script" uid="uid://20eydhtvfj61" path="res://scripts/enemy_projectile.gd" id="1_sw2of"]
 [ext_resource type="Texture2D" uid="uid://d0bh8ww5yd85v" path="res://assets/Cloud 1.png" id="2_cb0yd"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ckbrt"]

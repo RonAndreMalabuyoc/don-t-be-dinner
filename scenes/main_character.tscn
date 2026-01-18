@@ -30,6 +30,7 @@ var is_dodging := false
 const SHOOT_FRAME := 3
 var shoot_direction: Vector2 = Vector2.RIGHT
 var is_shooting := false
+@export var base_damage := 10  # default player damage
 
 # ───────── FRUIT SHOOTING ─────────
 @export var fruit_shoot_cooldown := 0.3
@@ -68,7 +69,8 @@ var dash_dir := 0.0
 var is_hurt := false
 const HURT_ANIM_TIME := 1.0
 var hurt_dir := 0
-
+var jumps_done := 0
+var max_jumps := 1  # normal jump
 var can_shoot := true
 var is_emoting := false
 var shot_fired_this_anim := false
@@ -80,18 +82,26 @@ func _ready():
 	Global.playerbody = self
 	Global.player_alive = true
 	current_health = max_health
+	
+	for skill_id in SkillManager.unlocked_skills:
+		SkillManager.apply_skill_effect(skill_id)
 
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 	hitbox.area_entered.connect(_on_hitbox_area_entered)
 	sprite.frame_changed.connect(_on_sprite_frame_changed)
-
 	print(\"PLAYER READY:\", get_path())
 	_debug_slots(\"Ready\")
 	
 	_update_fruit_ui()
-	print(\"UI current path:\", fruit_ui_current.get_path() if is_instance_valid(fruit_ui_current) else \"MISSING\")
-	print(\"UI reserve path:\", fruit_ui_reserve.get_path() if is_instance_valid(fruit_ui_reserve) else \"MISSING\")
 
+	if SkillManager.dash_mastery_active:
+		dash_cooldown *= 0.6  # 40% faster cooldown
+		print(\"Dash cooldown reduced to:\", dash_cooldown)
+		
+func apply_double_jump():
+	max_jumps = 2
+	print(\"Double Jump unlocked! Max jumps:\", max_jumps)
+	
 
 # ───────── PHYSICS ─────────
 func _physics_process(delta):
@@ -163,6 +173,11 @@ func _physics_process(delta):
 
 		if Input.is_action_just_pressed(\"jump\") and is_on_floor() and not is_emoting:
 			velocity.y = jump_force
+			jumps_done += 1
+			
+		if is_on_floor():
+			jumps_done = 0
+
 
 	handle_animations()
 	sprite.flip_h = not facing_right
@@ -233,7 +248,9 @@ func _on_sprite_frame_changed():
 				Global.node_creation_parent
 			) as Bullet
 			bullet.direction = get_shoot_direction()
-		
+		if \"damage\" in bullet_scene:
+			bullet_scene.damage = base_damage
+			
 func start_shoot():
 	if not can_shoot:
 		return
@@ -255,7 +272,19 @@ func start_shoot():
 	# Cooldown before allowing the next shot
 	await get_tree().create_timer(shoot_cooldown).timeout
 	can_shoot = true
+# ───────── POWERUP ─────────
+func apply_swift_feet():
+	speed *= 1.3  # Increase speed by 30%
+	print(\"Swift Feet applied! New speed:\", speed)
+	
+func apply_sharp_blows():
+	base_damage = int(base_damage * 1.5)  # 50% more damage
+	print(\"Sharp Blows applied! New damage:\", base_damage)
 
+func apply_quick_recovery():
+	hurt_lock_time *= 0.5        # reduces hurt animation lock
+	invulnerability_time *= 0.5  # reduces invincibility duration
+	print(\"Quick Recovery applied! Hurt lock:\", hurt_lock_time, \" Invulnerability:\", invulnerability_time)
 
 # ───────── FRUIT SHOOTING ─────────
 var _fruit_shot_seq := 0
@@ -327,12 +356,28 @@ func shoot_fruit() -> void:
 		return
 
 	can_shoot_fruit = true
+
 	print(\"Fruit shoot cooldown finished\")
 
 	
 func _on_timer_timeout():
 	# Put reload / shoot reset logic here
 	can_shoot = true
+
+	
+# ───────── ANIMATIONS ─────────
+	if reserve_fruit != \"\":
+		current_fruit = reserve_fruit
+		reserve_fruit = \"\"
+		print(\"Auto-loaded reserve into current:\", current_fruit)
+
+	_debug_slots(\"After Fruit Shoot\")
+
+	_update_fruit_ui()
+
+	await get_tree().create_timer(fruit_shoot_cooldown).timeout
+	can_shoot_fruit = true
+
 
 # ───────── ANIMATIONS ─────────
 func handle_animations():

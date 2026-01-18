@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SkillData" load_steps=2 format=3 uid="uid://cg3wdnlyb5p54"]
+
+[ext_resource type="Script" uid="uid://jtuyjj865n63" path="res://scripts/skills/data/SkillData.gd" id="1_uegwv"]
+
+[resource]
+script = ExtResource("1_uegwv")
+id = "extra_heart"
+name = "Extra Heart"
+description = "+1 Heart"
+cost = 2
+category = "Survivability"
+effect_type = "extra_hearts"
+effect_value = 1.0
+metadata/_custom_type_script = "uid://jtuyjj865n63"

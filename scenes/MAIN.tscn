@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=35 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://dk4spknv8m3e1" path="res://assets/Full_bgx32.png" id="1_51ehd"]
@@ -24,6 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://v0jy8lu50ja" path="res://scenes/Pickups/coconut_pickup.tscn" id="20_cli15"]
 [ext_resource type="PackedScene" uid="uid://dsq147a63qiui" path="res://scenes/Pickups/banana_pickup.tscn" id="21_1c2kf"]
 [ext_resource type="PackedScene" uid="uid://ba72iadkq2qr2" path="res://scenes/Pickups/orange_pickup.tscn" id="22_27wxa"]
+[ext_resource type="PackedScene" uid="uid://kirncin2gioi" path="res://scripts/skills/SkillTree.tscn" id="25_27wxa"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7vxoj"]
 texture = ExtResource("4_jgtwp")
@@ -2836,6 +2837,34 @@ position = Vector2(387, 440)
 position = Vector2(700, 437)
 
 [node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Control" parent="HUD" instance=ExtResource("25_27wxa")]
+offset_left = 851.0
+offset_top = 33.0
+offset_right = 851.0
+offset_bottom = 33.0
+
+[node name="SkillTreePanel" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 1.0000005
+offset_top = 40.999992
+offset_right = 41.0
+offset_bottom = 80.99999
+
+[node name="Skill Tree" type="Label" parent="HUD/SkillTreePanel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="SkillList" type="VBoxContainer" parent="HUD/SkillTreePanel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ToggleButton" type="Button" parent="HUD"]
+offset_right = 8.0
+offset_bottom = 8.0
 
 [node name="FruitUI" type="Control" parent="HUD"]
 layout_mode = 3

@@ -104,6 +104,20 @@ func start_next_wave():
 		spawn_queue.append(moth_scene)
 
 	spawn_timer.start()
+	
+func _on_wave_completed():
+	print("Wave", current_wave, "completed!")
+
+	# Add 1 skill point for finishing the wave
+	SkillManager.add_skill_points(1)
+
+	# Apply Post-Wave Heal if unlocked
+	if SkillManager.post_wave_heal_active and Global.playerbody:
+		Global.playerbody.current_health += 1  # heal 1 heart
+		if Global.playerbody.current_health > Global.playerbody.max_health:
+			Global.playerbody.current_health = Global.playerbody.max_health
+		print("Post-Wave Heal applied! Current Health:", Global.playerbody.current_health)
+
 
 func _on_spawn_timer_timeout():
 	if spawn_queue.is_empty():

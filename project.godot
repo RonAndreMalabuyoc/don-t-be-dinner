@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.5", "Forward Plus")
 [autoload]
 
 Global="*res://scripts/Player/global.gd"
+SkillManager="*res://scripts/skills/data/SkillManager.gd"
 
 [input]
 
