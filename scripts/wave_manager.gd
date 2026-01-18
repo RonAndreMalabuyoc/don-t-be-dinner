@@ -16,6 +16,8 @@ extends Node2D
 @export var max_spawn_per_wave: int = 2
 @export var max_fruits_alive: int = 3
 
+signal wave_completed(wave_number: int)
+
 var _alive_fruits: int = 0
 var _last_wave: int = 0
 var _wave_manager: Node = null
@@ -135,6 +137,12 @@ func _on_enemy_died():
 	if enemies_alive == 0 and spawn_queue.size() == 0:  # <- fixed here
 		wave_in_progress = false
 		start_next_wave()
+		
+	if enemies_alive == 0 and spawn_queue.size() == 0:
+		wave_in_progress = false
+		emit_signal("wave_completed", current_wave)
+		start_next_wave()
+
 		
 func _process(_delta: float) -> void:
 	if _wave_manager == null:
