@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=34 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://dk4spknv8m3e1" path="res://assets/Full_bgx32.png" id="1_51ehd"]
@@ -7,9 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://din53kv6dqfko" path="res://assets/Objects.png" id="4_jgtwp"]
 [ext_resource type="Texture2D" uid="uid://ctd5xxvgiufnm" path="res://assets/Terrain (16x16).png" id="5_ql6cl"]
 [ext_resource type="Texture2D" uid="uid://55h8se0yolal" path="res://assets/world_tileset.png" id="6_1rw4c"]
-[ext_resource type="FontFile" uid="uid://dwu5dg2ta5rl2" path="res://assets/planet_jumbo/Planet Jumbo.otf" id="6_27wxa"]
 [ext_resource type="Texture2D" uid="uid://dscb7doug7iqt" path="res://assets/Tileset.png" id="7_6gd58"]
-[ext_resource type="Script" uid="uid://bg1bkgjtknw4w" path="res://scenes/pause_button.gd" id="7_idstl"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="8_vkg1p"]
 [ext_resource type="Script" uid="uid://cccilmvgmxtbp" path="res://scripts/projectiles.gd" id="9_cli15"]
 [ext_resource type="Script" uid="uid://cx8hujvj3jmow" path="res://scripts/pick_up.gd" id="10_1c2kf"]
@@ -26,49 +24,6 @@
 [ext_resource type="PackedScene" uid="uid://v0jy8lu50ja" path="res://scenes/Pickups/coconut_pickup.tscn" id="20_cli15"]
 [ext_resource type="PackedScene" uid="uid://dsq147a63qiui" path="res://scenes/Pickups/banana_pickup.tscn" id="21_1c2kf"]
 [ext_resource type="PackedScene" uid="uid://ba72iadkq2qr2" path="res://scenes/Pickups/orange_pickup.tscn" id="22_27wxa"]
-[ext_resource type="PackedScene" uid="uid://qtx2mtcwnypb" path="res://scenes/pause_menu.tscn" id="27_v426v"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v426v"]
-bg_color = Color(1, 1, 1, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 1)
-shadow_size = 5
-shadow_offset = Vector2(0, 3.41)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ue4rg"]
-bg_color = Color(0.7254902, 0.7254902, 0.7254902, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 1)
-shadow_size = 5
-shadow_offset = Vector2(0, 3.41)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uag27"]
-bg_color = Color(0.3647059, 0.3647059, 0.3647059, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 1)
-shadow_size = 5
-shadow_offset = Vector2(0, 3.41)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_njcny"]
-bg_color = Color(0.3647059, 0.3647059, 0.3647059, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 1)
-shadow_size = 5
-shadow_offset = Vector2(0, 3.41)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cvanf"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7vxoj"]
 texture = ExtResource("4_jgtwp")
@@ -2770,27 +2725,6 @@ limit_bottom = 635
 limit_smoothed = true
 position_smoothing_enabled = true
 
-[node name="pause_button" type="Button" parent="player"]
-offset_left = 425.0
-offset_top = -463.0
-offset_right = 570.0
-offset_bottom = -376.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_focus_color = Color(0.95, 0.95, 0.95, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(0.95, 0.95, 0.95, 1)
-theme_override_colors/font_hover_pressed_color = Color(1, 1, 1, 1)
-theme_override_constants/outline_size = 10
-theme_override_fonts/font = ExtResource("6_27wxa")
-theme_override_font_sizes/font_size = 30
-theme_override_styles/normal = SubResource("StyleBoxFlat_v426v")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ue4rg")
-theme_override_styles/hover = SubResource("StyleBoxFlat_uag27")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_njcny")
-theme_override_styles/focus = SubResource("StyleBoxFlat_cvanf")
-text = "Pause"
-script = ExtResource("7_idstl")
-
 [node name="TileMap" type="TileMap" parent="."]
 scale = Vector2(4, 4)
 tile_set = SubResource("TileSet_ei405")
@@ -2919,9 +2853,3 @@ layout_mode = 0
 offset_top = 35.0
 offset_right = 40.0
 offset_bottom = 58.0
-
-[node name="PauseMenu" parent="." instance=ExtResource("27_v426v")]
-offset_left = 344.0
-offset_right = 344.0
-
-[connection signal="pressed" from="player/pause_button" to="player/pause_button" method="_on_pressed"]

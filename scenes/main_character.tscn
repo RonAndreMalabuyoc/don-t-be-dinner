@@ -216,6 +216,7 @@ func shoot():
 		Global.node_creation_parent
 	) as Bullet
 
+
 	# Direction from shoot point to mouse
 	var mouse_pos = get_global_mouse_position()
 	bullet.direction = (mouse_pos - shoot_point.global_position).normalized()
