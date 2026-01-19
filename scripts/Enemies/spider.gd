@@ -191,14 +191,16 @@ func _handle_animation():
 	# Jump animation has highest priority
 	if is_jumping:
 		if sprite.animation != "jump":
-			sprite.play("jump")
+			sprite.play("jadump")
 		return
 
 	# Dash animation
 	if is_dashing:
-		if sprite.animation != "dash":
+		# Check if "dash" exists, otherwise fallback to "walk" or "run"
+		if sprite.sprite_frames.has_animation("dash"):
 			sprite.play("dash")
-		return
+		else:
+			sprite.play("walk")
 
 	# Walk / Idle
 	if abs(velocity.x) > 5:
