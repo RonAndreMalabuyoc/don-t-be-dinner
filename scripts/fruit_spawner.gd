@@ -30,12 +30,11 @@ func _ready() -> void:
 
 
 func _on_wave_completed(wave_number: int) -> void:
-	# Spawn AFTER a wave ends, directly above the player.
-	# If you ever want to skip after wave 1 ends, change to: if wave_number < 2: return
-	_spawn_for_wave()
+	_spawn_for_wave(wave_number)
 
 
-func _spawn_for_wave() -> void:
+
+func _spawn_for_wave(wave_number: int) -> void:
 	if fruit_pickups.is_empty():
 		return
 	if Global.playerbody == null:
@@ -43,12 +42,15 @@ func _spawn_for_wave() -> void:
 	if _alive_fruits >= max_fruits_alive:
 		return
 
-	# Bonus spawn upgrade support (your existing pattern)
+	# First 5 waves: 1 fruit. Wave 6+: 2 fruits.
+	var base_count := 1 if wave_number <= 5 else 2
+
+	# Keep your upgrade bonus if you want it
 	var bonus: int = 0
 	if "extra_spawn_chance" in Global.playerbody:
 		bonus = Global.playerbody.extra_spawn_chance
 
-	var count: int = randi_range(min_spawn_per_wave, max_spawn_per_wave) + bonus
+	var count := base_count + bonus
 	count = min(count, max_fruits_alive - _alive_fruits)
 
 	for i in range(count):
