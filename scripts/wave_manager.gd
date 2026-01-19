@@ -34,7 +34,22 @@ var wave_in_progress := false
 var spawn_queue: Array = []
 
 var waves = [
+	
+	{ "spider": 3 },
+	{ "spider": 5 },
+	{ "spider": 7 },
+	
+	# Phase 2 — Air melee only
+	{ "moth": 3 },
+	{ "moth": 5 },
+	{ "moth": 7 },
 
+	# Phase 3 — Land + Air melee
+	{ "spider": 4, "moth": 3 },
+	{ "spider": 6, "moth": 4 },
+	{ "spider": 8, "moth": 5 },
+
+	# Phase 4 — Wasp intro
 	{ "wasp": 2 },
 	{ "wasp": 4 },
 	{ "wasp": 6 },

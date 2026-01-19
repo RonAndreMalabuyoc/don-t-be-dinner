@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dj83aqshd8uax"]
+
+[ext_resource type="Texture2D" uid="uid://urbeytn40pwc" path="res://assets/Barrel.png" id="1_q36op"]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_ptqd7"]
+a = Vector2(-2, 1)
+b = Vector2(22, 1)
+
+[node name="AnimatableBody2D" type="AnimatableBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_q36op")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-10, -15)
+shape = SubResource("SegmentShape2D_ptqd7")
+one_way_collision = true
