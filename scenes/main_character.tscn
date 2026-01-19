@@ -81,6 +81,7 @@ var can_shoot_fruit := true
 # ───────── READY ─────────
 func _ready():
 	Global.playerbody = self
+	SkillManager.apply_existing_skills_to_player()
 	Global.player_alive = true
 	current_health = max_health
 	
@@ -94,10 +95,16 @@ func _ready():
 	_debug_slots(\"Ready\")
 	
 	_update_fruit_ui()
-
+	
 	if SkillManager.dash_mastery_active:
-		dash_cooldown *= 0.6  # 40% faster cooldown
-		print(\"Dash cooldown reduced to:\", dash_cooldown)
+		dash_speed *= 1.25
+		dash_cooldown *= 0.7
+		
+func apply_dash_mastery():
+	if SkillManager.dash_mastery_active:
+		dash_speed *= 1.25
+		dash_cooldown *= 0.7
+
 		
 func apply_double_jump():
 	max_jumps = 2
@@ -134,7 +141,7 @@ func _physics_process(delta):
 	if Input.is_action_pressed(\"shoot\") and can_shoot and not is_emoting and not is_hurt:
 		start_shoot()
 
-
+	
 	if Input.is_action_just_pressed(\"dance\"):
 		is_emoting = !is_emoting
 
@@ -475,6 +482,15 @@ func take_damage(amount: int):
 		return
 
 	start_hurt_and_invincibility()
+	
+func heal_after_wave(amount: int):
+	if is_dead:
+		return
+	
+	var old_health := current_health
+	current_health = min(current_health + amount, max_health)
+
+	print(\"Post-wave heal:\", old_health, \"→\", current_health)
 
 func start_hurt_and_invincibility():
 	is_hurt = true
@@ -541,7 +557,7 @@ var reserve_fruit: String = \"\"
 func _debug_slots(context: String) -> void:
 	print(\"[\" + context + \"] Current:\", current_fruit, \" | Reserve:\", reserve_fruit)
 
-func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = false) -> void:
+func push_powerup(item_id: String, _duration: float = -1.0, auto_fire: bool = false) -> void:
 	print(\"push_powerup called with:\", item_id, \" auto_fire:\", auto_fire)
 
 	if current_fruit == \"\":

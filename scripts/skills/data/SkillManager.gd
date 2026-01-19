@@ -6,10 +6,9 @@ extends Node
 # ───────── STATE ─────────
 var skill_points := 0
 var unlocked_skills: Array[String] = []
-
 var all_skills: Dictionary = {}
 
-# skill flags
+# ───────── SKILL FLAGS ─────────
 var dash_mastery_active := false
 var swift_feet_active := false
 var double_jump_active := false
@@ -41,14 +40,14 @@ func _load_skills():
 			print("Loaded skill:", skill.id)
 		else:
 			push_error("FAILED TO LOAD: " + path)
+
 	print("ALL SKILLS LOADED:", all_skills.keys())
+
 # ───────── SKILL LOGIC ─────────
 func has_skill(skill_id: String) -> bool:
 	return skill_id in unlocked_skills
 
 func unlock_skill(skill_id: String) -> bool:
-	print("Trying to unlock:", skill_id)
-
 	if not all_skills.has(skill_id):
 		print("Skill not found:", skill_id)
 		return false
@@ -60,66 +59,63 @@ func unlock_skill(skill_id: String) -> bool:
 	var skill = all_skills[skill_id]
 
 	if skill_points < skill.cost:
-		print("Not enough points")
+		print("Not enough skill points")
 		return false
 
 	skill_points -= skill.cost
 	unlocked_skills.append(skill_id)
-	
+
 	apply_skill_effect(skill_id)
 
-	print("Unlocked:", skill_id)
+	print("Unlocked skill:", skill_id)
 	return true
 
 func add_skill_points(amount: int):
 	skill_points += amount
 	print("Skill points:", skill_points)
 
-# ───────── APPLY EFFECTS ─────────
+# ───────── APPLY EXISTING SKILLS (PLAYER SPAWN) ─────────
+func apply_existing_skills_to_player():
+	for skill_id in unlocked_skills:
+		apply_skill_effect(skill_id)
+
+# ───────── APPLY SKILL EFFECTS ─────────
 func apply_skill_effect(skill_id: String) -> void:
 	if not all_skills.has(skill_id):
 		return
 
-	var skill = all_skills[skill_id]
-
-	match skill.id:
+	match skill_id:
 
 		"extra_heart":
 			if Global.playerbody:
 				Global.playerbody.max_health += 1
 				Global.playerbody.current_health += 1
-				print("Extra Heart applied! Max Health:", Global.playerbody.max_health)
+				print("Extra Heart applied")
 
 		"post_wave_heal":
-			if not post_wave_heal_active:
-				post_wave_heal_active = true
-				print("Post-Wave Heal activated")
+			post_wave_heal_active = true
+			print("Post-Wave Heal activated")
 
 		"dash_mastery":
-			if not dash_mastery_active:
-				dash_mastery_active = true
-				print("Dash Mastery applied!")
+			dash_mastery_active = true
+			print("Dash Mastery activated")
 
 		"swift_feet":
-			if not swift_feet_active:
-				swift_feet_active = true
-				if Global.playerbody:
-					Global.playerbody.apply_swift_feet()
-				print("Swift Feet applied!")
+			swift_feet_active = true
+			if Global.playerbody:
+				Global.playerbody.apply_swift_feet()
+			print("Swift Feet activated")
 
 		"double_jump":
-			if not double_jump_active:
-				double_jump_active = true
-				if Global.playerbody:
-					Global.playerbody.apply_double_jump()
-				print("Double Jump applied!")
+			double_jump_active = true
+			if Global.playerbody:
+				Global.playerbody.apply_double_jump()
+			print("Double Jump activated")
 
 		"sharp_blows":
-			if not sharp_blows_active:
-				sharp_blows_active = true
-				print("Sharp Blows applied!")
+			sharp_blows_active = true
+			print("Sharp Blows activated")
 
 		"quick_recovery":
-			if not quick_recovery_active:
-				quick_recovery_active = true
-				print("Quick Recovery applied!")
+			quick_recovery_active = true
+			print("Quick Recovery activated")
