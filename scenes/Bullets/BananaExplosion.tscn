@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dejvcou6moiiq"]
+
+[ext_resource type="Script" uid="uid://doy1llgpvjycg" path="res://scenes/Bullets/banana_explosion.gd" id="1_gfvw3"]
+
+[node name="BananaExplosion" type="Node2D"]
+script = ExtResource("1_gfvw3")
