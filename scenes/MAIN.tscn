@@ -2800,6 +2800,11 @@ moth_scene = ExtResource("17_cli15")
 wasp_spawn_points = [NodePath("wasp_spawn_point1"), NodePath("wasp_spawn_point2")]
 spider_spawn_points = [NodePath("spider_spawn_points"), NodePath("spider_spawn_points2")]
 moth_spawn_points = [NodePath("moth_spawn_points"), NodePath("moth_spawn_points2")]
+spawn_delay = null
+fruit_pickups = null
+min_spawn_per_wave = null
+max_spawn_per_wave = null
+max_fruits_alive = null
 
 [node name="spider_spawn_points2" parent="WaveManager" instance=ExtResource("17_jgtwp")]
 position = Vector2(-628, 442.99997)
