@@ -364,21 +364,6 @@ func _on_timer_timeout():
 	# Put reload / shoot reset logic here
 	can_shoot = true
 
-	
-# ───────── ANIMATIONS ─────────
-	if reserve_fruit != \"\":
-		current_fruit = reserve_fruit
-		reserve_fruit = \"\"
-		print(\"Auto-loaded reserve into current:\", current_fruit)
-
-	_debug_slots(\"After Fruit Shoot\")
-
-	_update_fruit_ui()
-
-	await get_tree().create_timer(fruit_shoot_cooldown).timeout
-	can_shoot_fruit = true
-
-
 # ───────── ANIMATIONS ─────────
 func handle_animations():
 	if is_hurt:
