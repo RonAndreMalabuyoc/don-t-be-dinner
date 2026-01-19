@@ -6,6 +6,11 @@ class_name WaspEnemy
 @export var hover_speed := 90.0
 @export var strafe_speed := 70.0
 @export var strafe_switch_time := 1.5
+@export var base_max_health := 10
+@export var base_scale := 1.0
+
+var current_health := base_max_health
+var difficulty_applied := false
 
 var strafe_dir := 1
 var strafe_timer := 0.0
@@ -19,7 +24,6 @@ var strafe_timer := 0.0
 @export var damage_amount := 8
 
 # ---------------- VARIABLES ----------------
-var current_health := 0
 var is_dead := false
 var shoot_timer := 0.0
 var shootpoint_offset_x := 0.0
@@ -140,6 +144,26 @@ func _fire_projectile():
 		bullet.setup(shoot_dir_cache, projectile_speed, damage_amount)
 	else:
 		bullet.velocity = shoot_dir_cache * projectile_speed
+
+func apply_difficulty(wave: int, hp_multiplier: float) -> void:
+	if difficulty_applied:
+		return
+	difficulty_applied = true
+
+	# --- HP scaling ---
+	max_health = int(base_max_health * hp_multiplier)
+	current_health = max_health
+
+	# --- Size scaling ---
+	var size_bonus: float = min(wave * 0.03, 0.5)
+	scale = Vector2.ONE * (base_scale + size_bonus)
+
+	print(
+		name,
+		"| Wave:", wave,
+		"| HP:", max_health,
+		"| Scale:", scale
+	)
 
 
 # ---------------- ANIMATION ----------------

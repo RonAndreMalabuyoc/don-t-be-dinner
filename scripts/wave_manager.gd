@@ -10,6 +10,11 @@ extends Node2D
 
 @export var spawn_delay: float = 1.0
 @onready var spawn_timer := Timer.new()
+@export var base_enemy_hp_multiplier := 1.0
+@export var hp_per_wave := 0.15 
+@export var hp_per_minute := 0.10 
+
+var run_time := 0.0
 
 signal wave_completed(wave_number: int)
 
@@ -19,10 +24,11 @@ var wave_in_progress := false
 var spawn_queue: Array = []
 
 var waves = [
+	
 	{ "spider": 3 },
 	{ "spider": 5 },
 	{ "spider": 7 },
-
+	
 	# Phase 2 — Air melee only
 	{ "moth": 3 },
 	{ "moth": 5 },
@@ -61,14 +67,21 @@ func start_next_wave() -> void:
 		return
 
 	if current_wave >= waves.size():
-		print("ALL WAVES COMPLETE")
-		return
-
+		# Generate infinite scaling wave
+		wave_scale = current_wave - waves.size() + 1
+		print("Scaling factor for wave:", wave_scale)
+		
+		waves.append({
+			"spider": 5 + wave_scale,
+			"moth": 4 + int(wave_scale * 0.8),
+			"wasp": 3 + int(wave_scale * 0.6)
+		})
+		
 	current_wave += 1
 	wave_in_progress = true
 	enemies_alive = 0
 	spawn_queue.clear()
-
+	
 	print("Starting wave", current_wave)
 
 	var wave_data = waves[current_wave - 1]
@@ -82,6 +95,22 @@ func start_next_wave() -> void:
 		spawn_queue.append(moth_scene)
 
 	spawn_timer.start()
+	
+	if Global.playerbody:
+		Global.playerbody.heal_after_wave(10)
+
+func _on_wave_completed():
+	print("Wave", current_wave, "completed!")
+
+	# Add 1 skill point for finishing the wave
+	SkillManager.add_skill_points(1)
+
+	# Apply Post-Wave Heal if unlocked
+	if SkillManager.post_wave_heal_active and Global.playerbody:
+		Global.playerbody.current_health += 1  # heal 1 heart
+		if Global.playerbody.current_health > Global.playerbody.max_health:
+			Global.playerbody.current_health = Global.playerbody.max_health
+		print("Post-Wave Heal applied! Current Health:", Global.playerbody.current_health)
 
 
 func _on_spawn_timer_timeout() -> void:
@@ -92,6 +121,13 @@ func _on_spawn_timer_timeout() -> void:
 	var scene: PackedScene = spawn_queue.pop_front()
 	var enemy: Node2D = scene.instantiate()
 
+	# Difficulty scaling
+	if enemy.has_method("apply_difficulty"):
+		enemy.apply_difficulty(
+			current_wave,
+			get_enemy_hp_multiplier()
+		)
+
 	var spawn_point: Node2D = null
 	if scene == spider_scene:
 		spawn_point = spider_spawn_points.pick_random()
@@ -101,7 +137,7 @@ func _on_spawn_timer_timeout() -> void:
 		spawn_point = wasp_spawn_points.pick_random()
 
 	if spawn_point == null:
-		push_warning("No spawn point assigned for this enemy type!")
+		push_warning("No spawn point assigned!")
 		return
 
 	enemy.global_position = spawn_point.global_position
@@ -111,16 +147,35 @@ func _on_spawn_timer_timeout() -> void:
 	enemies_alive += 1
 
 
-func _on_enemy_died() -> void:
+func _on_enemy_died():
 	if enemies_alive <= 0:
 		return
 
 	enemies_alive -= 1
 	print("Enemy died. Remaining:", enemies_alive)
 
-	# Wave ends only when nothing is alive AND nothing left to spawn
 	if enemies_alive == 0 and spawn_queue.size() == 0:
 		wave_in_progress = false
+		emit_signal("wave_completed", current_wave)  # emit first
+		start_next_wave()  # only once
+
+
+		
+func _process(_delta: float) -> void:
+	run_time += _delta
+	if _wave_manager == null:
+		return
+
+	# Watch the WaveManager's current_wave
+	var w := int(_wave_manager.get("current_wave"))
+	if w != _last_wave:
+		_last_wave = w
+		spawn_for_wave(w)
+
+func get_enemy_hp_multiplier() -> float:
+	var wave_bonus := current_wave * hp_per_wave
+	var time_bonus := (run_time / 60.0) * hp_per_minute
+	return base_enemy_hp_multiplier + wave_bonus + time_bonus
 
 		# Wave rewards (your original logic)
 		_on_wave_completed()

@@ -14,8 +14,11 @@ class_name LandEnemy
 @export var max_health := 20
 @export var min_jump_delay := 0.6
 @export var max_jump_delay := 1.8
+@export var base_max_health := 10
+@export var base_scale := 1.0
+var current_health := base_max_health
+var difficulty_applied := false
 
-var current_health := 20
 var dash_cooldown_left := 0.0
 var is_retreating := false
 var is_dashing := false
@@ -185,6 +188,27 @@ func _on_hitbox_body_entered(body):
 		if body.has_method("take_damage"):
 			body.take_damage(damage_amount)
 			has_hit_player = true
+			
+func apply_difficulty(wave: int, hp_multiplier: float) -> void:
+	if difficulty_applied:
+		return
+	difficulty_applied = true
+
+	# --- HP scaling ---
+	max_health = int(base_max_health * hp_multiplier)
+	current_health = max_health
+
+	# --- Size scaling ---
+	var size_bonus: float = min(wave * 0.03, 0.5)
+	scale = Vector2.ONE * (base_scale + size_bonus)
+
+	print(
+		name,
+		"| Wave:", wave,
+		"| HP:", max_health,
+		"| Scale:", scale
+	)
+
 
 # ---------------- ANIMATION ----------------
 func _handle_animation():
