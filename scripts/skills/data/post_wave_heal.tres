@@ -1,0 +1,14 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://cvuewqjj3dc27"]
+
+[ext_resource type="Script" uid="uid://jtuyjj865n63" path="res://scripts/skills/data/SkillData.gd" id="1_s6f6j"]
+
+[resource]
+script = ExtResource("1_s6f6j")
+id = "post_wave_heal"
+name = "Post-Wave Heal"
+description = "Heal 1 heart after each wave"
+cost = 3
+category = "Survivability"
+effect_type = "heal_after_wave"
+effect_value = 10.0
+metadata/_custom_type_script = "uid://jtuyjj865n63"

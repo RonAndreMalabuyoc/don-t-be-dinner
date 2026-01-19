@@ -1,8 +1,7 @@
-res://Bullet.gd
-res://scenes/Bullet_2.tscn
-res://scripts/enemy.gd
-res://scenes/MAIN.tscn
+res://scenes/main_character.tscn
+res://scripts/skills/data/post_wave_heal.tres
+res://scripts/skills/data/SkillManager.gd
+res://scripts/Bullets/Bread/BreadBullet_Throw.gd
 res://scenes/main.gd
-res://scenes/Main_Menu.tscn
-res://scenes/main_menu.tscn
-res://scenes/main_menu.gd
+res://scripts/pick_up.gd
+res://Bullet.gd

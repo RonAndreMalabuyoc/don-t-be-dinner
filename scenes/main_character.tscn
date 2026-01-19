@@ -14,8 +14,11 @@ script/source = "extends CharacterBody2D
 # ───────── MOVEMENT ─────────
 @export var speed := 400
 @export var jump_force := -600
-@export var gravity := 1200
-
+@export var gravity := 700
+@export var hurt_knockback_damp := 1800.0
+@export var jump_grace_time := 0.12
+var jump_grace_timer := 0.0
+var dash_mastery_applied := false
 # ───────── DASH ─────────
 @export var dash_speed := 900.0
 @export var dash_duration := 0.12
@@ -63,12 +66,65 @@ func _ready():
 
 # ───────── PHYSICS ─────────
 func _physics_process(delta):
+	# HURT LOCK
+	if is_hurt:
+		velocity.y += gravity * delta
+
+		# Horizontal knockback damping
+		velocity.x = move_toward(velocity.x, 0, hurt_knockback_damp * delta)
+
+		# Extra damping once grounded
+	if is_on_floor():
+		velocity.x = move_toward(velocity.x, 0, hurt_knockback_damp * 2 * delta)
+		
+		# Gravity
+	if not is_on_floor() and not is_dashing:
+		velocity.y += gravity * delta
+
+	# Reset jumps when grounded
+	if is_on_floor():
+		jumps_done = 0
+
+	# Jump input (supports double jump)
+	if Input.is_action_just_pressed(\"jump\") and not is_emoting:
+		if jumps_done < max_jumps:
+			velocity.y = jump_force
+			jumps_done += 1
+
+		move_and_slide()
+		return
+
+	# ───────── SHOOT INPUT ─────────
+	if Input.is_action_pressed(\"shoot\") and can_shoot and not is_emoting and not is_hurt:
+		start_shoot()
+
+
+	if Input.is_action_just_pressed(\"dance\"):
+		is_emoting = !is_emoting
+
+	# ───────── FRUIT INPUT ─────────
+	if Input.is_action_just_pressed(\"fruit_shoot\") and not is_emoting and not is_hurt:
+		print(\"INPUT: fruit_shoot pressed\")
+		shoot_fruit()
+
+	if Input.is_action_just_pressed(\"swap_fruit\") and not is_emoting and not is_hurt:
+		print(\"INPUT: swap_fruit pressed\")
+		swap_fruit_slots()
+# ──────────────────────────────
+
+
+
 	if is_dead:
 		return
 
 	# Gravity
 	if not is_on_floor() and not is_dashing:
-		velocity.y += gravity * delta
+		if velocity.y < 0:
+			velocity.y += gravity * 0.6 * delta
+		else:
+			velocity.y += gravity * delta
+
+
 
 	# Emote
 	is_emoting = Input.is_action_pressed(\"dance\") and is_on_floor()
@@ -90,9 +146,19 @@ func _physics_process(delta):
 			facing_right = direction > 0
 		else:
 			velocity.x = move_toward(velocity.x, 0, 40)
+			
+		if is_on_floor():
+			jumps_done = 0
 
-		if Input.is_action_just_pressed(\"jump\") and is_on_floor() and not is_emoting:
-			velocity.y = jump_force
+		if Input.is_action_just_pressed(\"jump\") and not is_emoting:
+			if jumps_done < max_jumps:
+				velocity.y = jump_force
+				jumps_done += 1
+				jump_grace_timer = jump_grace_time
+
+			
+		if is_on_floor():
+			jumps_done = 0
 
 	# Shooting
 	if Input.is_action_pressed(\"shoot\") and can_shoot and not is_emoting:
@@ -157,8 +223,143 @@ func _on_sprite_frame_changed():
 				Global.node_creation_parent
 			) as Bullet
 			bullet.direction = get_shoot_direction()
-	if sprite.frame == sprite.sprite_frames.get_frame_count(\"shoot\") - 1:
-		shot_fired_this_anim = false
+		if \"damage\" in bullet_scene:
+			bullet_scene.damage = base_damage
+			
+func start_shoot():
+	if not can_shoot:
+		return
+
+	can_shoot = false
+	is_shooting = true
+	shot_fired_this_anim = false
+
+	# Face mouse
+	facing_right = get_global_mouse_position().x > global_position.x
+
+	# IMPORTANT: this triggers _on_sprite_frame_changed() to spawn the bullet on SHOOT_FRAME
+	sprite.play(\"shoot\")
+
+	# Wait until the shoot anim ends, then allow animations again
+	await sprite.animation_finished
+	is_shooting = false
+
+	# Cooldown before allowing the next shot
+	await get_tree().create_timer(shoot_cooldown).timeout
+	can_shoot = true
+# ───────── POWERUP ─────────
+func apply_swift_feet():
+	speed *= 1 # Increase speed by 30%
+	print(\"Swift Feet applied! New speed:\", speed)
+	
+func apply_sharp_blows():
+	base_damage = int(base_damage * 1.5)  # 50% more damage
+	print(\"Sharp Blows applied! New damage:\", base_damage)
+
+func apply_quick_recovery():
+	hurt_lock_time *= 0.5        # reduces hurt animation lock
+	invulnerability_time *= 0.5  # reduces invincibility duration
+	print(\"Quick Recovery applied! Hurt lock:\", hurt_lock_time, \" Invulnerability:\", invulnerability_time)
+
+func apply_dash_mastery():
+	if dash_mastery_applied:
+		return
+	dash_mastery_applied = true
+
+	dash_cooldown *= 0.6
+	print(\"Dash cooldown now:\", dash_cooldown)
+
+
+# ───────── FRUIT SHOOTING ─────────
+var _fruit_shot_seq := 0
+
+func shoot_fruit() -> void:
+	_fruit_shot_seq += 1
+	var seq := _fruit_shot_seq
+
+	print(\"shoot_fruit() called seq:\", seq)
+
+	if not can_shoot_fruit:
+		print(\"Fruit shoot blocked by cooldown\")
+		return
+
+	if current_fruit == \"\":
+		print(\"No current fruit to shoot.\")
+		return
+
+	var fruit_id := current_fruit
+	print(\"Shooting fruit:\", fruit_id)
+
+	if not fruit_projectiles.has(fruit_id) or fruit_projectiles[fruit_id] == null:
+		print(\"No projectile scene set for fruit:\", fruit_id)
+		return
+
+	can_shoot_fruit = false
+
+	# Spawn projectile
+	var proj_scene: PackedScene = fruit_projectiles[fruit_id]
+	var proj := Global.instance_node(
+		proj_scene,
+		shoot_point.global_position,
+		Global.node_creation_parent
+	)
+
+	var dir := get_shoot_direction()
+	if proj != null:
+		if \"direction\" in proj:
+			proj.direction = dir
+		elif proj.has_method(\"setup\"):
+			proj.call(\"setup\", dir)
+
+	# Play anim
+	is_shooting = true
+	sprite.play(\"shoot\")
+	await sprite.animation_finished
+	is_shooting = false
+
+	# IMPORTANT: consume RIGHT NOW, not later
+	# Also protect against an older coroutine finishing late
+	if seq != _fruit_shot_seq:
+		return
+
+	current_fruit = \"\"
+	print(\"Consumed fruit:\", fruit_id)
+
+	if reserve_fruit != \"\":
+		current_fruit = reserve_fruit
+		reserve_fruit = \"\"
+		print(\"Auto-loaded reserve into current:\", current_fruit)
+
+	_update_fruit_ui()
+
+	await get_tree().create_timer(fruit_shoot_cooldown).timeout
+
+	# Still protect against late finishes
+	if seq != _fruit_shot_seq:
+		return
+
+	can_shoot_fruit = true
+
+	print(\"Fruit shoot cooldown finished\")
+
+	
+func _on_timer_timeout():
+	# Put reload / shoot reset logic here
+	can_shoot = true
+
+	
+# ───────── ANIMATIONS ─────────
+	if reserve_fruit != \"\":
+		current_fruit = reserve_fruit
+		reserve_fruit = \"\"
+		print(\"Auto-loaded reserve into current:\", current_fruit)
+
+
+
+	_update_fruit_ui()
+
+	await get_tree().create_timer(fruit_shoot_cooldown).timeout
+	can_shoot_fruit = true
 
 
 # ───────── ANIMATIONS ─────────
@@ -168,13 +369,25 @@ func handle_animations():
 
 	if is_dashing:
 		sprite.play(\"dash\" if sprite.sprite_frames.has_animation(\"dash\") else \"walk\")
-	elif is_emoting:
-		sprite.play(\"dance\")
-	elif Input.is_action_pressed(\"shoot\"):
-		sprite.play(\"shoot\")
-	elif not is_on_floor():
-		sprite.play(\"jump\" if velocity.y < 0 else \"fall\")
-	elif abs(velocity.x) > 10:
+		return
+
+
+	if not is_on_floor():
+		if velocity.y < 0:
+			if sprite.animation != \"jump\":
+				sprite.play(\"jump\")
+		else:
+			if sprite.animation != \"fall\" and sprite.sprite_frames.has_animation(\"fall\"):
+				sprite.play(\"fall\")
+		return
+
+	# Shoot
+	if is_shooting:
+		return
+
+
+	# Walk / Idle
+	if abs(velocity.x) > 10:
 		sprite.play(\"walk\")
 	else:
 		sprite.play(\"idle\")
@@ -222,6 +435,52 @@ func die():
 
 	await get_tree().create_timer(3.0).timeout
 	queue_free()
+
+# ───────── FRUIT SLOTS ─────────
+var current_fruit: String = \"\"
+var reserve_fruit: String = \"\"
+
+func _debug_slots(context: String) -> void:
+	print(\"[\" + context + \"] Current:\", current_fruit, \" | Reserve:\", reserve_fruit)
+
+func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = false) -> void:
+	print(\"push_powerup called with:\", item_id, \" auto_fire:\", auto_fire)
+
+	if current_fruit == \"\":
+		current_fruit = item_id
+		_debug_slots(\"Pickup -> Filled Current\")
+	elif reserve_fruit == \"\":
+		reserve_fruit = item_id
+		_debug_slots(\"Pickup -> Filled Reserve\")
+	else:
+		reserve_fruit = item_id
+		_debug_slots(\"Pickup -> Replaced Reserve\")
+
+	_update_fruit_ui()
+
+func swap_fruit_slots() -> void:
+	print(\"Swap key pressed\")
+
+	if current_fruit == \"\" and reserve_fruit == \"\":
+		print(\"Nothing to swap (both empty)\")
+		return
+
+	var tmp := current_fruit
+	current_fruit = reserve_fruit
+	reserve_fruit = tmp
+	
+	_update_fruit_ui()
+
+func _fruit_name_or_empty(v: String) -> String:
+	return v if v != \"\" else \"(empty)\"
+
+
+func _update_fruit_ui() -> void:
+	if is_instance_valid(fruit_ui_current):
+		fruit_ui_current.text = \"Current: \" + _fruit_name_or_empty(current_fruit)
+
+	if is_instance_valid(fruit_ui_reserve):
+		fruit_ui_reserve.text = \"Reserve: \" + _fruit_name_or_empty(reserve_fruit)
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qthh5"]

@@ -1,8 +1,8 @@
 extends Area2D
 class_name Bullet
 
-@export var speed: float = 500
-@export var damage: int = 10
+@export var speed: float = 800
+@export var damage: int = 15
 var direction: Vector2 = Vector2.RIGHT
 @export var lifetime: float = 3.0
 
