@@ -1,0 +1,78 @@
+[gd_scene load_steps=10 format=3 uid="uid://cuokmdueyp8gt"]
+
+[ext_resource type="Texture2D" uid="uid://c1pfw1acxw5ig" path="res://assets/Background/Just_clothes_line.png" id="1_yyw6p"]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_cqa3o"]
+a = Vector2(27, 21)
+b = Vector2(349, 104)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_iux5t"]
+a = Vector2(-534, 186)
+b = Vector2(-332, 230)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_bro4u"]
+a = Vector2(186, 46)
+b = Vector2(-9, 15)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_yv8td"]
+b = Vector2(172, 13)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_qtvi5"]
+b = Vector2(206, -3)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_d0lh3"]
+a = Vector2(182, -13)
+b = Vector2(11, 7)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_d4mmx"]
+b = Vector2(269, -45)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_7vds5"]
+b = Vector2(181, -37)
+
+[node name="AnimatableBody2D" type="AnimatableBody2D"]
+collision_layer = 7
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(8, 14)
+texture = ExtResource("1_yyw6p")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-883, 83)
+shape = SubResource("SegmentShape2D_cqa3o")
+one_way_collision = true
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+shape = SubResource("SegmentShape2D_iux5t")
+one_way_collision = true
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
+position = Vector2(-323, 215)
+shape = SubResource("SegmentShape2D_bro4u")
+one_way_collision = true
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="."]
+position = Vector2(-138, 261)
+shape = SubResource("SegmentShape2D_yv8td")
+one_way_collision = true
+
+[node name="CollisionShape2D5" type="CollisionShape2D" parent="."]
+position = Vector2(34, 274)
+shape = SubResource("SegmentShape2D_qtvi5")
+one_way_collision = true
+
+[node name="CollisionShape2D6" type="CollisionShape2D" parent="."]
+position = Vector2(229, 264)
+shape = SubResource("SegmentShape2D_d0lh3")
+one_way_collision = true
+
+[node name="CollisionShape2D7" type="CollisionShape2D" parent="."]
+position = Vector2(411, 251)
+shape = SubResource("SegmentShape2D_d4mmx")
+one_way_collision = true
+
+[node name="CollisionShape2D8" type="CollisionShape2D" parent="."]
+light_mask = 7
+position = Vector2(679, 206)
+shape = SubResource("SegmentShape2D_7vds5")
+one_way_collision = true

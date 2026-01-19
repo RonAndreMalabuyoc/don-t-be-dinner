@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3 uid="uid://cwy1o8p5ifgy0"]
+
+[ext_resource type="Texture2D" uid="uid://b2j2qpkebu08e" path="res://assets/Background/House-Sheet.png" id="1_bfmfj"]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_8twys"]
+b = Vector2(67, 83)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_r2usd"]
+a = Vector2(-53, 37)
+b = Vector2(19, -47)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_ispqn"]
+a = Vector2(8, 10)
+b = Vector2(-1, 10)
+
+[node name="AnimatableBody2D" type="AnimatableBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_bfmfj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(3, -108)
+shape = SubResource("SegmentShape2D_8twys")
+one_way_collision = true
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+position = Vector2(-23, -61)
+shape = SubResource("SegmentShape2D_r2usd")
+one_way_collision = true
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
+position = Vector2(-4, -118)
+shape = SubResource("SegmentShape2D_ispqn")
+one_way_collision = true

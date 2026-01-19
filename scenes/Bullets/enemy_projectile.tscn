@@ -1,17 +1,17 @@
 [gd_scene load_steps=6 format=3 uid="uid://bjeebfuqqc7ss"]
 
 [ext_resource type="Script" uid="uid://20eydhtvfj61" path="res://scripts/enemy_projectile.gd" id="1_sw2of"]
-[ext_resource type="Texture2D" uid="uid://d0bh8ww5yd85v" path="res://assets/Cloud 1.png" id="2_cb0yd"]
+[ext_resource type="Texture2D" uid="uid://csjyq0qv0odoc" path="res://assets/Bullets/wasp_ammo-Sheet.png" id="2_sw2of"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_ckbrt"]
-atlas = ExtResource("2_cb0yd")
-region = Rect2(141, 0, 47, 26)
+[sub_resource type="AtlasTexture" id="AtlasTexture_cb0yd"]
+atlas = ExtResource("2_sw2of")
+region = Rect2(0, 0, 32, 32)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fo7rs"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_ckbrt")
+"texture": SubResource("AtlasTexture_cb0yd")
 }],
 "loop": true,
 "name": &"stinger",
@@ -19,7 +19,7 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g5ffh"]
-size = Vector2(46, 15)
+size = Vector2(24, 8.75)
 
 [node name="EnemyProjectile" type="CharacterBody2D"]
 collision_layer = 15
@@ -27,13 +27,15 @@ collision_mask = 15
 script = ExtResource("1_sw2of")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(-1.9999995, 7.250002)
+scale = Vector2(1.8125, 1.7343751)
 sprite_frames = SubResource("SpriteFrames_fo7rs")
 animation = &"stinger"
 
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(0, 3)
+position = Vector2(-1, 4.625)
 shape = SubResource("RectangleShape2D_g5ffh")
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
