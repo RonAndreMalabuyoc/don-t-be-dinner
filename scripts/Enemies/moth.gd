@@ -20,6 +20,7 @@ var dash_time_left := 0.0
 var dir := Vector2.ZERO
 var has_hit_player := false
 var dash_cooldown_timer := 0.0
+var attack_target: Node2D
 
 var player: CharacterBody2D
 var player_hitbox: Area2D
@@ -45,24 +46,28 @@ func _ready():
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 
 # ---------------- PHYSICS PROCESS ----------------
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if not player:
 		player = Global.playerbody
 		if player:
 			player_hitbox = player.get_node("Hitbox") as Area2D
 		return
 
-	# Reduce dash cooldown
-	if dash_cooldown_timer > 0:
-		dash_cooldown_timer -= delta
-
-	# Movement logic
-	if is_dashing:
-		_dash_process(delta)
-	elif is_retreating:
-		move_and_slide()
+	var plant = get_tree().get_first_node_in_group("POI")
+	var move_target = plant if is_instance_valid(plant) else Global.playerbody
+	
+	if is_instance_valid(move_target):
+		var dist = global_position.distance_to(move_target.global_position)
+		
+		# INCREASE THIS NUMBER until they stop jittering. 
+		# If your plant is wide, you might need 70.0 or 80.0
+		if dist > 65.0: 
+			var direction = (move_target.global_position - global_position).normalized()
+			velocity.x = direction.x * 150.0
+		else:
+			velocity.x = 0 # They stop here and let the AttackTimer do the work
 	else:
-		_chase_process(delta)
+		velocity.x = 0
 
 	move_and_slide()
 	_handle_animation()
@@ -129,9 +134,10 @@ func _handle_animation() -> void:
 
 # ---------------- HITBOX DAMAGE ----------------
 func _on_hitbox_body_entered(body: Node) -> void:
-	if body.is_in_group("PlayerAttack") and body.has_method("get_damage"):
-		take_damage(body.get_damage())
-
+	if body.has_method("take_damage"):
+		body.take_damage(damage_amount)
+		print("Attacked: ", body.name)
+		
 # ---------------- DAMAGE ----------------
 func take_damage(amount: int) -> void:
 	current_health -= amount

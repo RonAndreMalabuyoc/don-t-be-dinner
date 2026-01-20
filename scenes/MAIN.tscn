@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=35 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://dk4spknv8m3e1" path="res://assets/Full_bgx32.png" id="1_51ehd"]
@@ -24,6 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://v0jy8lu50ja" path="res://scenes/Pickups/coconut_pickup.tscn" id="20_cli15"]
 [ext_resource type="PackedScene" uid="uid://dsq147a63qiui" path="res://scenes/Pickups/banana_pickup.tscn" id="21_1c2kf"]
 [ext_resource type="PackedScene" uid="uid://ba72iadkq2qr2" path="res://scenes/Pickups/orange_pickup.tscn" id="22_27wxa"]
+[ext_resource type="PackedScene" uid="uid://c6mtufmygqyd6" path="res://scenes/Plants/PlantPOI.tscn" id="25_27wxa"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7vxoj"]
 texture = ExtResource("4_jgtwp")
@@ -2853,3 +2854,6 @@ layout_mode = 0
 offset_top = 35.0
 offset_right = 40.0
 offset_bottom = 58.0
+
+[node name="PlantPoi" parent="." instance=ExtResource("25_27wxa")]
+position = Vector2(912, 446)

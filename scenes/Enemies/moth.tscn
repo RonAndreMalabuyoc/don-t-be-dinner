@@ -71,7 +71,7 @@ radius = 22.69107
 
 [node name="Node2D" type="CharacterBody2D" groups=["Enemy"]]
 collision_layer = 2
-collision_mask = 14
+collision_mask = 15
 script = ExtResource("1_xwavj")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

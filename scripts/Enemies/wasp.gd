@@ -17,13 +17,15 @@ var strafe_timer := 0.0
 @export var projectile_scene: PackedScene
 @export var projectile_speed := 450.0
 @export var damage_amount := 8
+@onready var attack_timer: Timer = $AttackTimer # Create a Timer node in your enemy scene
 
 # ---------------- VARIABLES ----------------
 var current_health := 0
 var is_dead := false
 var shoot_timer := 0.0
 var shootpoint_offset_x := 0.0
-
+var attack_target: Node2D
+var current_target_in_range = null
 var player: CharacterBody2D
 var player_hitbox: Area2D
 # ---------------- ANIMATION ----------------
@@ -100,6 +102,28 @@ func _physics_process(delta: float) -> void:
 
 	if shoot_timer > 0:
 		shoot_timer -= delta
+		
+	var plant = get_tree().get_first_node_in_group("POI")
+	var move_target = plant if is_instance_valid(plant) else player
+	
+	if is_instance_valid(move_target):
+		var dist = global_position.distance_to(move_target.global_position)
+		
+		# 2. Distance Check: Stop 55 pixels away so you don't jitter against the plant
+		if dist > 55.0:
+			var direction = (move_target.global_position - global_position).normalized()
+			velocity.x = direction.x * 150.0
+		else:
+			# Stop moving and let the AttackTimer do the work
+			velocity.x = 0
+	else:
+		velocity.x = 0
+
+	move_and_slide()
+		
+	
+
+	# Move toward attack_target.position...
 
 	_process_movement()
 	move_and_slide()
@@ -162,9 +186,24 @@ func _on_animation_finished():
 		sprite.play("fly")
 
 # ---------------- HITBOX DAMAGE ----------------
-func _on_hitbox_body_entered(body: Node) -> void:
-	if body.is_in_group("PlayerAttack") and body.has_method("get_damage"):
-		take_damage(body.get_damage())
+func _on_hitbox_body_entered(body):
+	# 1. Check if it's the player
+	if body.has_method("take_damage"):
+		body.take_damage(damage_amount)
+		print("Attacked: ", body.name)
+		current_target_in_range = body
+		attack_timer.start() # Set this timer to Wait Time: 1.0 and Autostart: Off
+
+func _on_hitbox_body_exited(body):
+	if body == current_target_in_range:
+		current_target_in_range = null
+		attack_timer.stop()
+
+func _on_attack_timer_timeout():
+	if is_instance_valid(current_target_in_range):
+		current_target_in_range.take_damage(damage_amount)
+	else:
+		attack_timer.stop()
 
 # ---------------- DAMAGE ----------------
 func take_damage(amount: int) -> void:

@@ -14,6 +14,7 @@ class_name LandEnemy
 @export var max_health := 20
 @export var min_jump_delay := 0.6
 @export var max_jump_delay := 1.8
+@onready var attack_timer: Timer = $AttackTimer # Create a Timer node in your enemy scene
 
 var current_health := 20
 var dash_cooldown_left := 0.0
@@ -26,6 +27,8 @@ var has_hit_player := false
 var _jump_timer: Timer
 var can_jump := true
 var is_jumping := false
+var current_target_in_range = null
+var attack_target: Node2D
 
 @onready var sprite := $AnimatedSprite2D
 
@@ -90,11 +93,27 @@ func _physics_process(delta):
 	else:
 		_chase_process(delta)
 
+	var plant = get_tree().get_first_node_in_group("POI")
+	var move_target = plant if is_instance_valid(plant) else player
+	
+	if is_instance_valid(move_target):
+		var dist = global_position.distance_to(move_target.global_position)
+		
+		# 2. Distance Check: Stop 55 pixels away so you don't jitter against the plant
+		if dist > 55.0:
+			var direction = (move_target.global_position - global_position).normalized()
+			velocity.x = direction.x * walk_speed
+		else:
+			# Stop moving and let the AttackTimer do the work
+			velocity.x = 0
+	else:
+		velocity.x = 0
+
 	move_and_slide()
 	
 	if is_jumping and is_on_floor():
 		is_jumping = false
-
+	
 	_handle_animation()
 
 
@@ -181,11 +200,22 @@ func end_dash():
 
 # ---------------- DAMAGE ----------------
 func _on_hitbox_body_entered(body):
-	if body == player and not has_hit_player:
-		if body.has_method("take_damage"):
-			body.take_damage(damage_amount)
-			has_hit_player = true
+	# 1. Check if it's the player
+	if body.has_method("take_damage"):
+		body.take_damage(damage_amount)
+		current_target_in_range = body
+		attack_timer.start()
 
+func _on_hitbox_body_exited(body):
+	if body == current_target_in_range:
+		current_target_in_range = null
+		attack_timer.stop()
+
+func _on_attack_timer_timeout():
+	if is_instance_valid(current_target_in_range):
+		current_target_in_range.take_damage(damage_amount)
+	else:
+		attack_timer.stop()
 # ---------------- ANIMATION ----------------
 func _handle_animation():
 	# Jump animation has highest priority

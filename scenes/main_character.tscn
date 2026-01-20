@@ -12,6 +12,15 @@
 resource_name = "Movement"
 script/source = "extends CharacterBody2D
 
+# ───────── HEALTH ─────────
+@export var hurt_lock_time := 0.25
+@export var invulnerability_time := 1.3
+@export var blink_interval := 0.1
+var is_invulnerable := false
+var is_dead := false
+var can_take_damage := true
+const INVINCIBILITY_TIME := 1.3
+
 # ───────── MOVEMENT ─────────
 @export var speed := 400
 @export var jump_force := -600
@@ -39,18 +48,6 @@ var is_shooting := false
 	\"Banana\": preload(\"res://scenes/Bullets/BananaBullet_Throw.tscn\"),
 	\"Coconut\": preload(\"res://scenes/Bullets/CoconutBullet_Throw.tscn\"),
 }
-
-# ───────── HEALTH ─────────
-@export var max_health := 30
-@export var hurt_lock_time := 0.25
-@export var invulnerability_time := 1.3
-@export var blink_interval := 0.1
-var is_invulnerable := false
-var current_health := 100
-var is_dead := false
-var can_take_damage := true
-const INVINCIBILITY_TIME := 1.3
-
 # ───────── NODES ─────────
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var shoot_point: Node2D = $ShootPoint
@@ -77,9 +74,9 @@ var can_shoot_fruit := true
 
 # ───────── READY ─────────
 func _ready():
+	Global.node_creation_parent = self
 	Global.playerbody = self
 	Global.player_alive = true
-	current_health = max_health
 
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 	hitbox.area_entered.connect(_on_hitbox_area_entered)
@@ -403,13 +400,13 @@ func take_damage(amount: int):
 	if is_dead or is_hurt or is_invulnerable:
 		return
 
-	current_health -= amount
+	# Tell Global to subtract health. 
+	# Global.take_damage() will trigger die() if health hits 0.
+	Global.take_damage(amount)
 
-	if current_health <= 0:
-		die()
-		return
-
-	start_hurt_and_invincibility()
+	# If the player is still alive after the hit, play hurt logic
+	if Global.current_health > 0:
+		start_hurt_and_invincibility()
 
 func start_hurt_and_invincibility():
 	is_hurt = true
