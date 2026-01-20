@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://c6mtufmygqyd6"]
+
+[ext_resource type="Script" uid="uid://u0l02h1iaap0" path="res://scenes/Plants/PlantPOI.gd" id="1_6dlpp"]
+[ext_resource type="Texture2D" uid="uid://1ltwocainlt" path="res://assets/plant_sheet.png" id="2_043sc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_043sc"]
+radius = 45.598793
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_18pvq"]
+radius = 57.00877
+
+[node name="PlantPoi" type="StaticBody2D"]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_6dlpp")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1.3541666, 1.6571429)
+texture = ExtResource("2_043sc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 11)
+shape = SubResource("CircleShape2D_043sc")
+
+[node name="Hitbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(-1, 9)
+shape = SubResource("CircleShape2D_18pvq")

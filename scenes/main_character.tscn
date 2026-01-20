@@ -20,6 +20,15 @@
 resource_name = "Movement"
 script/source = "extends CharacterBody2D
 
+# ───────── HEALTH ─────────
+@export var hurt_lock_time := 0.25
+@export var invulnerability_time := 1.3
+@export var blink_interval := 0.1
+var is_invulnerable := false
+var is_dead := false
+var can_take_damage := true
+const INVINCIBILITY_TIME := 1.3
+
 # ───────── MOVEMENT ─────────
 @export var speed := 400
 @export var jump_force := -600
@@ -49,18 +58,6 @@ var is_shooting := false
 	\"Banana\": preload(\"res://scenes/Bullets/BananaBullet_Throw.tscn\"),
 	\"Coconut\": preload(\"res://scenes/Bullets/CoconutBullet_Throw.tscn\"),
 }
-
-# ───────── HEALTH ─────────
-@export var max_health := 30
-@export var hurt_lock_time := 0.25
-@export var invulnerability_time := 1.3
-@export var blink_interval := 0.1
-var is_invulnerable := false
-var current_health := 100
-var is_dead := false
-var can_take_damage := true
-const INVINCIBILITY_TIME := 1.3
-
 # ───────── NODES ─────────
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var shoot_point: Node2D = $ShootPoint
@@ -97,6 +94,7 @@ var can_shoot_fruit := true
 var quack_timer := 0.0
 # ───────── READY ─────────
 func _ready():
+	Global.node_creation_parent = self
 	Global.playerbody = self
 	SkillManager.apply_existing_skills_to_player()
 	Global.player_alive = true
@@ -522,11 +520,9 @@ func take_damage(amount: int):
 	if is_dead or is_hurt or is_invulnerable:
 		return
 
-	current_health -= amount
-
-	if current_health <= 0:
-		die()
-		return
+	# Tell Global to subtract health. 
+	# Global.take_damage() will trigger die() if health hits 0.
+	Global.take_damage(amount)
 
 	start_hurt_and_invincibility()
 	
@@ -588,16 +584,47 @@ func end_invulnerability():
 
 # ───────── DEATH ─────────
 func die():
+	if is_dead: return
 	is_dead = true
 	Global.player_alive = false
-	sprite.play(\"death\")
-	sprite.modulate = Color.WHITE
-
+	
+	# 1. STOP PHYSICS (Prevents the player from falling into the killzone again)
+	set_physics_process(false)
+	set_process(false)
+	if hitbox:
+		hitbox.monitoring = false
+	
+	# 2. VISUALS
+	sprite.play(\"hurt\")
+	
+	# 3. CAMERA & EFFECTS (Set to keep working even if we pause)
 	if camera:
-		create_tween().tween_property(camera, \"zoom\", Vector2(3, 3), 0.5)
+		var cam_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		cam_tween.tween_property(camera, \"zoom\", Vector2(3, 3), 0.5)
 
-	await get_tree().create_timer(3.0).timeout
-	queue_free()
+	var tween = create_tween().set_parallel(true).set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tween.tween_property(sprite, \"modulate\", Color(1, 0, 0, 0), 1.5)
+	tween.tween_property(sprite, \"rotation_degrees\", 360, 1.0)
+
+	# 4. PAUSE THE GAME WORLD (Stops enemies/timers)
+	get_tree().paused = true
+
+	# 5. WAIT (Using real time so it works while paused)
+	await get_tree().create_timer(2.0).timeout
+	
+	# 6. LOAD DEATH SCREEN
+	var death_screen_path = \"res://scenes/UI/death_screen.tscn\"
+	var death_scene = load(death_screen_path)
+	
+	if death_scene:
+		var instance = death_scene.instantiate()
+		# Add to root so it's not zoomed by the camera
+		get_tree().root.add_child(instance) 
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	else:
+		print(\"CRITICAL ERROR: Could not find death_screen.tscn at: \", death_screen_path)
+		get_tree().paused = false
+		get_tree().reload_current_scene()
 
 # ───────── FRUIT SLOTS ─────────
 var current_fruit: String = \"\"
