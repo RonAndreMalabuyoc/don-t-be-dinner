@@ -1192,4 +1192,4 @@ region_rect = Rect2(36.621223, 0, 20.810104, 28)
 [node name="Label" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
-text = "Goon"
+text = "Gooner"
