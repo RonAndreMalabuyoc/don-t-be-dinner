@@ -1,0 +1,4 @@
+[gd_scene format=3 uid="uid://4ce30qabbtxq"]
+
+[node name="SkillButton" type="Button"]
+text = "Placeholder"

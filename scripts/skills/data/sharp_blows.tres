@@ -1,0 +1,14 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://n458ql0jwdb3"]
+
+[ext_resource type="Script" uid="uid://jtuyjj865n63" path="res://scripts/skills/data/SkillData.gd" id="1_t64v3"]
+
+[resource]
+script = ExtResource("1_t64v3")
+id = "sharp_blows"
+name = "Sharp Blows"
+description = "+2 damage per hit"
+cost = 2
+category = "Offense"
+effect_type = "flat_damage_bonus"
+effect_value = 2.0
+metadata/_custom_type_script = "uid://jtuyjj865n63"

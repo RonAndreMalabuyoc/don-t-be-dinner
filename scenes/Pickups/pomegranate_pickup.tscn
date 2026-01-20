@@ -4,15 +4,17 @@
 [ext_resource type="Texture2D" uid="uid://cmcje4u1rkuxh" path="res://assets/Fruit_Icons/pomegranate.png" id="1_tbg5g"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_tbg5g"]
+radius = 15.0
 
 [node name="PomegranatePickup" type="Area2D"]
 script = ExtResource("1_7jilw")
 item_id = "Pomegranate"
 
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+texture = ExtResource("1_tbg5g")
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_tbg5g")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_tbg5g")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

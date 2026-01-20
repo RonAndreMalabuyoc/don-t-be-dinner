@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://kirncin2gioi"]
+
+[ext_resource type="Script" uid="uid://cfjbcwminep5h" path="res://scripts/skills/data/SkillTree.gd" id="1_0n5e3"]
+[ext_resource type="PackedScene" uid="uid://bvkp1xjulesfx" path="res://scripts/skills/SkillButton.tscn" id="2_rom8s"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0n5e3")
+skill_button_scene = ExtResource("2_rom8s")
+
+[node name="SkillList" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SkillButton" parent="SkillList" instance=ExtResource("2_rom8s")]
+layout_mode = 2

@@ -6,6 +6,11 @@ class_name WaspEnemy
 @export var hover_speed := 90.0
 @export var strafe_speed := 70.0
 @export var strafe_switch_time := 1.5
+@export var base_max_health := 10
+@export var base_scale := 1.0
+
+var current_health := base_max_health
+var difficulty_applied := false
 
 var strafe_dir := 1
 var strafe_timer := 0.0
@@ -20,7 +25,6 @@ var strafe_timer := 0.0
 @onready var attack_timer: Timer = $AttackTimer # Create a Timer node in your enemy scene
 
 # ---------------- VARIABLES ----------------
-var current_health := 0
 var is_dead := false
 var shoot_timer := 0.0
 var shootpoint_offset_x := 0.0
@@ -94,6 +98,8 @@ func _process_movement() -> void:
 
 	# ---------------- STRAFING ZONE ----------------
 func _physics_process(delta: float) -> void:
+	update_effects(delta)
+
 	if not player:
 		player = Global.playerbody
 		if player:
@@ -165,6 +171,26 @@ func _fire_projectile():
 	else:
 		bullet.velocity = shoot_dir_cache * projectile_speed
 
+func apply_difficulty(wave: int, hp_multiplier: float) -> void:
+	if difficulty_applied:
+		return
+	difficulty_applied = true
+
+	# --- HP scaling ---
+	max_health = int(base_max_health * hp_multiplier)
+	current_health = max_health
+
+	# --- Size scaling ---
+	var size_bonus: float = min(wave * 0.03, 0.5)
+	scale = Vector2.ONE * (base_scale + size_bonus)
+
+	print(
+		name,
+		"| Wave:", wave,
+		"| HP:", max_health,
+		"| Scale:", scale
+	)
+
 
 # ---------------- ANIMATION ----------------
 func _handle_animation() -> void:
@@ -186,28 +212,90 @@ func _on_animation_finished():
 		sprite.play("fly")
 
 # ---------------- HITBOX DAMAGE ----------------
-func _on_hitbox_body_entered(body):
-	# 1. Check if it's the player
-	if body.has_method("take_damage"):
-		body.take_damage(damage_amount)
-		print("Attacked: ", body.name)
-		current_target_in_range = body
-		attack_timer.start() # Set this timer to Wait Time: 1.0 and Autostart: Off
+func _on_hitbox_body_entered(body: Node) -> void:
+	if body.is_in_group("PlayerAttack") and body.has_method("get_damage"):
+		take_damage(body.get_damage())
+# =========================
+# LINKED LIST: STATUS EFFECTS
+# =========================
+class EffectNode:
+	var effect_type: String
+	var duration: float
+	var next: EffectNode = null
 
-func _on_hitbox_body_exited(body):
-	if body == current_target_in_range:
-		current_target_in_range = null
-		attack_timer.stop()
+	func _init(t: String, d: float) -> void:
+		effect_type = t
+		duration = d
 
-func _on_attack_timer_timeout():
-	if is_instance_valid(current_target_in_range):
-		current_target_in_range.take_damage(damage_amount)
-	else:
-		attack_timer.stop()
+var effect_head: EffectNode = null
+
+func add_or_refresh_effect(effect_type: String, duration: float) -> void:
+	# If already present, refresh to max(current, new)
+	var cur := effect_head
+	while cur != null:
+		if cur.effect_type == effect_type:
+			cur.duration = max(cur.duration, duration)
+			return
+		cur = cur.next
+
+	# Otherwise insert at head (O(1))
+	var node := EffectNode.new(effect_type, duration)
+	node.next = effect_head
+	effect_head = node
+
+func has_effect(effect_type: String) -> bool:
+	var cur := effect_head
+	while cur != null:
+		if cur.effect_type == effect_type:
+			return true
+		cur = cur.next
+	return false
+
+func consume_effect(effect_type: String) -> bool:
+	# Remove first matching node. Returns true if removed.
+	var cur := effect_head
+	var prev: EffectNode = null
+
+	while cur != null:
+		if cur.effect_type == effect_type:
+			if prev == null:
+				effect_head = cur.next
+			else:
+				prev.next = cur.next
+			return true
+		prev = cur
+		cur = cur.next
+
+	return false
+
+func update_effects(delta: float) -> void:
+	var cur := effect_head
+	var prev: EffectNode = null
+
+	while cur != null:
+		cur.duration -= delta
+
+		if cur.duration <= 0.0:
+			# Remove expired node
+			if prev == null:
+				effect_head = cur.next
+				cur = effect_head
+			else:
+				prev.next = cur.next
+				cur = prev.next
+		else:
+			prev = cur
+			cur = cur.next
 
 # ---------------- DAMAGE ----------------
 func take_damage(amount: int) -> void:
-	current_health -= amount
+	var dmg := amount
+
+	if has_effect("vulnerable"):
+		dmg *= 2
+		consume_effect("vulnerable")
+
+	current_health -= dmg
 	sprite.modulate = Color.RED
 
 	if player:

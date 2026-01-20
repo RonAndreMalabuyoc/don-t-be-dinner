@@ -14,9 +14,11 @@ class_name LandEnemy
 @export var max_health := 20
 @export var min_jump_delay := 0.6
 @export var max_jump_delay := 1.8
-@onready var attack_timer: Timer = $AttackTimer # Create a Timer node in your enemy scene
+@export var base_max_health := 10
+@export var base_scale := 1.0
+var current_health := base_max_health
+var difficulty_applied := false
 
-var current_health := 20
 var dash_cooldown_left := 0.0
 var is_retreating := false
 var is_dashing := false
@@ -35,6 +37,78 @@ var attack_target: Node2D
 signal enemy_died
 var is_dead := false
 
+# =========================
+# LINKED LIST: STATUS EFFECTS
+# =========================
+class EffectNode:
+	var effect_type: String
+	var duration: float
+	var next: EffectNode = null
+
+	func _init(t: String, d: float) -> void:
+		effect_type = t
+		duration = d
+
+var effect_head: EffectNode = null
+
+func add_or_refresh_effect(effect_type: String, duration: float) -> void:
+	# If already present, refresh to max(current, new)
+	var cur := effect_head
+	while cur != null:
+		if cur.effect_type == effect_type:
+			cur.duration = max(cur.duration, duration)
+			return
+		cur = cur.next
+
+	# Otherwise insert at head (O(1))
+	var node := EffectNode.new(effect_type, duration)
+	node.next = effect_head
+	effect_head = node
+
+func has_effect(effect_type: String) -> bool:
+	var cur := effect_head
+	while cur != null:
+		if cur.effect_type == effect_type:
+			return true
+		cur = cur.next
+	return false
+
+func consume_effect(effect_type: String) -> bool:
+	# Remove first matching node. Returns true if removed.
+	var cur := effect_head
+	var prev: EffectNode = null
+
+	while cur != null:
+		if cur.effect_type == effect_type:
+			if prev == null:
+				effect_head = cur.next
+			else:
+				prev.next = cur.next
+			return true
+		prev = cur
+		cur = cur.next
+
+	return false
+
+func update_effects(delta: float) -> void:
+	var cur := effect_head
+	var prev: EffectNode = null
+
+	while cur != null:
+		cur.duration -= delta
+
+		if cur.duration <= 0.0:
+			# Remove expired node
+			if prev == null:
+				effect_head = cur.next
+				cur = effect_head
+			else:
+				prev.next = cur.next
+				cur = prev.next
+		else:
+			prev = cur
+			cur = cur.next
+
 func die():
 	if is_dead:
 		return
@@ -44,9 +118,16 @@ func die():
 	queue_free()
 
 func take_damage(amount: int) -> void:
-	current_health -= amount
+	var dmg := amount
 
-	# Flash red on hit (same idea as your bat)
+	# If vulnerable is active, double damage ONCE, then consume it
+	if has_effect("vulnerable"):
+		dmg *= 2
+		consume_effect("vulnerable")
+
+	current_health -= dmg
+
+	# Flash red on hit
 	sprite.modulate = Color.RED
 	await get_tree().create_timer(0.1).timeout
 	sprite.modulate = Color.WHITE
@@ -76,6 +157,8 @@ func _on_jump_cooldown_finished():
 	can_jump = true
 
 func _physics_process(delta):
+	update_effects(delta)
+
 	if player == null:
 		player = Global.playerbody
 		return
@@ -116,7 +199,7 @@ func _physics_process(delta):
 	
 	_handle_animation()
 
-
+	
 
 # ---------------- CHASE ----------------
 func _chase_process(_delta):
@@ -200,22 +283,32 @@ func end_dash():
 
 # ---------------- DAMAGE ----------------
 func _on_hitbox_body_entered(body):
-	# 1. Check if it's the player
-	if body.has_method("take_damage"):
-		body.take_damage(damage_amount)
-		current_target_in_range = body
-		attack_timer.start()
+	if body == player and not has_hit_player:
+		if body.has_method("take_damage"):
+			body.take_damage(damage_amount)
+			has_hit_player = true
+			
+func apply_difficulty(wave: int, hp_multiplier: float) -> void:
+	if difficulty_applied:
+		return
+	difficulty_applied = true
 
-func _on_hitbox_body_exited(body):
-	if body == current_target_in_range:
-		current_target_in_range = null
-		attack_timer.stop()
+	# --- HP scaling ---
+	max_health = int(base_max_health * hp_multiplier)
+	current_health = max_health
 
-func _on_attack_timer_timeout():
-	if is_instance_valid(current_target_in_range):
-		current_target_in_range.take_damage(damage_amount)
-	else:
-		attack_timer.stop()
+	# --- Size scaling ---
+	var size_bonus: float = min(wave * 0.03, 0.5)
+	scale = Vector2.ONE * (base_scale + size_bonus)
+
+	print(
+		name,
+		"| Wave:", wave,
+		"| HP:", max_health,
+		"| Scale:", scale
+	)
+
+
 # ---------------- ANIMATION ----------------
 func _handle_animation():
 	# Jump animation has highest priority

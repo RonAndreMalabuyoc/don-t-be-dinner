@@ -84,16 +84,7 @@ radius = 14.0
 collision_layer = 2
 collision_mask = 15
 script = ExtResource("1_qpo7e")
-max_health = null
-hover_speed = null
-strafe_speed = null
-strafe_switch_time = null
-shoot_range = null
-too_close_range = null
-shoot_cooldown = null
 projectile_scene = ExtResource("2_fchng")
-projectile_speed = null
-damage_amount = null
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_1hvwd")
