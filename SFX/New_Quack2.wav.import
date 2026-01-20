@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://buyeq2ir02s23"
-path="res://.godot/imported/Wasp_shoot.wav-93e58412299a73fa9ab6d22a1674c59f.sample"
+uid="uid://dum32gbaebqwg"
+path="res://.godot/imported/New_Quack2.wav-835af28c1b605522cc5121207929d6c8.sample"
 
 [deps]
 
-source_file="res://SFX/Wasp_shoot.wav"
-dest_files=["res://.godot/imported/Wasp_shoot.wav-93e58412299a73fa9ab6d22a1674c59f.sample"]
+source_file="res://SFX/New_Quack2.wav"
+dest_files=["res://.godot/imported/New_Quack2.wav-835af28c1b605522cc5121207929d6c8.sample"]
 
 [params]
 

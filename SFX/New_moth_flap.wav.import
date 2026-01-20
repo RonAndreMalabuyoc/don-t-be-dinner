@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://22s0p3fa18w1"
-path="res://.godot/imported/moth_flap.wav-be82d9ef2d165d59926b08b0d386d47f.sample"
+uid="uid://tug0805g4hyl"
+path="res://.godot/imported/New_moth_flap.wav-a3e0004da38247b340dc12db4500cb03.sample"
 
 [deps]
 
-source_file="res://SFX/moth_flap.wav"
-dest_files=["res://.godot/imported/moth_flap.wav-be82d9ef2d165d59926b08b0d386d47f.sample"]
+source_file="res://SFX/New_moth_flap.wav"
+dest_files=["res://.godot/imported/New_moth_flap.wav-a3e0004da38247b340dc12db4500cb03.sample"]
 
 [params]
 

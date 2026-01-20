@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://b06opfd0sd6db"
-path="res://.godot/imported/enemy_death-2.wav-a775b49e83509cf06d77118d97555400.sample"
+uid="uid://dyspmfxtx0uqg"
+path="res://.godot/imported/New_moth_hit.wav-6e4aa065c52c52541c3ac9086a78b360.sample"
 
 [deps]
 
-source_file="res://SFX/enemy_death-2.wav"
-dest_files=["res://.godot/imported/enemy_death-2.wav-a775b49e83509cf06d77118d97555400.sample"]
+source_file="res://SFX/New_moth_hit.wav"
+dest_files=["res://.godot/imported/New_moth_hit.wav-6e4aa065c52c52541c3ac9086a78b360.sample"]
 
 [params]
 

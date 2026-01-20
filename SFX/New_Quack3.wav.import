@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://b6482fh15hbsc"
-path="res://.godot/imported/enemy_death_3.wav-3d5f30eeeb9d1e1bafffa2589cecfcdd.sample"
+uid="uid://cq87beyadkt41"
+path="res://.godot/imported/New_Quack3.wav-c264515a5658c5341330309a274450c0.sample"
 
 [deps]
 
-source_file="res://SFX/enemy_death_3.wav"
-dest_files=["res://.godot/imported/enemy_death_3.wav-3d5f30eeeb9d1e1bafffa2589cecfcdd.sample"]
+source_file="res://SFX/New_Quack3.wav"
+dest_files=["res://.godot/imported/New_Quack3.wav-c264515a5658c5341330309a274450c0.sample"]
 
 [params]
 

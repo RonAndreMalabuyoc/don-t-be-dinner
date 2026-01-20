@@ -2,16 +2,16 @@
 
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
-[ext_resource type="PackedScene" uid="uid://0c7kqgockbqo" path="res://scenes/Bullets/BreadBullet_Throw.tscn" id="1_ogw1n"]
 [ext_resource type="Texture2D" uid="uid://drv57nqyv7011" path="res://assets/jump_right-Sheet.png" id="2_uvl38"]
 [ext_resource type="Texture2D" uid="uid://dio8s4h1seupc" path="res://assets/walk_right-Sheet.png" id="2_wmkwl"]
 [ext_resource type="Texture2D" uid="uid://dcku5knbb872k" path="res://assets/Duck/24_hurtduck_left-Sheet.png" id="4_0d0nc"]
 [ext_resource type="Texture2D" uid="uid://xfs8i5sosg3v" path="res://assets/shoot_right_duck-Sheet.png" id="6_2v62t"]
-[ext_resource type="AudioStream" uid="uid://eudp7igamm7n" path="res://SFX/Quack 1.wav" id="8_pvtuh"]
-[ext_resource type="AudioStream" uid="uid://cxsj25mtfcsfi" path="res://SFX/hurt_quack.wav" id="9_8rh4e"]
-[ext_resource type="AudioStream" uid="uid://ce87l57f5k2f4" path="res://SFX/Shoot.wav" id="10_is85u"]
-[ext_resource type="AudioStream" uid="uid://bqp7v03q2heb1" path="res://SFX/Dash.wav" id="11_o67j2"]
-[ext_resource type="AudioStream" uid="uid://7pdn5m3xkmnn" path="res://SFX/Fruit_collect.wav" id="14_wtvrk"]
+[ext_resource type="AudioStream" uid="uid://de27x6a54lqmw" path="res://SFX/New_Quack 1.wav" id="8_pvtuh"]
+[ext_resource type="AudioStream" uid="uid://b0n04kot10ber" path="res://SFX/New_hurt_quack.wav" id="9_8rh4e"]
+[ext_resource type="AudioStream" uid="uid://fstjth7ok1gr" path="res://SFX/Shoot.wav" id="10_is85u"]
+[ext_resource type="AudioStream" uid="uid://g7ye5piva6ft" path="res://SFX/Dash.wav" id="11_o67j2"]
+[ext_resource type="AudioStream" uid="uid://drp1drij7wbh2" path="res://SFX/Walking.wav" id="13_o67j2"]
+[ext_resource type="AudioStream" uid="uid://dkcsyxq0gdoia" path="res://SFX/Fruit_collect.wav" id="14_wtvrk"]
 
 [sub_resource type="GDScript" id="GDScript_48ufq"]
 resource_name = "Movement"
@@ -67,13 +67,13 @@ const INVINCIBILITY_TIME := 1.3
 @onready var fruit_ui_reserve: Label = get_tree().current_scene.get_node_or_null(\"HUD/FruitUI/Reserve_fruit\")
 
 # ───────── SFX ─────────
-@onready var quack_player = $QuackPlayer
-@onready var hurt_player = $HurtPlayer
-@onready var shoot_player = $ShootPlayer
-@onready var dash_player = $DashPlayer
-@onready var land_player = $LandPlayer
-@onready var walk_player = $WalkPlayer
-@onready var pickup_player = $PickupPlayer
+@onready var quack_player = get_node_or_null(\"QuackPlayer\")
+@onready var hurt_player = get_node_or_null(\"HurtPlayer\")
+@onready var shoot_player = get_node_or_null(\"ShootPlayer\")
+@onready var dash_player = get_node_or_null(\"DashPlayer\")
+@onready var land_player = get_node_or_null(\"LandPlayer\")
+@onready var walk_player = get_node_or_null(\"WalkPlayer\")
+@onready var pickup_player = get_node_or_null(\"PickupPlayer\")
 
 # ───────── STATE ─────────
 var facing_right := true
@@ -92,6 +92,8 @@ var shot_fired_this_anim := false
 
 var can_shoot_fruit := true
 var quack_timer := 0.0
+var was_on_floor := false
+
 # ───────── READY ─────────
 func _ready():
 	Global.playerbody = self
@@ -109,14 +111,14 @@ func _ready():
 	_debug_slots(\"Ready\")
 	
 	_update_fruit_ui()
-	
-	quack_player.play() # always quack on game start
 
-	if SkillManager.dash_mastery_active:
-		dash_speed *= 1.25
-		dash_cooldown *= 0.7
-		
-func apply_dash_mastery():
+	# Prevent immediate “random quack” right after starting
+	quack_timer = randf_range(6.0, 14.0)
+
+	# Track landing properly
+	was_on_floor = is_on_floor()
+
+	# Apply dash mastery if unlocked
 	if SkillManager.dash_mastery_active:
 		dash_speed *= 1.25
 		dash_cooldown *= 0.7
@@ -220,21 +222,22 @@ func _physics_process(delta):
 	quack_timer -= delta
 
 	if quack_timer <= 0.0:
-		quack_player.play()
+		if quack_player:
+			quack_player.play()
 		quack_timer = randf_range(6.0, 14.0) # random quack timing
-		
-	var was_on_floor := false
 
+	# Landing SFX (fixed: persistent was_on_floor)
 	if not was_on_floor and is_on_floor():
-		land_player.play()
-
+		if land_player:
+			land_player.play()
 	was_on_floor = is_on_floor()
 	
+	# Walking SFX
 	if is_on_floor() and abs(velocity.x) > 10:
-		if not walk_player.playing:
+		if walk_player and not walk_player.playing:
 			walk_player.play()
 	else:
-		if walk_player.playing:
+		if walk_player and walk_player.playing:
 			walk_player.stop()
 
 
@@ -252,6 +255,10 @@ func start_dash():
 	can_take_damage = false
 	hitbox.monitoring = false
 
+	# Dash SFX should happen immediately (fixed)
+	if dash_player:
+		dash_player.play()
+
 	dash_time_left = dash_duration
 
 	var input_dir := Input.get_axis(\"Left\", \"Right\")
@@ -266,7 +273,6 @@ func start_dash():
 	await get_tree().create_timer(dash_cooldown).timeout
 	can_dash = true
 
-	dash_player.play()
 
 func stop_dash():
 	is_dashing = false
@@ -291,7 +297,8 @@ func shoot():
 	var mouse_pos = get_global_mouse_position()
 	bullet.direction = (mouse_pos - shoot_point.global_position).normalized()
 
-	shoot_player.play()
+	if shoot_player:
+		shoot_player.play()
 
 func _on_sprite_frame_changed():
 	if sprite.animation != \"shoot\":
@@ -330,6 +337,7 @@ func start_shoot():
 	# Cooldown before allowing the next shot
 	await get_tree().create_timer(shoot_cooldown).timeout
 	can_shoot = true
+
 # ───────── POWERUP ─────────
 func apply_swift_feet():
 	speed *= 1 # Increase speed by 30%
@@ -517,7 +525,8 @@ func heal_after_wave(amount: int):
 
 	print(\"Post-wave heal:\", old_health, \"→\", current_health)
 
-	hurt_player.play()
+	if hurt_player:
+		hurt_player.play()
 
 func start_hurt_and_invincibility():
 	is_hurt = true
@@ -917,10 +926,7 @@ radius = 37.0
 [node name="Player" type="CharacterBody2D"]
 z_index = 5
 script = SubResource("GDScript_48ufq")
-jump_force = -900
-gravity = 1800
 dash_duration = 0.25
-bullet_scene = ExtResource("1_ogw1n")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0.5, -9.5)
@@ -952,23 +958,26 @@ autostart = true
 position = Vector2(1, 5)
 shape = SubResource("CircleShape2D_0d0nc")
 
-[node name="QuackPlayer" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("8_pvtuh")
+[node name="SFX" type="Node" parent="."]
 
-[node name="HurtPlayer" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("9_8rh4e")
+[node name="PickupPlayer" type="AudioStreamPlayer2D" parent="SFX"]
+stream = ExtResource("14_wtvrk")
 
-[node name="ShootPlayer" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("10_is85u")
+[node name="WalkPlayer" type="AudioStreamPlayer2D" parent="SFX"]
+stream = ExtResource("13_o67j2")
 
-[node name="DashPlayer" type="AudioStreamPlayer2D" parent="."]
+[node name="LandPlayer" type="AudioStreamPlayer2D" parent="SFX"]
+
+[node name="DashPlayer" type="AudioStreamPlayer2D" parent="SFX"]
 stream = ExtResource("11_o67j2")
 
-[node name="LandPlayer" type="AudioStreamPlayer2D" parent="."]
+[node name="ShootPlayer" type="AudioStreamPlayer2D" parent="SFX"]
+stream = ExtResource("10_is85u")
 
-[node name="WalkPlayer" type="AudioStreamPlayer2D" parent="."]
+[node name="HurtPlayer" type="AudioStreamPlayer2D" parent="SFX"]
+stream = ExtResource("9_8rh4e")
 
-[node name="PickupPlayer" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("14_wtvrk")
+[node name="QuackPlayer" type="AudioStreamPlayer2D" parent="SFX"]
+stream = ExtResource("8_pvtuh")
 
 [connection signal="timeout" from="Reload_speed" to="." method="_on_timer_timeout"]

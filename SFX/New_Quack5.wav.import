@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://bhxwxxft2myyv"
-path="res://.godot/imported/moth_hit.wav-84e8cc42943e6e36de4191bab404b090.sample"
+uid="uid://irplwgexm5df"
+path="res://.godot/imported/New_Quack5.wav-5b3cf878c924d327c6b12b6993bff3d4.sample"
 
 [deps]
 
-source_file="res://SFX/moth_hit.wav"
-dest_files=["res://.godot/imported/moth_hit.wav-84e8cc42943e6e36de4191bab404b090.sample"]
+source_file="res://SFX/New_Quack5.wav"
+dest_files=["res://.godot/imported/New_Quack5.wav-5b3cf878c924d327c6b12b6993bff3d4.sample"]
 
 [params]
 

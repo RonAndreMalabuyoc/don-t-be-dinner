@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://dpndlmn0j2ycc"
-path="res://.godot/imported/Quack2.wav-706ab2f9448d71627d6b124f84b6edec.sample"
+uid="uid://b57ugu5ffyhph"
+path="res://.godot/imported/New_Quack4.wav-58254a26dedfeb947f7abb3a71ac60a8.sample"
 
 [deps]
 
-source_file="res://SFX/Quack2.wav"
-dest_files=["res://.godot/imported/Quack2.wav-706ab2f9448d71627d6b124f84b6edec.sample"]
+source_file="res://SFX/New_Quack4.wav"
+dest_files=["res://.godot/imported/New_Quack4.wav-58254a26dedfeb947f7abb3a71ac60a8.sample"]
 
 [params]
 
