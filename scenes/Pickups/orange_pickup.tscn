@@ -4,15 +4,18 @@
 [ext_resource type="Texture2D" uid="uid://g2exbuc4hfa1" path="res://assets/Fruit_Icons/orange.png" id="1_abw3f"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_abw3f"]
+radius = 17.029387
 
 [node name="OrangePickup" type="Area2D"]
 script = ExtResource("1_23opr")
 item_id = "Orange"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
 texture = ExtResource("1_abw3f")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, 1)
 shape = SubResource("CircleShape2D_abw3f")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

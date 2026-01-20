@@ -110,8 +110,12 @@ func _ready():
 	
 	_update_fruit_ui()
 	
-	quack_player.play() # always quack on game start
+		# Always quack on game start
+	quack_player.play()
+	# Prevent immediate “random quack” right after starting
+	quack_timer = randf_range(6.0, 14.0)
 
+	# Apply dash mastery if unlocked
 	if SkillManager.dash_mastery_active:
 		dash_speed *= 1.25
 		dash_cooldown *= 0.7
