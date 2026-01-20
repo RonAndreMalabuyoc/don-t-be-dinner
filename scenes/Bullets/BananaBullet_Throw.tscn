@@ -1,6 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://c8kgelwwb81f6"]
+[gd_scene load_steps=4 format=3 uid="uid://c8kgelwwb81f6"]
 
 [ext_resource type="Script" uid="uid://ck6b8xxrq7cm3" path="res://scripts/Bullets/Banana/Banana.gd" id="1_vb2wd"]
+[ext_resource type="Texture2D" uid="uid://cdpg745g0nrcf" path="res://assets/Fruit_Icons/banana_peeled-Sheet.png" id="2_qe53y"]
 
-[node name="BananaBreadThrow" type="Area2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2n4cs"]
+size = Vector2(27, 20)
+
+[node name="BananaBulletThrow" type="Area2D"]
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("1_vb2wd")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_2n4cs")
+
+[node name="AnimatedSprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_qe53y")
+
+[connection signal="area_shape_entered" from="." to="." method="_on_area_shape_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
