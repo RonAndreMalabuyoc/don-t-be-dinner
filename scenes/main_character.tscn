@@ -962,10 +962,6 @@ position = Vector2(-31, -29)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -141)
-limit_smoothed = true
-position_smoothing_enabled = true
-position_smoothing_speed = 10.0
-script = ExtResource("8_d3a2h")
 
 [node name="Reload_speed" type="Timer" parent="."]
 wait_time = 0.75
