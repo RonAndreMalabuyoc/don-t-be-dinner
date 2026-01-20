@@ -1028,15 +1028,15 @@ offset_right = 182.0
 offset_bottom = -73.0
 
 [node name="SkillConnections" type="Node2D" parent="HUD/SkillTree/SkillArea"]
-position = Vector2(-128, 34)
+position = Vector2(-71, 37)
 script = ExtResource("27_03e8k")
 
 [node name="Skills" type="Control" parent="HUD/SkillTree/SkillArea"]
 anchors_preset = 0
-offset_left = -684.0
-offset_top = 130.0
-offset_right = -644.0
-offset_bottom = 170.0
+offset_left = -646.0
+offset_top = 99.0
+offset_right = -606.0
+offset_bottom = 139.0
 
 [node name="FruitUI" type="Control" parent="HUD"]
 layout_mode = 3
