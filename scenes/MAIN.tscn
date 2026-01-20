@@ -1,8 +1,10 @@
-[gd_scene load_steps=47 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=50 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://cdhby2iat3dde" path="res://assets/Background/flowers n dirt-Sheet.png" id="2_cli15"]
+[ext_resource type="Texture2D" uid="uid://bw0d4gs8ww4c4" path="res://assets/UI/exit_button-exitbutton.png" id="2_ryxhv"]
 [ext_resource type="Texture2D" uid="uid://chpqec1vnal8c" path="res://assets/Background/clothes-Sheet.png" id="3_1c2kf"]
+[ext_resource type="Texture2D" uid="uid://cra1l6axwk7sj" path="res://assets/UI/exit_button-buttonexitpressed.png" id="3_eyrxi"]
 [ext_resource type="Texture2D" uid="uid://xm0elcmwy1dh" path="res://assets/Background/final tree-Sheet.png" id="4_27wxa"]
 [ext_resource type="Texture2D" uid="uid://dtlgj3xed5x7c" path="res://assets/Background/grass ig-Sheet.png" id="5_idstl"]
 [ext_resource type="Texture2D" uid="uid://b2j2qpkebu08e" path="res://assets/Background/House-Sheet.png" id="6_v426v"]
@@ -14,6 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://dmr8gbwsycx6c" path="res://assets/Background/BG3.png" id="10_rqdy6"]
 [ext_resource type="PackedScene" uid="uid://dl6d3lwiivjxg" path="res://scenes/main_character.tscn" id="11_27wxa"]
 [ext_resource type="PackedScene" uid="uid://buhcwc5fd7jh1" path="res://scenes/rooster.tscn" id="12_idstl"]
+[ext_resource type="AudioStream" uid="uid://dn2crounonnsf" path="res://SFX/Main_menu_Button_press.wav" id="14_eyrxi"]
 [ext_resource type="PackedScene" uid="uid://bi087ib7mw0kp" path="res://scenes/killzone.tscn" id="14_ue4rg"]
 [ext_resource type="PackedScene" uid="uid://dtnai2lsmcq0i" path="res://scenes/wave_manager.tscn" id="16_fr04l"]
 [ext_resource type="PackedScene" uid="uid://cuokmdueyp8gt" path="res://scenes/clothing_line.tscn" id="17_1c2kf"]
@@ -29,7 +32,7 @@
 [ext_resource type="PackedScene" uid="uid://dj83aqshd8uax" path="res://scenes/barrel.tscn" id="25_ue4rg"]
 [ext_resource type="Script" uid="uid://cfjbcwminep5h" path="res://scripts/skills/data/SkillTree.gd" id="26_03e8k"]
 [ext_resource type="PackedScene" uid="uid://cwy1o8p5ifgy0" path="res://scenes/House.tscn" id="26_uag27"]
-[ext_resource type="Script" path="res://scenes/skill_connections.gd" id="27_03e8k"]
+[ext_resource type="Script" uid="uid://l4jq1hrhpf2a" path="res://scenes/skill_connections.gd" id="27_03e8k"]
 [ext_resource type="Texture2D" uid="uid://iiu4g1tlyjt6" path="res://assets/Wooden Shed.png" id="27_njcny"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="28_cvanf"]
 
@@ -910,6 +913,30 @@ texture = ExtResource("10_rqdy6")
 [node name="player" parent="." instance=ExtResource("11_27wxa")]
 position = Vector2(919, 463)
 
+[node name="ButtonManager" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 40.0
+offset_top = 208.0
+offset_right = 80.0
+offset_bottom = 248.0
+
+[node name="exit_button" type="TextureButton" parent="ButtonManager"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 1392.0
+offset_top = -200.0
+offset_right = 1440.0
+offset_bottom = -150.0
+texture_normal = ExtResource("2_ryxhv")
+texture_pressed = ExtResource("3_eyrxi")
+texture_hover = ExtResource("3_eyrxi")
+stretch_mode = 0
+
+[node name="SFX_button3" type="AudioStreamPlayer" parent="ButtonManager/exit_button"]
+stream = ExtResource("14_eyrxi")
+volume_db = 5.0
+
 [node name="Projectiles" type="Area2D" parent="."]
 script = ExtResource("9_cli15")
 
@@ -938,16 +965,12 @@ scale = Vector2(4.3199997, 1)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Killzone"]
 shape = SubResource("WorldBoundaryShape2D_nr8wp")
 
-[node name="WaveManager" parent="." node_paths=PackedStringArray("wasp_spawn_points", "spider_spawn_points", "moth_spawn_points") groups=["WaveManager"] instance=ExtResource("16_fr04l")]
+[node name="WaveManager" parent="." node_paths=PackedStringArray("wasp_spawn_points", "spider_spawn_points", "moth_spawn_points") instance=ExtResource("16_fr04l")]
 moth_scene = ExtResource("17_cli15")
 wasp_spawn_points = [NodePath("wasp_spawn_point1"), NodePath("wasp_spawn_point2")]
 spider_spawn_points = [NodePath("spider_spawn_points"), NodePath("spider_spawn_points2"), NodePath("spider_spawn_points3")]
 moth_spawn_points = [NodePath("moth_spawn_points"), NodePath("moth_spawn_points2")]
 spawn_delay = null
-fruit_pickups = null
-min_spawn_per_wave = null
-max_spawn_per_wave = null
-max_fruits_alive = null
 
 [node name="spider_spawn_points2" parent="WaveManager" instance=ExtResource("17_jgtwp")]
 z_index = -27
@@ -988,10 +1011,9 @@ z_index = -13
 position = Vector2(1151, 131)
 scale = Vector2(1.0522232, 0.48075065)
 
-[node name="FruitSpawner" type="Node2D" parent="." node_paths=PackedStringArray("spawn_points")]
+[node name="FruitSpawner" type="Node2D" parent="."]
 script = ExtResource("18_jgtwp")
 fruit_pickups = Array[PackedScene]([ExtResource("19_vkg1p"), ExtResource("20_cli15"), ExtResource("21_1c2kf"), ExtResource("22_27wxa")])
-spawn_points = [null, null]
 
 [node name="FruitSpawnPoints" type="Node2D" parent="FruitSpawner"]
 
@@ -1018,10 +1040,10 @@ script = ExtResource("26_03e8k")
 
 [node name="ToggleButton" type="Button" parent="HUD/SkillTree"]
 layout_mode = 0
-offset_left = 137.0
-offset_top = -87.0
-offset_right = 215.0
-offset_bottom = -56.0
+offset_left = 109.0
+offset_top = -94.0
+offset_right = 187.0
+offset_bottom = -63.0
 toggle_mode = true
 text = "Skill Tree"
 
@@ -1168,7 +1190,7 @@ scale = Vector2(3.4285715, 4.1759987)
 texture = ExtResource("27_njcny")
 
 [node name="Laundry" type="Sprite2D" parent="Sprites"]
-position = Vector2(350, 224.00003)
+position = Vector2(379.00003, 222)
 scale = Vector2(2.5774267, 2.7357676)
 texture = ExtResource("28_cvanf")
 
@@ -1194,7 +1216,4 @@ texture = ExtResource("28_cvanf")
 region_enabled = true
 region_rect = Rect2(36.621223, 0, 20.810104, 28)
 
-[node name="Label" type="Label" parent="."]
-offset_right = 40.0
-offset_bottom = 23.0
-text = "Goon"
+[connection signal="pressed" from="ButtonManager/exit_button" to="." method="_on_exitbutton_pressed"]
