@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://chmoglvo2vfa3"]
+[gd_scene load_steps=41 format=3 uid="uid://chmoglvo2vfa3"]
 
 [ext_resource type="Script" uid="uid://lgqriyb5u4bf" path="res://scenes/UI/main_menu.gd" id="1_bqqt6"]
 [ext_resource type="Texture2D" uid="uid://cf50w2qen4xh6" path="res://assets/UI/background-Sheet.png" id="2_gqbxs"]
@@ -14,6 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://csamuywrlr781" path="res://assets/Enemy/31_idle_moth_right-Sheet.png" id="11_sh0sw"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="13_sfthw"]
 [ext_resource type="Texture2D" uid="uid://bgp3ilmj3ym5x" path="res://assets/Cloud 2.png" id="14_scr1a"]
+[ext_resource type="AudioStream" uid="uid://deeaexok541jm" path="res://scenes/UI/Main_menu_Button_press.mp3" id="15_1ss0f"]
 [ext_resource type="Texture2D" uid="uid://eo8l8yicpdve" path="res://assets/Cloud 3.png" id="15_d0t0a"]
 [ext_resource type="Texture2D" uid="uid://juqkgdhdl6cr" path="res://assets/Grass 3.png" id="16_sh0sw"]
 [ext_resource type="Texture2D" uid="uid://bai8vhryq1ykw" path="res://assets/Simple cat.png" id="17_d0t0a"]
@@ -251,6 +252,10 @@ texture_pressed = ExtResource("4_bm8t2")
 texture_hover = ExtResource("5_5d4ag")
 stretch_mode = 0
 
+[node name="SFX_button" type="AudioStreamPlayer" parent="Button_manager/Play"]
+stream = ExtResource("15_1ss0f")
+volume_db = 5.0
+
 [node name="Quit" type="TextureButton" parent="Button_manager"]
 layout_mode = 0
 offset_left = 448.0
@@ -261,6 +266,10 @@ texture_normal = ExtResource("6_um6dh")
 texture_pressed = ExtResource("7_mf7fl")
 texture_hover = ExtResource("8_d6l81")
 stretch_mode = 0
+
+[node name="SFX_button2" type="AudioStreamPlayer" parent="Button_manager/Quit"]
+stream = ExtResource("15_1ss0f")
+volume_db = 5.0
 
 [node name="LettersD" type="Sprite2D" parent="."]
 position = Vector2(344, 132.25)
