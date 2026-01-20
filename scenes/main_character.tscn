@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=3 uid="uid://dl6d3lwiivjxg"]
+[gd_scene load_steps=48 format=3 uid="uid://dl6d3lwiivjxg"]
 
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dio8s4h1seupc" path="res://assets/walk_right-Sheet.png" id="2_wmkwl"]
 [ext_resource type="Texture2D" uid="uid://dcku5knbb872k" path="res://assets/Duck/24_hurtduck_left-Sheet.png" id="4_0d0nc"]
 [ext_resource type="Texture2D" uid="uid://xfs8i5sosg3v" path="res://assets/shoot_right_duck-Sheet.png" id="6_2v62t"]
+[ext_resource type="Script" uid="uid://c1jhbscky8a3u" path="res://scenes/camera_2d.gd" id="8_d3a2h"]
 
 [sub_resource type="GDScript" id="GDScript_48ufq"]
 resource_name = "Movement"
@@ -916,6 +917,7 @@ position = Vector2(-31, -29)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -141)
+script = ExtResource("8_d3a2h")
 
 [node name="Reload_speed" type="Timer" parent="."]
 wait_time = 0.75

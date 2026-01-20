@@ -8,6 +8,9 @@ extends Resource
 @export_enum("Survivability", "Mobility", "Offense", "Utility")
 var category: String
 
-# effect identifiers (used later)
+# NEW: skill dependencies
+@export var prerequisites: Array[String] = []
+
+# effect identifiers
 @export var effect_type: String
 @export var effect_value: float

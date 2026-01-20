@@ -44,6 +44,26 @@ func _load_skills():
 	print("ALL SKILLS LOADED:", all_skills.keys())
 
 # ───────── SKILL LOGIC ─────────
+func can_unlock(skill_id: String) -> bool:
+	if not all_skills.has(skill_id):
+		return false
+
+	if has_skill(skill_id):
+		return false
+
+	var skill = all_skills[skill_id]
+
+	# Check prerequisites
+	for prereq in skill.prerequisites:
+		if not has_skill(prereq):
+			return false
+
+	# Check cost
+	if skill_points < skill.cost:
+		return false
+
+	return true
+
 func has_skill(skill_id: String) -> bool:
 	return skill_id in unlocked_skills
 

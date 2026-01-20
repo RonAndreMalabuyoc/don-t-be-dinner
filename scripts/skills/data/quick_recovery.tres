@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SkillData" load_steps=2 format=3 uid="uid://curel7nhjf2u3"]
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://curel7nhjf2u3"]
 
 [ext_resource type="Script" uid="uid://jtuyjj865n63" path="res://scripts/skills/data/SkillData.gd" id="1_uf080"]
 
@@ -9,6 +9,7 @@ name = "Quick Recovery"
 description = "Recover faster after being hurt"
 cost = 1
 category = "Utility"
+prerequisites = Array[String](["sharp_blows"])
 effect_type = "hurt_time_mult"
 effect_value = 0.7
 metadata/_custom_type_script = "uid://jtuyjj865n63"

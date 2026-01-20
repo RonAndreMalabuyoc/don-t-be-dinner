@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=47 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://cdhby2iat3dde" path="res://assets/Background/flowers n dirt-Sheet.png" id="2_cli15"]
@@ -26,11 +26,27 @@
 [ext_resource type="PackedScene" uid="uid://dsq147a63qiui" path="res://scenes/Pickups/banana_pickup.tscn" id="21_1c2kf"]
 [ext_resource type="PackedScene" uid="uid://ba72iadkq2qr2" path="res://scenes/Pickups/orange_pickup.tscn" id="22_27wxa"]
 [ext_resource type="Texture2D" uid="uid://7xxckyjpus8u" path="res://assets/Background/Just_fence.png" id="23_cli15"]
-[ext_resource type="PackedScene" uid="uid://kirncin2gioi" path="res://scripts/skills/SkillTree.tscn" id="25_27wxa"]
 [ext_resource type="PackedScene" uid="uid://dj83aqshd8uax" path="res://scenes/barrel.tscn" id="25_ue4rg"]
+[ext_resource type="Script" uid="uid://cfjbcwminep5h" path="res://scripts/skills/data/SkillTree.gd" id="26_03e8k"]
 [ext_resource type="PackedScene" uid="uid://cwy1o8p5ifgy0" path="res://scenes/House.tscn" id="26_uag27"]
+[ext_resource type="Script" uid="uid://l4jq1hrhpf2a" path="res://scenes/skill_connections.gd" id="27_03e8k"]
 [ext_resource type="Texture2D" uid="uid://iiu4g1tlyjt6" path="res://assets/Wooden Shed.png" id="27_njcny"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="28_cvanf"]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_cvanf"]
+b = Vector2(11, 1426)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_03e8k"]
+a = Vector2(2575, 1)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_rqdy6"]
+a = Vector2(1, -1429)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_ryxhv"]
+a = Vector2(-2581, 2)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_eyrxi"]
+a = Vector2(2574, 2)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_njcny"]
 texture = ExtResource("2_cli15")
@@ -829,6 +845,30 @@ sources/2 = SubResource("TileSetAtlasSource_1c2kf")
 [node name="Main" type="Node"]
 script = ExtResource("1_0tikr")
 
+[node name="WorldBorder" type="StaticBody2D" parent="."]
+collision_layer = 255
+collision_mask = 255
+
+[node name="1" type="CollisionShape2D" parent="WorldBorder"]
+position = Vector2(-263, -773)
+shape = SubResource("SegmentShape2D_cvanf")
+
+[node name="2" type="CollisionShape2D" parent="WorldBorder"]
+position = Vector2(-252, 654)
+shape = SubResource("SegmentShape2D_03e8k")
+
+[node name="3" type="CollisionShape2D" parent="WorldBorder"]
+position = Vector2(2319, 655)
+shape = SubResource("SegmentShape2D_rqdy6")
+
+[node name="4" type="CollisionShape2D" parent="WorldBorder"]
+position = Vector2(2319, -775)
+shape = SubResource("SegmentShape2D_ryxhv")
+
+[node name="5" type="CollisionShape2D" parent="WorldBorder"]
+position = Vector2(-253, 496)
+shape = SubResource("SegmentShape2D_eyrxi")
+
 [node name="TileMap" type="TileMap" parent="."]
 position = Vector2(1, 0)
 tile_set = SubResource("TileSet_5snkx")
@@ -860,21 +900,15 @@ texture = ExtResource("9_03e8k")
 
 [node name="TextureRect" type="TextureRect" parent="TileMap/TextureRect/TextureRect"]
 layout_mode = 0
-offset_left = 1.4859922
-offset_top = 25.37231
-offset_right = 321.486
-offset_bottom = 217.37231
+offset_left = 1.3714714
+offset_top = 6.606045
+offset_right = 321.37146
+offset_bottom = 198.60605
 scale = Vector2(0.99610645, 0.86401296)
 texture = ExtResource("10_rqdy6")
 
 [node name="player" parent="." instance=ExtResource("11_27wxa")]
 position = Vector2(919, 463)
-
-[node name="Camera2D2" type="Camera2D" parent="player"]
-position = Vector2(9, -150)
-limit_bottom = 635
-limit_smoothed = true
-position_smoothing_enabled = true
 
 [node name="Projectiles" type="Area2D" parent="."]
 script = ExtResource("9_cli15")
@@ -892,6 +926,9 @@ script = ExtResource("10_1c2kf")
 
 [node name="Rooster" parent="." instance=ExtResource("12_idstl")]
 position = Vector2(1016, 304)
+
+[node name="Rooster2" parent="." instance=ExtResource("12_idstl")]
+position = Vector2(-515, 307)
 
 [node name="Killzone" parent="." instance=ExtResource("14_ue4rg")]
 position = Vector2(-793, 806.00006)
@@ -961,33 +998,39 @@ position = Vector2(700, 437)
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="Control" parent="HUD" instance=ExtResource("25_27wxa")]
-offset_left = 860.0
-offset_top = 2.0
-offset_right = 860.0
-offset_bottom = 2.0
-
-[node name="SkillTreePanel" type="Control" parent="HUD"]
+[node name="SkillTree" type="Control" parent="HUD"]
+custom_minimum_size = Vector2(400, 400)
 layout_mode = 3
-anchors_preset = 0
-offset_left = 1.0000005
-offset_top = 40.999992
-offset_right = 41.0
-offset_bottom = 80.99999
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -425.0
+offset_top = 77.0
+offset_right = -25.0
+offset_bottom = 477.0
+grow_horizontal = 0
+script = ExtResource("26_03e8k")
 
-[node name="Skill Tree" type="Label" parent="HUD/SkillTreePanel"]
+[node name="ToggleButton" type="Button" parent="HUD/SkillTree"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 314.0
+offset_top = -52.0
+offset_right = 392.0
+offset_bottom = -21.0
+toggle_mode = true
+text = "Skill Tree"
 
-[node name="SkillList" type="VBoxContainer" parent="HUD/SkillTreePanel"]
+[node name="SkillGrid" type="GridContainer" parent="HUD/SkillTree"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 275.0
+offset_top = -1.0
+offset_right = 315.0
+offset_bottom = 39.0
 
-[node name="ToggleButton" type="Button" parent="HUD"]
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="SkillConnections" type="Node2D" parent="HUD/SkillTree"]
+visible = false
+position = Vector2(1, 40.999992)
+script = ExtResource("27_03e8k")
 
 [node name="FruitUI" type="Control" parent="HUD"]
 layout_mode = 3

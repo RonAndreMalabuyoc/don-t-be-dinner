@@ -1,56 +1,78 @@
 extends Control
 
-@onready var skill_list := $SkillList
-@onready var toggle_button := $"../ToggleButton" # adjust path if different
-@export var skill_button_scene: PackedScene # assign your SkillButton scene
+@onready var skill_grid := $SkillGrid
+@onready var toggle_button := $ToggleButton
+@onready var connections = $SkillConnections
+@export var skill_button_scene: PackedScene
 
-var is_open := true
+var is_open := false
+var connection_lines: Array = []
+
 
 func _ready():
-	toggle_button.pressed.connect(_on_toggle_pressed)
+	visible = true
+	skill_grid.visible = false
+	connections.visible = false
+	
+	await get_tree().process_frame
 	_update_ui()
+	toggle_button.pressed.connect(func():
+		is_open = !is_open
+		_set_tree_visibility(is_open)
+)
 
-func _on_toggle_pressed():
-	is_open = !is_open
-	# Collapse/expand the panel
-	visible = is_open
 
+	# Start CLOSED visually, but keep toggle visible
+	is_open = false
+
+
+	print("SkillTree ready")
+	print("skill_grid:", skill_grid)
+	print("toggle_button:", toggle_button)
+	_set_tree_visibility(false)
+
+		
+func _on_toggle_toggled(button_pressed: bool):
+	print("TOGGLE CLICKED:", button_pressed)
+	is_open = button_pressed
+	print("Toggle toggled:", is_open)
+	_set_tree_visibility(is_open)
+
+func _set_tree_visibility(open: bool):
+	skill_grid.visible = open
+	connections.visible = open
+	
 func _update_ui():
+	print("SKILLS FOUND:", SkillManager.all_skills.keys())
 	# Clear previous buttons
-	for child in skill_list.get_children():
+	
+	for child in skill_grid.get_children():
 		child.queue_free()
 
 	for skill_id in SkillManager.all_skills.keys():
+		print("Adding button for", skill_id)  # <-- debug
+		var btn = Button.new()
+		btn.text = skill_id
+		skill_grid.add_child(btn)
 		var skill = SkillManager.all_skills[skill_id]
-		var btn = skill_button_scene.instantiate() as Button
-		var status = "Unlocked" if SkillManager.has_skill(skill_id) else "Locked"
-		btn.text = "%s | Cost: %d | %s" % [skill.name, skill.cost, status]
-		btn.pressed.connect(func(id=skill_id):
-			_try_unlock_skill(id)
-		)
-		skill_list.add_child(btn)
 
-func _try_unlock_skill(skill_id: String):
-	print("Trying to unlock:", skill_id)
-	if SkillManager.unlock_skill(skill_id):
-		_update_ui() # refresh the UI
-	else:
-		print("Cannot unlock skill:", skill_id)
-		
-	if SkillManager.unlock_skill(skill_id):
-		_update_ui()
-		
-	if skill_id == "swift_feet" and Global.playerbody:
-		Global.playerbody.apply_swift_feet()
-		
-	if skill_id == "double_jump" and Global.playerbody:
-		Global.playerbody.apply_double_jump()
+		btn.name = skill_id
+		btn.text = skill.name
+		btn.disabled = not SkillManager.can_unlock(skill_id)
+		btn.tooltip_text = skill.description
+
+		btn.pressed.connect(func(id=skill_id):
+			if SkillManager.unlock_skill(id):
+				_update_ui()
+			$SkillConnections.update_lines()
+		)
+
+
+	# Update overlay lines
+	$SkillConnections.update_lines()
 	
-	if skill_id == "sharp_blows" and Global.playerbody:
-		Global.playerbody.apply_sharp_blows()
-	
-	if skill_id == "quick_recovery" and Global.playerbody:
-		Global.playerbody.apply_quick_recovery()
-	
-	else:
-		print("Cannot unlock skill:", skill_id)
+
+	# Update lines after creating buttons
+	if connections:
+		
+		connections.update_lines()
