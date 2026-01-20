@@ -1,45 +1,45 @@
 extends Node2D
-var connection_lines: Array = []
-@onready var skill_grid := $"../SkillGrid"
+
+@onready var skills_container: Control = $"../Skills"
+
+func _process(_delta):
+	# Forces redraw if buttons move or screen resizes
+	if visible:
+		queue_redraw()
 
 func _draw():
-	for c in connection_lines:
-		draw_line(c.from, c.to, Color.WHITE, 2.0)
+	if not skills_container.visible:
+		return
 		
-func update_lines():
-	
-	# Remove old lines
-	for child in get_children():
-		child.queue_free()
-
-	for skill_id in SkillManager.all_skills.keys():
-		var skill = SkillManager.all_skills[skill_id]
-
+	for skill in SkillManager.all_skills.values():
+		# Get the child button
+		var child_node = skills_container.get_node_or_null(skill.id)
+		if not child_node: continue
+			
 		for prereq_id in skill.prerequisites:
-			var prereq_btn = skill_grid.get_node(prereq_id)
-			var skill_btn = skill_grid.get_node(skill_id)
-
-			if prereq_btn and skill_btn:
-				var line = Line2D.new()
-				line.width = 3
-
-				# Color by branch
-				if skill.category == "Mobility":
-					line.default_color = Color(0,0.7,1)
-				elif skill.category == "Offense":
-					line.default_color = Color(1,0,0)
-				elif skill.category == "Survivability":
-					line.default_color = Color(0,1,0)
-				else:
-					line.default_color = Color(1,1,1)
-
-
-				# Positions relative to overlay
-				var start_pos = prereq_btn.global_position - global_position
-				var end_pos   = skill_btn.global_position - global_position
-
-				# Optional elbow curve
-				var mid = Vector2(start_pos.x, end_pos.y)
-				line.points = [start_pos, mid, end_pos]
-
-				add_child(line)
+			var parent_node = skills_container.get_node_or_null(prereq_id)
+			if not parent_node: continue
+			
+			# CALCULATE POSITIONS USING GLOBAL COORDINATES
+			# This fixes the "floating line" bug by ignoring local offsets
+			
+			# Parent Bottom-Center
+			var start_global = parent_node.global_position + Vector2(parent_node.size.x / 2, parent_node.size.y)
+			# Child Top-Center
+			var end_global = child_node.global_position + Vector2(child_node.size.x / 2, 0)
+			
+			# Convert global back to local drawing space
+			var start_pos = to_local(start_global)
+			var end_pos = to_local(end_global)
+			
+			# Color Logic
+			var color = Color.GRAY
+			var width = 2.0
+			
+			if SkillManager.has_skill(skill.id) and SkillManager.has_skill(prereq_id):
+				color = Color.GOLD
+				width = 4.0
+			elif SkillManager.has_skill(prereq_id):
+				color = Color.WHITE
+				
+			draw_line(start_pos, end_pos, color, width, true)

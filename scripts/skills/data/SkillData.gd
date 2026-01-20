@@ -4,6 +4,7 @@ extends Resource
 @export var name: String
 @export var description: String
 @export var cost: int
+@export var tier: int = 0   # 0 = root, 1 = branch, 2 = leaf
 
 @export_enum("Survivability", "Mobility", "Offense", "Utility")
 var category: String

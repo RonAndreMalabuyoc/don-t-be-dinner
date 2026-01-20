@@ -1004,33 +1004,39 @@ layout_mode = 3
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -425.0
-offset_top = 77.0
-offset_right = -25.0
-offset_bottom = 477.0
+offset_left = -261.0
+offset_top = 126.0
+offset_right = 139.0
+offset_bottom = 526.0
 grow_horizontal = 0
 script = ExtResource("26_03e8k")
 
 [node name="ToggleButton" type="Button" parent="HUD/SkillTree"]
 layout_mode = 0
-offset_left = 314.0
-offset_top = -52.0
-offset_right = 392.0
-offset_bottom = -21.0
+offset_left = 137.0
+offset_top = -87.0
+offset_right = 215.0
+offset_bottom = -56.0
 toggle_mode = true
 text = "Skill Tree"
 
-[node name="SkillGrid" type="GridContainer" parent="HUD/SkillTree"]
-layout_mode = 0
-offset_left = 275.0
-offset_top = -1.0
-offset_right = 315.0
-offset_bottom = 39.0
+[node name="SkillArea" type="Control" parent="HUD/SkillTree"]
+anchors_preset = 0
+offset_left = 142.0
+offset_top = -113.0
+offset_right = 182.0
+offset_bottom = -73.0
 
-[node name="SkillConnections" type="Node2D" parent="HUD/SkillTree"]
-visible = false
-position = Vector2(1, 40.999992)
+[node name="SkillConnections" type="Node2D" parent="HUD/SkillTree/SkillArea"]
+position = Vector2(-128, 34)
 script = ExtResource("27_03e8k")
+
+[node name="Skills" type="Control" parent="HUD/SkillTree/SkillArea"]
+anchors_preset = 0
+offset_left = -684.0
+offset_top = 130.0
+offset_right = -644.0
+offset_bottom = 170.0
 
 [node name="FruitUI" type="Control" parent="HUD"]
 layout_mode = 3
