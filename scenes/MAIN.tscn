@@ -29,7 +29,7 @@
 [ext_resource type="PackedScene" uid="uid://dj83aqshd8uax" path="res://scenes/barrel.tscn" id="25_ue4rg"]
 [ext_resource type="Script" uid="uid://cfjbcwminep5h" path="res://scripts/skills/data/SkillTree.gd" id="26_03e8k"]
 [ext_resource type="PackedScene" uid="uid://cwy1o8p5ifgy0" path="res://scenes/House.tscn" id="26_uag27"]
-[ext_resource type="Script" uid="uid://l4jq1hrhpf2a" path="res://scenes/skill_connections.gd" id="27_03e8k"]
+[ext_resource type="Script" path="res://scenes/skill_connections.gd" id="27_03e8k"]
 [ext_resource type="Texture2D" uid="uid://iiu4g1tlyjt6" path="res://assets/Wooden Shed.png" id="27_njcny"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="28_cvanf"]
 
@@ -1188,3 +1188,8 @@ position = Vector2(1660, 65)
 texture = ExtResource("28_cvanf")
 region_enabled = true
 region_rect = Rect2(36.621223, 0, 20.810104, 28)
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Goon"
