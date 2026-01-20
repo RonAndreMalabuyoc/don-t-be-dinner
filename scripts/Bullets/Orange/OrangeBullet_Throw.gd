@@ -95,10 +95,9 @@ func _apply_tick() -> void:
 
 
 func _on_body_entered(body: Node) -> void:
-	var enemy := _coerce_enemy_node(body)
-	if enemy != null and not _targets.has(body):
-		_targets.append(body)
-
+	if body.is_in_group("Enemy"):
+		if body.has_method("add_or_refresh_effect"):
+			body.add_or_refresh_effect("vulnerable", 2.0)
 
 func _on_body_exited(body: Node) -> void:
 	if _targets.has(body):
