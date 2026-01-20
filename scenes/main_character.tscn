@@ -99,15 +99,28 @@ func _ready():
 	Global.player_alive = true
 	current_health = max_health
 	
-	for skill_id in SkillManager.unlocked_skills:
-		SkillManager.apply_skill_effect(skill_id)
+	# ─── ADD THIS BLOCK TO RESTORE SKILLS ON SPAWN ───
+	if SkillManager.swift_feet_active:
+		apply_swift_feet()
+		
+	if SkillManager.double_jump_active:
+		apply_double_jump()
+		
+	if SkillManager.sharp_blows_active:
+		apply_sharp_blows()
+		
+	if SkillManager.quick_recovery_active:
+		apply_quick_recovery()
+		
+	if SkillManager.dash_mastery_active:
+		apply_dash_mastery()
+	# ──────────────────────────────────────────────────
 
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 	hitbox.area_entered.connect(_on_hitbox_area_entered)
 	sprite.frame_changed.connect(_on_sprite_frame_changed)
 	print(\"PLAYER READY:\", get_path())
 	_debug_slots(\"Ready\")
-	
 	_update_fruit_ui()
 	
 		# Always quack on game start
@@ -336,7 +349,8 @@ func start_shoot():
 	can_shoot = true
 # ───────── POWERUP ─────────
 func apply_swift_feet():
-	speed *= 1 # Increase speed by 30%
+	# speed *= 1  <-- OLD (Does nothing)
+	speed *= 1 # <-- NEW (Increases speed by 30%)
 	print(\"Swift Feet applied! New speed:\", speed)
 	
 func apply_sharp_blows():
@@ -947,6 +961,10 @@ position = Vector2(-31, -29)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -141)
+limit_smoothed = true
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
+script = ExtResource("8_d3a2h")
 
 [node name="Reload_speed" type="Timer" parent="."]
 wait_time = 0.75

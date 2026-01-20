@@ -44,6 +44,26 @@ func _load_skills():
 	print("ALL SKILLS LOADED:", all_skills.keys())
 
 # ───────── SKILL LOGIC ─────────
+func can_unlock(skill_id: String) -> bool:
+	if not all_skills.has(skill_id):
+		return false
+
+	if has_skill(skill_id):
+		return false
+
+	var skill = all_skills[skill_id]
+
+	# Check prerequisites
+	for prereq in skill.prerequisites:
+		if not has_skill(prereq):
+			return false
+
+	# Check cost
+	if skill_points < skill.cost:
+		return false
+
+	return true
+
 func has_skill(skill_id: String) -> bool:
 	return skill_id in unlocked_skills
 
@@ -80,42 +100,42 @@ func apply_existing_skills_to_player():
 		apply_skill_effect(skill_id)
 
 # ───────── APPLY SKILL EFFECTS ─────────
+# In skillmanager.gd
+
 func apply_skill_effect(skill_id: String) -> void:
 	if not all_skills.has(skill_id):
 		return
 
 	match skill_id:
-
 		"extra_heart":
 			if Global.playerbody:
 				Global.playerbody.max_health += 1
 				Global.playerbody.current_health += 1
-				print("Extra Heart applied")
 
 		"post_wave_heal":
 			post_wave_heal_active = true
-			print("Post-Wave Heal activated")
 
 		"dash_mastery":
 			dash_mastery_active = true
-			print("Dash Mastery activated")
+			if Global.playerbody:
+				Global.playerbody.apply_dash_mastery() # ADDED THIS
 
 		"swift_feet":
 			swift_feet_active = true
 			if Global.playerbody:
 				Global.playerbody.apply_swift_feet()
-			print("Swift Feet activated")
 
 		"double_jump":
 			double_jump_active = true
 			if Global.playerbody:
 				Global.playerbody.apply_double_jump()
-			print("Double Jump activated")
 
 		"sharp_blows":
 			sharp_blows_active = true
-			print("Sharp Blows activated")
+			if Global.playerbody:
+				Global.playerbody.apply_sharp_blows() # ADDED THIS
 
 		"quick_recovery":
 			quick_recovery_active = true
-			print("Quick Recovery activated")
+			if Global.playerbody:
+				Global.playerbody.apply_quick_recovery() # ADDED THIS

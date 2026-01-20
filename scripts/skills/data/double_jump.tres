@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SkillData" load_steps=2 format=3 uid="uid://w7syym30o834"]
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://w7syym30o834"]
 
 [ext_resource type="Script" uid="uid://jtuyjj865n63" path="res://scripts/skills/data/SkillData.gd" id="1_eiixr"]
 
@@ -9,6 +9,7 @@ name = "Double Jump"
 description = "Gain an extra jump in mid-air"
 cost = 3
 category = "Mobility"
+prerequisites = Array[String](["swift_feet"])
 effect_type = "extra_jump"
 effect_value = 1.0
 metadata/_custom_type_script = "uid://jtuyjj865n63"
