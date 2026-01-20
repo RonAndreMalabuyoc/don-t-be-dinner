@@ -1,0 +1,14 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://dll0synrjt0r3"]
+
+[ext_resource type="Script" uid="uid://jtuyjj865n63" path="res://scripts/skills/data/SkillData.gd" id="1_qrgex"]
+
+[resource]
+script = ExtResource("1_qrgex")
+id = "dash_mastery"
+name = "Dash Mastery"
+description = "Dash cooldown reduced"
+cost = 1
+category = "Mobility"
+effect_type = "dash_cooldown_flat"
+effect_value = 0.3
+metadata/_custom_type_script = "uid://jtuyjj865n63"

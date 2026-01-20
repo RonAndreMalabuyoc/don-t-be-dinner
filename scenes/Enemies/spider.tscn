@@ -5,7 +5,6 @@
 [ext_resource type="Texture2D" uid="uid://drnt4vcheqjve" path="res://assets/Enemy/21_jumpspdr_right-Sheet (1).png" id="3_d613k"]
 [ext_resource type="Texture2D" uid="uid://1ygpnsjbms1l" path="res://assets/Enemy/18_spdrwalk_right-Sheet.png" id="3_evcmw"]
 
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_txxy0"]
 atlas = ExtResource("2_d613k")
 region = Rect2(0, 0, 32, 32)
@@ -99,7 +98,8 @@ radius = 13.518345
 
 [node name="Spider" type="CharacterBody2D"]
 scale = Vector2(1.492929, 1.6565105)
-collision_mask = 6
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("1_k5hg5")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

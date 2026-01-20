@@ -14,10 +14,13 @@ func _on_body_entered(body: Node2D) -> void:
 	print("pickup is:", name, " path:", get_path())
 
 	# try to grant powerup
+	# try to grant powerup
+# IMPORTANT: always pass auto_fire = false.
+# We only want pickups to fill slots; shooting should only happen from player input.
 	if body.has_method("push_powerup"):
 		body.call("push_powerup", item_id, duration, false)
 	else:
-		# common case: the body is a child collider, but the player script is on the parent
+	# common case: the body is a child collider, but the player script is on the parent
 		var p := body.get_parent()
 		if p and p.has_method("push_powerup"):
 			p.call("push_powerup", item_id, duration, false)

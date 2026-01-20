@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://bviiy3qt1ttga"]
+
+[ext_resource type="Script" uid="uid://jtuyjj865n63" path="res://scripts/skills/data/SkillData.gd" id="1_ncp2h"]
+
+[resource]
+script = ExtResource("1_ncp2h")
+id = "swift_feet"
+name = "Swift Feet"
+description = "Increased movement speed"
+cost = 1
+category = "Mobility"
+prerequisites = Array[String](["dash_mastery"])
+effect_type = "move_speed_flat"
+effect_value = 40.0
+metadata/_custom_type_script = "uid://jtuyjj865n63"

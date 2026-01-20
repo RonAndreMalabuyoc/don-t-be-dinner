@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=3 uid="uid://dl6d3lwiivjxg"]
+[gd_scene load_steps=52 format=3 uid="uid://dl6d3lwiivjxg"]
 
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
@@ -7,6 +7,11 @@
 [ext_resource type="Texture2D" uid="uid://dio8s4h1seupc" path="res://assets/walk_right-Sheet.png" id="2_wmkwl"]
 [ext_resource type="Texture2D" uid="uid://dcku5knbb872k" path="res://assets/Duck/24_hurtduck_left-Sheet.png" id="4_0d0nc"]
 [ext_resource type="Texture2D" uid="uid://xfs8i5sosg3v" path="res://assets/shoot_right_duck-Sheet.png" id="6_2v62t"]
+[ext_resource type="AudioStream" uid="uid://eudp7igamm7n" path="res://SFX/Quack 1.wav" id="8_pvtuh"]
+[ext_resource type="AudioStream" uid="uid://cxsj25mtfcsfi" path="res://SFX/hurt_quack.wav" id="9_8rh4e"]
+[ext_resource type="AudioStream" uid="uid://ce87l57f5k2f4" path="res://SFX/Shoot.wav" id="10_is85u"]
+[ext_resource type="AudioStream" uid="uid://bqp7v03q2heb1" path="res://SFX/Dash.wav" id="11_o67j2"]
+[ext_resource type="AudioStream" uid="uid://7pdn5m3xkmnn" path="res://SFX/Fruit_collect.wav" id="14_wtvrk"]
 
 [sub_resource type="GDScript" id="GDScript_48ufq"]
 resource_name = "Movement"
@@ -17,6 +22,7 @@ script/source = "extends CharacterBody2D
 @export var jump_force := -600
 @export var gravity := 1200
 @export var hurt_knockback_damp := 1800.0
+var jump_anim_requested := false
 
 # ───────── DASH ─────────
 @export var dash_speed := 900.0
@@ -30,6 +36,7 @@ var is_dodging := false
 const SHOOT_FRAME := 3
 var shoot_direction: Vector2 = Vector2.RIGHT
 var is_shooting := false
+@export var base_damage := 10  # default player damage
 
 # ───────── FRUIT SHOOTING ─────────
 @export var fruit_shoot_cooldown := 0.3
@@ -59,6 +66,15 @@ const INVINCIBILITY_TIME := 1.3
 @onready var fruit_ui_current: Label = get_tree().current_scene.get_node(\"HUD/FruitUI/Current_fruit\")
 @onready var fruit_ui_reserve: Label = get_tree().current_scene.get_node_or_null(\"HUD/FruitUI/Reserve_fruit\")
 
+# ───────── SFX ─────────
+@onready var quack_player = $QuackPlayer
+@onready var hurt_player = $HurtPlayer
+@onready var shoot_player = $ShootPlayer
+@onready var dash_player = $DashPlayer
+@onready var land_player = $LandPlayer
+@onready var walk_player = $WalkPlayer
+@onready var pickup_player = $PickupPlayer
+
 # ───────── STATE ─────────
 var facing_right := true
 var is_dashing := false
@@ -68,30 +84,65 @@ var dash_dir := 0.0
 var is_hurt := false
 const HURT_ANIM_TIME := 1.0
 var hurt_dir := 0
-
+var jumps_done := 0
+var max_jumps := 1  # normal jump
 var can_shoot := true
 var is_emoting := false
 var shot_fired_this_anim := false
 
 var can_shoot_fruit := true
-
+var quack_timer := 0.0
 # ───────── READY ─────────
 func _ready():
 	Global.playerbody = self
+	SkillManager.apply_existing_skills_to_player()
 	Global.player_alive = true
 	current_health = max_health
+	
+	# ─── ADD THIS BLOCK TO RESTORE SKILLS ON SPAWN ───
+	if SkillManager.swift_feet_active:
+		apply_swift_feet()
+		
+	if SkillManager.double_jump_active:
+		apply_double_jump()
+		
+	if SkillManager.sharp_blows_active:
+		apply_sharp_blows()
+		
+	if SkillManager.quick_recovery_active:
+		apply_quick_recovery()
+		
+	if SkillManager.dash_mastery_active:
+		apply_dash_mastery()
+	# ──────────────────────────────────────────────────
 
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 	hitbox.area_entered.connect(_on_hitbox_area_entered)
 	sprite.frame_changed.connect(_on_sprite_frame_changed)
-
 	print(\"PLAYER READY:\", get_path())
 	_debug_slots(\"Ready\")
-	
 	_update_fruit_ui()
-	print(\"UI current path:\", fruit_ui_current.get_path() if is_instance_valid(fruit_ui_current) else \"MISSING\")
-	print(\"UI reserve path:\", fruit_ui_reserve.get_path() if is_instance_valid(fruit_ui_reserve) else \"MISSING\")
+	
+		# Always quack on game start
+	quack_player.play()
+	# Prevent immediate “random quack” right after starting
+	quack_timer = randf_range(6.0, 14.0)
 
+	# Apply dash mastery if unlocked
+	if SkillManager.dash_mastery_active:
+		dash_speed *= 1.25
+		dash_cooldown *= 0.7
+		
+func apply_dash_mastery():
+	if SkillManager.dash_mastery_active:
+		dash_speed *= 1.25
+		dash_cooldown *= 0.7
+
+		
+func apply_double_jump():
+	max_jumps = 2
+	print(\"Double Jump unlocked! Max jumps:\", max_jumps)
+	
 
 # ───────── PHYSICS ─────────
 func _physics_process(delta):
@@ -105,6 +156,16 @@ func _physics_process(delta):
 		# Extra damping once grounded
 		if is_on_floor():
 			velocity.x = move_toward(velocity.x, 0, hurt_knockback_damp * 2 * delta)
+	# Reset jumps when grounded
+	if is_on_floor():
+		jumps_done = 0
+
+	# Jump / Double Jump
+	if Input.is_action_just_pressed(\"jump\") and not is_emoting:
+		if jumps_done < max_jumps:
+			velocity.y = jump_force
+			jumps_done += 1
+			jump_anim_requested = true
 
 		move_and_slide()
 		return
@@ -113,7 +174,7 @@ func _physics_process(delta):
 	if Input.is_action_pressed(\"shoot\") and can_shoot and not is_emoting and not is_hurt:
 		start_shoot()
 
-
+	
 	if Input.is_action_just_pressed(\"dance\"):
 		is_emoting = !is_emoting
 
@@ -163,10 +224,36 @@ func _physics_process(delta):
 
 		if Input.is_action_just_pressed(\"jump\") and is_on_floor() and not is_emoting:
 			velocity.y = jump_force
+			jumps_done += 1
+			
+		if is_on_floor():
+			jumps_done = 0
+
 
 	handle_animations()
 	sprite.flip_h = not facing_right
 	move_and_slide()
+
+	quack_timer -= delta
+
+	if quack_timer <= 0.0:
+		quack_player.play()
+		quack_timer = randf_range(6.0, 14.0) # random quack timing
+		
+	var was_on_floor := false
+
+	if not was_on_floor and is_on_floor():
+		land_player.play()
+
+	was_on_floor = is_on_floor()
+	
+	if is_on_floor() and abs(velocity.x) > 10:
+		if not walk_player.playing:
+			walk_player.play()
+	else:
+		if walk_player.playing:
+			walk_player.stop()
+
 
 func get_shoot_direction() -> Vector2:
 	var mouse_pos = get_global_mouse_position()
@@ -196,6 +283,7 @@ func start_dash():
 	await get_tree().create_timer(dash_cooldown).timeout
 	can_dash = true
 
+	dash_player.play()
 
 func stop_dash():
 	is_dashing = false
@@ -221,6 +309,8 @@ func shoot():
 	var mouse_pos = get_global_mouse_position()
 	bullet.direction = (mouse_pos - shoot_point.global_position).normalized()
 
+	shoot_player.play()
+
 func _on_sprite_frame_changed():
 	if sprite.animation != \"shoot\":
 		return
@@ -234,7 +324,9 @@ func _on_sprite_frame_changed():
 				Global.node_creation_parent
 			) as Bullet
 			bullet.direction = get_shoot_direction()
-		
+		if \"damage\" in bullet_scene:
+			bullet_scene.damage = base_damage
+			
 func start_shoot():
 	if not can_shoot:
 		return
@@ -256,11 +348,29 @@ func start_shoot():
 	# Cooldown before allowing the next shot
 	await get_tree().create_timer(shoot_cooldown).timeout
 	can_shoot = true
+# ───────── POWERUP ─────────
+func apply_swift_feet():
+	# speed *= 1  <-- OLD (Does nothing)
+	speed *= 1 # <-- NEW (Increases speed by 30%)
+	print(\"Swift Feet applied! New speed:\", speed)
+	
+func apply_sharp_blows():
+	base_damage = int(base_damage * 1.5)  # 50% more damage
+	print(\"Sharp Blows applied! New damage:\", base_damage)
 
+func apply_quick_recovery():
+	hurt_lock_time *= 0.5        # reduces hurt animation lock
+	invulnerability_time *= 0.5  # reduces invincibility duration
+	print(\"Quick Recovery applied! Hurt lock:\", hurt_lock_time, \" Invulnerability:\", invulnerability_time)
 
 # ───────── FRUIT SHOOTING ─────────
+var _fruit_shot_seq := 0
+
 func shoot_fruit() -> void:
-	print(\"shoot_fruit() called\")
+	_fruit_shot_seq += 1
+	var seq := _fruit_shot_seq
+
+	print(\"shoot_fruit() called seq:\", seq)
 
 	if not can_shoot_fruit:
 		print(\"Fruit shoot blocked by cooldown\")
@@ -277,10 +387,9 @@ func shoot_fruit() -> void:
 		print(\"No projectile scene set for fruit:\", fruit_id)
 		return
 
-	# start fruit cooldown
 	can_shoot_fruit = false
 
-	# Spawn fruit projectile
+	# Spawn projectile
 	var proj_scene: PackedScene = fruit_projectiles[fruit_id]
 	var proj := Global.instance_node(
 		proj_scene,
@@ -288,7 +397,6 @@ func shoot_fruit() -> void:
 		Global.node_creation_parent
 	)
 
-	# direction
 	var dir := get_shoot_direction()
 	if proj != null:
 		if \"direction\" in proj:
@@ -296,17 +404,20 @@ func shoot_fruit() -> void:
 		elif proj.has_method(\"setup\"):
 			proj.call(\"setup\", dir)
 
-	# play shoot anim
+	# Play anim
 	is_shooting = true
 	sprite.play(\"shoot\")
 	await sprite.animation_finished
 	is_shooting = false
 
-	# Consume current fruit AFTER successful fire
+	# IMPORTANT: consume RIGHT NOW, not later
+	# Also protect against an older coroutine finishing late
+	if seq != _fruit_shot_seq:
+		return
+
 	current_fruit = \"\"
 	print(\"Consumed fruit:\", fruit_id)
 
-	# Auto-load reserve into current
 	if reserve_fruit != \"\":
 		current_fruit = reserve_fruit
 		reserve_fruit = \"\"
@@ -316,27 +427,19 @@ func shoot_fruit() -> void:
 	_update_fruit_ui()
 
 	await get_tree().create_timer(fruit_shoot_cooldown).timeout
+
+	# Still protect against late finishes
+	if seq != _fruit_shot_seq:
+		return
+
 	can_shoot_fruit = true
+
 	print(\"Fruit shoot cooldown finished\")
+
 	
 func _on_timer_timeout():
 	# Put reload / shoot reset logic here
 	can_shoot = true
-
-	
-# ───────── ANIMATIONS ─────────
-	if reserve_fruit != \"\":
-		current_fruit = reserve_fruit
-		reserve_fruit = \"\"
-		print(\"Auto-loaded reserve into current:\", current_fruit)
-
-	_debug_slots(\"After Fruit Shoot\")
-
-	_update_fruit_ui()
-
-	await get_tree().create_timer(fruit_shoot_cooldown).timeout
-	can_shoot_fruit = true
-	print(\"Fruit shoot cooldown finished\")
 
 # ───────── ANIMATIONS ─────────
 func handle_animations():
@@ -366,15 +469,23 @@ func handle_animations():
 		sprite.play(\"dash\" if sprite.sprite_frames.has_animation(\"dash\") else \"walk\")
 		return
 
-	# 🔥 JUMP / FALL (MOST IMPORTANT FIX)
+
 	if not is_on_floor():
+		# Force replay jump animation when requested
+		if jump_anim_requested:
+			sprite.stop()
+			sprite.play(\"jump\")
+			jump_anim_requested = false
+			return
+
 		if velocity.y < 0:
 			if sprite.animation != \"jump\":
 				sprite.play(\"jump\")
 		else:
-			if sprite.animation != \"fall\" and sprite.sprite_frames.has_animation(\"fall\"):
+			if sprite.sprite_frames.has_animation(\"fall\") and sprite.animation != \"fall\":
 				sprite.play(\"fall\")
 		return
+
 
 	# Shoot
 	if is_shooting:
@@ -415,6 +526,17 @@ func take_damage(amount: int):
 		return
 
 	start_hurt_and_invincibility()
+	
+func heal_after_wave(amount: int):
+	if is_dead:
+		return
+	
+	var old_health := current_health
+	current_health = min(current_health + amount, max_health)
+
+	print(\"Post-wave heal:\", old_health, \"→\", current_health)
+
+	hurt_player.play()
 
 func start_hurt_and_invincibility():
 	is_hurt = true
@@ -481,7 +603,7 @@ var reserve_fruit: String = \"\"
 func _debug_slots(context: String) -> void:
 	print(\"[\" + context + \"] Current:\", current_fruit, \" | Reserve:\", reserve_fruit)
 
-func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = false) -> void:
+func push_powerup(item_id: String, _duration: float = -1.0, auto_fire: bool = false) -> void:
 	print(\"push_powerup called with:\", item_id, \" auto_fire:\", auto_fire)
 
 	if current_fruit == \"\":
@@ -814,6 +936,9 @@ radius = 37.0
 [node name="Player" type="CharacterBody2D"]
 z_index = 5
 script = SubResource("GDScript_48ufq")
+jump_force = -900
+gravity = 1800
+dash_duration = 0.25
 bullet_scene = ExtResource("1_ogw1n")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -837,6 +962,10 @@ position = Vector2(-31, -29)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -141)
+limit_smoothed = true
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
+script = ExtResource("8_d3a2h")
 
 [node name="Reload_speed" type="Timer" parent="."]
 wait_time = 0.75
@@ -845,5 +974,24 @@ autostart = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(1, 5)
 shape = SubResource("CircleShape2D_0d0nc")
+
+[node name="QuackPlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("8_pvtuh")
+
+[node name="HurtPlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("9_8rh4e")
+
+[node name="ShootPlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("10_is85u")
+
+[node name="DashPlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("11_o67j2")
+
+[node name="LandPlayer" type="AudioStreamPlayer2D" parent="."]
+
+[node name="WalkPlayer" type="AudioStreamPlayer2D" parent="."]
+
+[node name="PickupPlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("14_wtvrk")
 
 [connection signal="timeout" from="Reload_speed" to="." method="_on_timer_timeout"]
