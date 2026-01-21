@@ -29,11 +29,85 @@ var has_hit_player := false
 var _jump_timer: Timer
 var can_jump := true
 var is_jumping := false
+var current_target_in_range = null
+var attack_target: Node2D
 
 @onready var sprite := $AnimatedSprite2D
 
 signal enemy_died
 var is_dead := false
+
+# =========================
+# LINKED LIST: STATUS EFFECTS
+# =========================
+class EffectNode:
+	var effect_type: String
+	var duration: float
+	var next: EffectNode = null
+
+	func _init(t: String, d: float) -> void:
+		effect_type = t
+		duration = d
+
+var effect_head: EffectNode = null
+
+func add_or_refresh_effect(effect_type: String, duration: float) -> void:
+	# If already present, refresh to max(current, new)
+	var cur := effect_head
+	while cur != null:
+		if cur.effect_type == effect_type:
+			cur.duration = max(cur.duration, duration)
+			return
+		cur = cur.next
+
+	# Otherwise insert at head (O(1))
+	var node := EffectNode.new(effect_type, duration)
+	node.next = effect_head
+	effect_head = node
+
+func has_effect(effect_type: String) -> bool:
+	var cur := effect_head
+	while cur != null:
+		if cur.effect_type == effect_type:
+			return true
+		cur = cur.next
+	return false
+
+func consume_effect(effect_type: String) -> bool:
+	# Remove first matching node. Returns true if removed.
+	var cur := effect_head
+	var prev: EffectNode = null
+
+	while cur != null:
+		if cur.effect_type == effect_type:
+			if prev == null:
+				effect_head = cur.next
+			else:
+				prev.next = cur.next
+			return true
+		prev = cur
+		cur = cur.next
+
+	return false
+
+func update_effects(delta: float) -> void:
+	var cur := effect_head
+	var prev: EffectNode = null
+
+	while cur != null:
+		cur.duration -= delta
+
+		if cur.duration <= 0.0:
+			# Remove expired node
+			if prev == null:
+				effect_head = cur.next
+				cur = effect_head
+			else:
+				prev.next = cur.next
+				cur = prev.next
+		else:
+			prev = cur
+			cur = cur.next
 
 func die():
 	if is_dead:
@@ -44,9 +118,16 @@ func die():
 	queue_free()
 
 func take_damage(amount: int) -> void:
-	current_health -= amount
+	var dmg := amount
 
-	# Flash red on hit (same idea as your bat)
+	# If vulnerable is active, double damage ONCE, then consume it
+	if has_effect("vulnerable"):
+		dmg *= 2
+		consume_effect("vulnerable")
+
+	current_health -= dmg
+
+	# Flash red on hit
 	sprite.modulate = Color.RED
 	await get_tree().create_timer(0.1).timeout
 	sprite.modulate = Color.WHITE
@@ -76,6 +157,8 @@ func _on_jump_cooldown_finished():
 	can_jump = true
 
 func _physics_process(delta):
+	update_effects(delta)
+
 	if player == null:
 		player = Global.playerbody
 		return
@@ -93,14 +176,30 @@ func _physics_process(delta):
 	else:
 		_chase_process(delta)
 
+	var plant = get_tree().get_first_node_in_group("POI")
+	var move_target = plant if is_instance_valid(plant) else player
+	
+	if is_instance_valid(move_target):
+		var dist = global_position.distance_to(move_target.global_position)
+		
+		# 2. Distance Check: Stop 55 pixels away so you don't jitter against the plant
+		if dist > 55.0:
+			var direction = (move_target.global_position - global_position).normalized()
+			velocity.x = direction.x * walk_speed
+		else:
+			# Stop moving and let the AttackTimer do the work
+			velocity.x = 0
+	else:
+		velocity.x = 0
+
 	move_and_slide()
 	
 	if is_jumping and is_on_floor():
 		is_jumping = false
-
+	
 	_handle_animation()
 
-
+	
 
 # ---------------- CHASE ----------------
 func _chase_process(_delta):
@@ -215,14 +314,16 @@ func _handle_animation():
 	# Jump animation has highest priority
 	if is_jumping:
 		if sprite.animation != "jump":
-			sprite.play("jump")
+			sprite.play("jadump")
 		return
 
 	# Dash animation
 	if is_dashing:
-		if sprite.animation != "dash":
+		# Check if "dash" exists, otherwise fallback to "walk" or "run"
+		if sprite.sprite_frames.has_animation("dash"):
 			sprite.play("dash")
-		return
+		else:
+			sprite.play("walk")
 
 	# Walk / Idle
 	if abs(velocity.x) > 5:

@@ -98,6 +98,8 @@ radius = 13.518345
 
 [node name="Spider" type="CharacterBody2D"]
 scale = Vector2(1.492929, 1.6565105)
+collision_layer = 2
+collision_mask = 13
 script = ExtResource("1_k5hg5")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

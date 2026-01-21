@@ -22,12 +22,14 @@ var strafe_timer := 0.0
 @export var projectile_scene: PackedScene
 @export var projectile_speed := 450.0
 @export var damage_amount := 8
+@onready var attack_timer: Timer = $AttackTimer # Create a Timer node in your enemy scene
 
 # ---------------- VARIABLES ----------------
 var is_dead := false
 var shoot_timer := 0.0
 var shootpoint_offset_x := 0.0
-
+var attack_target: Node2D
+var current_target_in_range = null
 var player: CharacterBody2D
 var player_hitbox: Area2D
 # ---------------- ANIMATION ----------------
@@ -96,6 +98,8 @@ func _process_movement() -> void:
 
 	# ---------------- STRAFING ZONE ----------------
 func _physics_process(delta: float) -> void:
+	update_effects(delta)
+
 	if not player:
 		player = Global.playerbody
 		if player:
@@ -104,6 +108,28 @@ func _physics_process(delta: float) -> void:
 
 	if shoot_timer > 0:
 		shoot_timer -= delta
+		
+	var plant = get_tree().get_first_node_in_group("POI")
+	var move_target = plant if is_instance_valid(plant) else player
+	
+	if is_instance_valid(move_target):
+		var dist = global_position.distance_to(move_target.global_position)
+		
+		# 2. Distance Check: Stop 55 pixels away so you don't jitter against the plant
+		if dist > 55.0:
+			var direction = (move_target.global_position - global_position).normalized()
+			velocity.x = direction.x * 150.0
+		else:
+			# Stop moving and let the AttackTimer do the work
+			velocity.x = 0
+	else:
+		velocity.x = 0
+
+	move_and_slide()
+		
+	
+
+	# Move toward attack_target.position...
 
 	_process_movement()
 	move_and_slide()
@@ -189,10 +215,87 @@ func _on_animation_finished():
 func _on_hitbox_body_entered(body: Node) -> void:
 	if body.is_in_group("PlayerAttack") and body.has_method("get_damage"):
 		take_damage(body.get_damage())
+# =========================
+# LINKED LIST: STATUS EFFECTS
+# =========================
+class EffectNode:
+	var effect_type: String
+	var duration: float
+	var next: EffectNode = null
+
+	func _init(t: String, d: float) -> void:
+		effect_type = t
+		duration = d
+
+var effect_head: EffectNode = null
+
+func add_or_refresh_effect(effect_type: String, duration: float) -> void:
+	# If already present, refresh to max(current, new)
+	var cur := effect_head
+	while cur != null:
+		if cur.effect_type == effect_type:
+			cur.duration = max(cur.duration, duration)
+			return
+		cur = cur.next
+
+	# Otherwise insert at head (O(1))
+	var node := EffectNode.new(effect_type, duration)
+	node.next = effect_head
+	effect_head = node
+
+func has_effect(effect_type: String) -> bool:
+	var cur := effect_head
+	while cur != null:
+		if cur.effect_type == effect_type:
+			return true
+		cur = cur.next
+	return false
+
+func consume_effect(effect_type: String) -> bool:
+	# Remove first matching node. Returns true if removed.
+	var cur := effect_head
+	var prev: EffectNode = null
+
+	while cur != null:
+		if cur.effect_type == effect_type:
+			if prev == null:
+				effect_head = cur.next
+			else:
+				prev.next = cur.next
+			return true
+		prev = cur
+		cur = cur.next
+
+	return false
+
+func update_effects(delta: float) -> void:
+	var cur := effect_head
+	var prev: EffectNode = null
+
+	while cur != null:
+		cur.duration -= delta
+
+		if cur.duration <= 0.0:
+			# Remove expired node
+			if prev == null:
+				effect_head = cur.next
+				cur = effect_head
+			else:
+				prev.next = cur.next
+				cur = prev.next
+		else:
+			prev = cur
+			cur = cur.next
 
 # ---------------- DAMAGE ----------------
 func take_damage(amount: int) -> void:
-	current_health -= amount
+	var dmg := amount
+
+	if has_effect("vulnerable"):
+		dmg *= 2
+		consume_effect("vulnerable")
+
+	current_health -= dmg
 	sprite.modulate = Color.RED
 
 	if player:

@@ -1025,10 +1025,10 @@ script = ExtResource("26_03e8k")
 
 [node name="ToggleButton" type="Button" parent="HUD/SkillTree"]
 layout_mode = 0
-offset_left = 137.0
-offset_top = -87.0
-offset_right = 215.0
-offset_bottom = -56.0
+offset_left = 109.0
+offset_top = -94.0
+offset_right = 187.0
+offset_bottom = -63.0
 toggle_mode = true
 text = "Skill Tree"
 

@@ -53,6 +53,7 @@ func _ready():
 
 # ---------------- PHYSICS PROCESS ----------------
 func _physics_process(delta: float) -> void:
+	update_effects(delta)
 	if not player:
 		player = Global.playerbody
 		if player:
@@ -178,24 +179,31 @@ func _on_frame_changed():
 
 # ---------------- HITBOX DAMAGE ----------------
 func _on_hitbox_body_entered(body: Node) -> void:
-	if body.is_in_group("PlayerAttack") and body.has_method("get_damage"):
-		take_damage(body.get_damage())
-
+	if body.has_method("take_damage"):
+		body.take_damage(damage_amount)
+		print("Attacked: ", body.name)
+		
 # ---------------- DAMAGE ----------------
 func take_damage(amount: int) -> void:
-	current_health -= amount
+	var dmg := amount
+
+	if has_effect("vulnerable"):
+		dmg *= 2
+		consume_effect("vulnerable")
+
+	current_health -= dmg
 	sprite.modulate = Color.RED
 
-	# Knockback from player
+	# Knockback from player (keep your logic)
 	if player:
 		velocity = (global_position - player.global_position).normalized() * 200
 
-	# Flash red briefly
 	await get_tree().create_timer(0.1).timeout
 	sprite.modulate = Color.WHITE
 
 	if current_health <= 0:
 		die()
+
 
 # ---------------- DEATH ----------------
 func die() -> void:
