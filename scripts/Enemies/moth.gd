@@ -38,6 +38,80 @@ var anim_locked := false
 # ---------------- SIGNALS ----------------
 signal enemy_died
 
+# LINKED LIST: STATUS EFFECTS
+# =========================
+class EffectNode:
+	var effect_type: String
+	var duration: float
+	var next: EffectNode = null
+
+	func _init(t: String, d: float) -> void:
+		effect_type = t
+		duration = d
+
+var effect_head: EffectNode = null
+
+func add_or_refresh_effect(effect_type: String, duration: float) -> void:
+	# If already present, refresh to max(current, new)
+	var cur := effect_head
+	while cur != null:
+		if cur.effect_type == effect_type:
+			cur.duration = max(cur.duration, duration)
+			return
+		cur = cur.next
+
+	# Otherwise insert at head (O(1))
+	var node := EffectNode.new(effect_type, duration)
+	node.next = effect_head
+	effect_head = node
+
+func has_effect(effect_type: String) -> bool:
+	var cur := effect_head
+	while cur != null:
+		if cur.effect_type == effect_type:
+			return true
+		cur = cur.next
+	return false
+
+func consume_effect(effect_type: String) -> bool:
+	# Remove first matching node. Returns true if removed.
+	var cur := effect_head
+	var prev: EffectNode = null
+
+	while cur != null:
+		if cur.effect_type == effect_type:
+			if prev == null:
+				effect_head = cur.next
+			else:
+				prev.next = cur.next
+			return true
+		prev = cur
+		cur = cur.next
+	return false
+
+func update_effects(delta: float) -> void:
+	# Decrement durations and remove expired nodes
+	var cur := effect_head
+	var prev: EffectNode = null
+
+	while cur != null:
+		cur.duration -= delta
+		if cur.duration <= 0.0:
+			# Remove expired node
+			if prev == null:
+				effect_head = cur.next
+				cur = effect_head
+			else:
+				prev.next = cur.next
+				cur = prev.next
+		else:
+			prev = cur
+			cur = cur.next
+
+# Optional compatibility wrapper (useful if any script calls apply_effect)
+func apply_effect(effect_type: String, duration: float) -> void:
+	add_or_refresh_effect(effect_type, duration)
+
 # ---------------- READY ----------------
 func _ready():
 	sprite.frame_changed.connect(_on_frame_changed)
