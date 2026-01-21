@@ -60,34 +60,26 @@ func _update_ui():
 	# 6. Create Buttons
 	for skill_id in positions:
 		var skill = SkillManager.all_skills[skill_id]
+
 		var btn = Button.new()
-		
-		# --- FIX: Stop Spacebar from triggering skill buttons too ---
-		btn.focus_mode = Control.FOCUS_NONE 
-		# ------------------------------------------------------------
-		
+		btn.focus_mode = Control.FOCUS_NONE
 		btn.name = skill_id
-		btn.text = "%s\n%d pts" % [skill.name, skill.cost] 
+		btn.text = "%s\n%d pts" % [skill.name, skill.cost]
 		btn.size = Vector2(NODE_W, NODE_H)
-		
-		# Offset Y by 50 to give top margin
 		btn.position = positions[skill_id] + Vector2(start_offset_x, 50)
-		
-		# Color Logic
+
+		btn.pressed.connect(_on_skill_pressed.bind(skill_id))
+
+		# Color logic
 		if SkillManager.has_skill(skill_id):
 			btn.modulate = Color.GREEN
 		elif SkillManager.can_unlock(skill_id):
 			btn.modulate = Color.WHITE
 		else:
 			btn.modulate = Color(0.5, 0.5, 0.5)
-			
-		btn.pressed.connect(func(): 
-			if SkillManager.unlock_skill(skill_id):
-				_update_ui()
-		)
+
 		skills_node.add_child(btn)
 
-	connections.queue_redraw()
 
 func _build_tree_hierarchy() -> Dictionary:
 	var children = {}
@@ -126,3 +118,22 @@ func _calculate_node_position(skill_id: String, children_map: Dictionary, depth:
 	result_positions[skill_id] = Vector2(my_x, depth * GAP_Y)
 	
 	return max(total_w, NODE_W)
+	
+func _on_skill_pressed(skill_id: String) -> void:
+	# Already unlocked
+	if SkillManager.has_skill(skill_id):
+		return
+	
+	# Can't unlock yet
+	if not SkillManager.can_unlock(skill_id):
+		return
+	
+	# Unlock in SkillManager
+	SkillManager.unlock_skill(skill_id)
+	
+	# APPLY EFFECTS IMMEDIATELY
+	if skill_id == "health_boost":
+		if Global.playerbody:
+			Global.playerbody.update_max_health()
+	
+	_update_ui()
