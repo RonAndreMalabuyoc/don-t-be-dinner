@@ -82,7 +82,7 @@ radius = 14.0
 
 [node name="Wasp" type="CharacterBody2D"]
 collision_layer = 2
-collision_mask = 14
+collision_mask = 15
 script = ExtResource("1_qpo7e")
 projectile_scene = ExtResource("2_fchng")
 
