@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3 uid="uid://dl6d3lwiivjxg"]
+[gd_scene load_steps=56 format=3 uid="uid://dl6d3lwiivjxg"]
 
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://dcku5knbb872k" path="res://assets/Duck/24_hurtduck_left-Sheet.png" id="4_0d0nc"]
 [ext_resource type="Texture2D" uid="uid://xfs8i5sosg3v" path="res://assets/shoot_right_duck-Sheet.png" id="6_2v62t"]
 [ext_resource type="AudioStream" uid="uid://eudp7igamm7n" path="res://SFX/Quack 1.wav" id="8_pvtuh"]
-[ext_resource type="Script" uid="uid://c1jhbscky8a3u" path="res://scenes/camera_2d.gd" id="8_qoi8n"]
+[ext_resource type="Script" path="res://scenes/camera_2d.gd" id="8_qoi8n"]
 [ext_resource type="AudioStream" uid="uid://cxsj25mtfcsfi" path="res://SFX/hurt_quack.wav" id="9_8rh4e"]
 [ext_resource type="AudioStream" uid="uid://ce87l57f5k2f4" path="res://SFX/Shoot.wav" id="10_is85u"]
 [ext_resource type="AudioStream" uid="uid://bqp7v03q2heb1" path="res://SFX/Dash.wav" id="11_o67j2"]
@@ -282,19 +282,25 @@ func stop_dash():
 	sprite.modulate = Color.WHITE
 
 # ───────── SHOOTING ─────────
+# ───────── SHOOTING ─────────
 func shoot():
-	var bullet := Global.instance_node(bullet_scene, shoot_point.global_position, Global.node_creation_parent) as Bullet
 	var bullet := Global.instance_node(
 		bullet_scene,
 		shoot_point.global_position,
 		Global.node_creation_parent
 	) as Bullet
 
+	if bullet == null:
+		return
 
-	# Direction from shoot point to mouse
-	var mouse_pos = get_global_mouse_position()
+	# If your Bullet script expects a direction:
+	var mouse_pos := get_global_mouse_position()
 	bullet.direction = (mouse_pos - shoot_point.global_position).normalized()
-	shoot_player.play()
+
+	# If you have SFX:
+	if has_node(\"ShootPlayer\"):
+		$ShootPlayer.play()
+
 
 func _on_sprite_frame_changed():
 	if sprite.animation != \"shoot\": return
