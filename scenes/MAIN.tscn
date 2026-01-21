@@ -1,8 +1,10 @@
-[gd_scene load_steps=50 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=49 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://cdhby2iat3dde" path="res://assets/Background/flowers n dirt-Sheet.png" id="2_cli15"]
+[ext_resource type="AudioStream" uid="uid://b25uua4tmr1gf" path="res://scenes/UI/bgaudiogame.mp3" id="2_ryxhv"]
 [ext_resource type="Texture2D" uid="uid://chpqec1vnal8c" path="res://assets/Background/clothes-Sheet.png" id="3_1c2kf"]
+[ext_resource type="Script" uid="uid://d07kdawtj0j70" path="res://scenes/UI/bgaudio.gd" id="3_eyrxi"]
 [ext_resource type="Texture2D" uid="uid://xm0elcmwy1dh" path="res://assets/Background/final tree-Sheet.png" id="4_27wxa"]
 [ext_resource type="Texture2D" uid="uid://dtlgj3xed5x7c" path="res://assets/Background/grass ig-Sheet.png" id="5_idstl"]
 [ext_resource type="Texture2D" uid="uid://b2j2qpkebu08e" path="res://assets/Background/House-Sheet.png" id="6_v426v"]
@@ -847,6 +849,12 @@ sources/2 = SubResource("TileSetAtlasSource_1c2kf")
 
 [node name="Main" type="Node"]
 script = ExtResource("1_0tikr")
+
+[node name="bg_music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_ryxhv")
+volume_db = -15.0
+playback_type = 1
+script = ExtResource("3_eyrxi")
 
 [node name="WorldBorder" type="StaticBody2D" parent="."]
 collision_layer = 255

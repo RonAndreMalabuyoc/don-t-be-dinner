@@ -1,5 +1,7 @@
 extends Node
 
+@onready var bg_music = $bg_music
+
 func _ready():
 	Global.node_creation_parent = self
 	
