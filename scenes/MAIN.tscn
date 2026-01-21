@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=50 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://cdhby2iat3dde" path="res://assets/Background/flowers n dirt-Sheet.png" id="2_cli15"]
@@ -28,10 +28,13 @@
 [ext_resource type="Texture2D" uid="uid://7xxckyjpus8u" path="res://assets/Background/Just_fence.png" id="23_cli15"]
 [ext_resource type="PackedScene" uid="uid://dj83aqshd8uax" path="res://scenes/barrel.tscn" id="25_ue4rg"]
 [ext_resource type="Script" uid="uid://cfjbcwminep5h" path="res://scripts/skills/data/SkillTree.gd" id="26_03e8k"]
+[ext_resource type="Script" uid="uid://bi8kjcgfa4yvg" path="res://scenes/heart_ui.gd" id="26_eyrxi"]
 [ext_resource type="PackedScene" uid="uid://cwy1o8p5ifgy0" path="res://scenes/House.tscn" id="26_uag27"]
 [ext_resource type="Script" uid="uid://l4jq1hrhpf2a" path="res://scenes/skill_connections.gd" id="27_03e8k"]
+[ext_resource type="Texture2D" uid="uid://ufwxcxto433d" path="res://assets/Background/1_big_heart.png" id="27_eyrxi"]
 [ext_resource type="Texture2D" uid="uid://iiu4g1tlyjt6" path="res://assets/Wooden Shed.png" id="27_njcny"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="28_cvanf"]
+[ext_resource type="Texture2D" uid="uid://2mogll6p1qfh" path="res://assets/Background/1_big_hollow_heart.png" id="28_sskcy"]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_cvanf"]
 b = Vector2(11, 1426)
@@ -943,7 +946,6 @@ moth_scene = ExtResource("17_cli15")
 wasp_spawn_points = [NodePath("wasp_spawn_point1"), NodePath("wasp_spawn_point2")]
 spider_spawn_points = [NodePath("spider_spawn_points"), NodePath("spider_spawn_points2"), NodePath("spider_spawn_points3")]
 moth_spawn_points = [NodePath("moth_spawn_points"), NodePath("moth_spawn_points2")]
-spawn_delay = null
 
 [node name="spider_spawn_points2" parent="WaveManager" instance=ExtResource("17_jgtwp")]
 z_index = -27
@@ -983,6 +985,7 @@ scale = Vector2(1.979006, 1.3733937)
 z_index = -13
 position = Vector2(1151, 131)
 scale = Vector2(1.0522232, 0.48075065)
+collision_layer = 1
 
 [node name="FruitSpawner" type="Node2D" parent="."]
 script = ExtResource("18_jgtwp")
@@ -997,6 +1000,15 @@ position = Vector2(387, 440)
 position = Vector2(700, 437)
 
 [node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="HeartUI" type="HBoxContainer" parent="HUD"]
+offset_left = 19.0
+offset_top = 602.0
+offset_right = 59.0
+offset_bottom = 642.0
+script = ExtResource("26_eyrxi")
+heart_full = ExtResource("27_eyrxi")
+heart_empty = ExtResource("28_sskcy")
 
 [node name="SkillTree" type="Control" parent="HUD"]
 custom_minimum_size = Vector2(400, 400)
@@ -1163,7 +1175,7 @@ scale = Vector2(3.4285715, 4.1759987)
 texture = ExtResource("27_njcny")
 
 [node name="Laundry" type="Sprite2D" parent="Sprites"]
-position = Vector2(379.00003, 222)
+position = Vector2(381.00003, 222)
 scale = Vector2(2.5774267, 2.7357676)
 texture = ExtResource("28_cvanf")
 
