@@ -2,9 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://cdhby2iat3dde" path="res://assets/Background/flowers n dirt-Sheet.png" id="2_cli15"]
-[ext_resource type="AudioStream" uid="uid://b25uua4tmr1gf" path="res://scenes/UI/bgaudiogame.mp3" id="2_ryxhv"]
 [ext_resource type="Texture2D" uid="uid://chpqec1vnal8c" path="res://assets/Background/clothes-Sheet.png" id="3_1c2kf"]
-[ext_resource type="Script" uid="uid://d07kdawtj0j70" path="res://scenes/UI/bgaudio.gd" id="3_eyrxi"]
 [ext_resource type="Texture2D" uid="uid://xm0elcmwy1dh" path="res://assets/Background/final tree-Sheet.png" id="4_27wxa"]
 [ext_resource type="Texture2D" uid="uid://dtlgj3xed5x7c" path="res://assets/Background/grass ig-Sheet.png" id="5_idstl"]
 [ext_resource type="Texture2D" uid="uid://b2j2qpkebu08e" path="res://assets/Background/House-Sheet.png" id="6_v426v"]
@@ -30,13 +28,12 @@
 [ext_resource type="Texture2D" uid="uid://7xxckyjpus8u" path="res://assets/Background/Just_fence.png" id="23_cli15"]
 [ext_resource type="PackedScene" uid="uid://dj83aqshd8uax" path="res://scenes/barrel.tscn" id="25_ue4rg"]
 [ext_resource type="Script" uid="uid://cfjbcwminep5h" path="res://scripts/skills/data/SkillTree.gd" id="26_03e8k"]
-[ext_resource type="Script" uid="uid://bi8kjcgfa4yvg" path="res://scenes/heart_ui.gd" id="26_eyrxi"]
 [ext_resource type="PackedScene" uid="uid://cwy1o8p5ifgy0" path="res://scenes/House.tscn" id="26_uag27"]
-[ext_resource type="Script" uid="uid://l4jq1hrhpf2a" path="res://scenes/skill_connections.gd" id="27_03e8k"]
-[ext_resource type="Texture2D" uid="uid://ufwxcxto433d" path="res://assets/Background/1_big_heart.png" id="27_eyrxi"]
+[ext_resource type="Script" path="res://scenes/skill_connections.gd" id="27_03e8k"]
 [ext_resource type="Texture2D" uid="uid://iiu4g1tlyjt6" path="res://assets/Wooden Shed.png" id="27_njcny"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="28_cvanf"]
-[ext_resource type="Texture2D" uid="uid://2mogll6p1qfh" path="res://assets/Background/1_big_hollow_heart.png" id="28_sskcy"]
+[ext_resource type="Script" uid="uid://ikc05a8h410n" path="res://scenes/tutorial.gd" id="33_rqdy6"]
+[ext_resource type="Texture2D" uid="uid://b5na4tx07n8gn" path="res://assets/Controls.png" id="34_ryxhv"]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_cvanf"]
 b = Vector2(11, 1426)
@@ -850,12 +847,6 @@ sources/2 = SubResource("TileSetAtlasSource_1c2kf")
 [node name="Main" type="Node"]
 script = ExtResource("1_0tikr")
 
-[node name="bg_music" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("2_ryxhv")
-volume_db = -15.0
-playback_type = 1
-script = ExtResource("3_eyrxi")
-
 [node name="WorldBorder" type="StaticBody2D" parent="."]
 collision_layer = 255
 collision_mask = 255
@@ -993,7 +984,6 @@ scale = Vector2(1.979006, 1.3733937)
 z_index = -13
 position = Vector2(1151, 131)
 scale = Vector2(1.0522232, 0.48075065)
-collision_layer = 1
 
 [node name="FruitSpawner" type="Node2D" parent="."]
 script = ExtResource("18_jgtwp")
@@ -1008,15 +998,6 @@ position = Vector2(387, 440)
 position = Vector2(700, 437)
 
 [node name="HUD" type="CanvasLayer" parent="."]
-
-[node name="HeartUI" type="HBoxContainer" parent="HUD"]
-offset_left = 19.0
-offset_top = 602.0
-offset_right = 59.0
-offset_bottom = 642.0
-script = ExtResource("26_eyrxi")
-heart_full = ExtResource("27_eyrxi")
-heart_empty = ExtResource("28_sskcy")
 
 [node name="SkillTree" type="Control" parent="HUD"]
 custom_minimum_size = Vector2(400, 400)
@@ -1183,7 +1164,7 @@ scale = Vector2(3.4285715, 4.1759987)
 texture = ExtResource("27_njcny")
 
 [node name="Laundry" type="Sprite2D" parent="Sprites"]
-position = Vector2(381.00003, 222)
+position = Vector2(379.00003, 222)
 scale = Vector2(2.5774267, 2.7357676)
 texture = ExtResource("28_cvanf")
 
@@ -1208,3 +1189,21 @@ position = Vector2(1660, 65)
 texture = ExtResource("28_cvanf")
 region_enabled = true
 region_rect = Rect2(36.621223, 0, 20.810104, 28)
+
+[node name="Tutorial" type="CanvasLayer" parent="."]
+script = ExtResource("33_rqdy6")
+
+[node name="Content" type="Control" parent="Tutorial"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect" type="TextureRect" parent="Tutorial/Content"]
+layout_mode = 0
+offset_left = 202.0
+offset_top = 28.0
+offset_right = 940.0
+offset_bottom = 456.0
+texture = ExtResource("34_ryxhv")
+expand_mode = 1
