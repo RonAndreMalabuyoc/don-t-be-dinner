@@ -222,12 +222,6 @@ func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = tru
 	if item_id == "":
 		return
 
-	# Only auto-fire when the pickup actually fills the CURRENT slot.
-	# If we auto-fire while a fruit is already equipped, we'd consume the equipped
-	# fruit and then auto-load the reserve, which feels like the game is
-	# "auto-consuming" the current fruit just because a reserve exists.
-	var was_current_empty := (current_fruit == "")
-
 	print("Picked up:", item_id)
 
 	if current_fruit == "":
@@ -240,10 +234,9 @@ func push_powerup(item_id: String, duration: float = -1.0, auto_fire: bool = tru
 		reserve_fruit = item_id
 		_debug_slots("Pickup -> Replaced Reserve")
 
-	if auto_fire and was_current_empty:
+	if auto_fire:
 		print("Auto firing:", current_fruit)
 		shoot_fruit()
-
 
 
 func swap_fruit_slots() -> void:

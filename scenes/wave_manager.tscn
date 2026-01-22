@@ -174,7 +174,7 @@ _bundled = {
 "version": 3
 }
 
-[node name="WaveManager" type="Node2D" groups=["WaveManager"]]
+[node name="WaveManager" type="Node2D"]
 script = ExtResource("1_8fe1o")
 spider_scene = ExtResource("2_qj452")
 moth_scene = SubResource("PackedScene_2xf3a")

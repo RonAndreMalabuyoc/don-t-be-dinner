@@ -1,4 +1,5 @@
 [gd_scene load_steps=56 format=3 uid="uid://dl6d3lwiivjxg"]
+[gd_scene load_steps=48 format=3 uid="uid://dl6d3lwiivjxg"]
 
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
@@ -16,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://cra1l6axwk7sj" path="res://assets/UI/exit_button-buttonexitpressed.png" id="14_is85u"]
 [ext_resource type="AudioStream" uid="uid://7pdn5m3xkmnn" path="res://SFX/Fruit_collect.wav" id="14_wtvrk"]
 [ext_resource type="AudioStream" uid="uid://dn2crounonnsf" path="res://SFX/Main_menu_Button_press.wav" id="15_o67j2"]
+[ext_resource type="Script" uid="uid://c1jhbscky8a3u" path="res://scenes/camera_2d.gd" id="8_d3a2h"]
 
 [sub_resource type="GDScript" id="GDScript_48ufq"]
 resource_name = "Movement"
@@ -375,6 +377,21 @@ func shoot_fruit() -> void:
 	
 func _on_timer_timeout():
 	can_shoot = true
+
+	
+# ───────── ANIMATIONS ─────────
+	if reserve_fruit != \"\":
+		current_fruit = reserve_fruit
+		reserve_fruit = \"\"
+		print(\"Auto-loaded reserve into current:\", current_fruit)
+
+	_debug_slots(\"After Fruit Shoot\")
+
+	_update_fruit_ui()
+
+	await get_tree().create_timer(fruit_shoot_cooldown).timeout
+	can_shoot_fruit = true
+
 
 # ───────── ANIMATIONS ─────────
 func handle_animations():

@@ -3,32 +3,42 @@ extends Node2D
 @export var spider_scene: PackedScene
 @export var moth_scene: PackedScene
 @export var wasp_scene: PackedScene
-
 @export var wasp_spawn_points: Array[Node2D]
 @export var spider_spawn_points: Array[Node2D]
 @export var moth_spawn_points: Array[Node2D]
-
 @export var spawn_delay: float = 1.0
 @onready var spawn_timer := Timer.new()
-
 @export var base_enemy_hp_multiplier := 1.0
-@export var hp_per_wave := 0.15
-@export var hp_per_minute := 0.10
+@export var hp_per_wave := 0.15 
+@export var hp_per_minute := 0.10 
 
 var run_time := 0.0
 
+@export var fruit_pickups: Array[PackedScene] = []
+@export var fruit_spawn_points: Array[Node2D] = []
+
+@export var min_spawn_per_wave: int = 1
+@export var max_spawn_per_wave: int = 2
+@export var max_fruits_alive: int = 3
+
 signal wave_completed(wave_number: int)
 
+var _alive_fruits: int = 0
+var _last_wave: int = 0
+var _wave_manager: Node = null
+var wave_scale := 0
 var current_wave := 0
 var enemies_alive := 0
 var wave_in_progress := false
+
 var spawn_queue: Array = []
 
 var waves = [
+	
 	{ "spider": 3 },
 	{ "spider": 5 },
 	{ "spider": 7 },
-
+	
 	# Phase 2 — Air melee only
 	{ "moth": 3 },
 	{ "moth": 5 },
@@ -53,7 +63,7 @@ var waves = [
 	{ "spider": 6, "moth": 4, "wasp": 3 },
 ]
 
-func _ready() -> void:
+func _ready():
 	add_child(spawn_timer)
 	spawn_timer.wait_time = spawn_delay
 	spawn_timer.one_shot = false
@@ -61,44 +71,71 @@ func _ready() -> void:
 
 	start_next_wave()
 
-func _process(delta: float) -> void:
-	run_time += delta
+	_wave_manager = get_tree().get_first_node_in_group("WaveManager")
+	if _wave_manager == null:
+		push_warning("FruitSpawner: WaveManager not found. Add WaveManager node to group 'WaveManager'.")
+	
+	wave_scale = current_wave - waves.size() + 1
 
-func start_next_wave() -> void:
+	waves.append({
+	"spider": 5 + wave_scale,
+	"moth": 4 + int(wave_scale * 0.8),
+	"wasp": 3 + int(wave_scale * 0.6)
+})
+
+func start_next_wave():
 	if wave_in_progress:
 		return
 
-	# Infinite scaling waves after the designed list
 	if current_wave >= waves.size():
-		var wave_scale := current_wave - waves.size() + 1
+		# Generate infinite scaling wave
+		wave_scale = current_wave - waves.size() + 1
 		print("Scaling factor for wave:", wave_scale)
-
+		
 		waves.append({
 			"spider": 5 + wave_scale,
 			"moth": 4 + int(wave_scale * 0.8),
 			"wasp": 3 + int(wave_scale * 0.6)
 		})
-
+		
 	current_wave += 1
 	wave_in_progress = true
 	enemies_alive = 0
 	spawn_queue.clear()
-
+	
 	print("Starting wave", current_wave)
 
 	var wave_data = waves[current_wave - 1]
-
-	# Queue order (your original order)
+	
 	for i in range(wave_data.get("wasp", 0)):
 		spawn_queue.append(wasp_scene)
+
 	for i in range(wave_data.get("spider", 0)):
 		spawn_queue.append(spider_scene)
+
 	for i in range(wave_data.get("moth", 0)):
 		spawn_queue.append(moth_scene)
 
 	spawn_timer.start()
+	
+	if Global.playerbody:
+		Global.playerbody.heal_after_wave(10)
 
-func _on_spawn_timer_timeout() -> void:
+func _on_wave_completed():
+	print("Wave", current_wave, "completed!")
+
+	# Add 1 skill point for finishing the wave
+	SkillManager.add_skill_points(1)
+
+	# Apply Post-Wave Heal if unlocked
+	if SkillManager.post_wave_heal_active and Global.playerbody:
+		Global.playerbody.current_health += 1  # heal 1 heart
+		if Global.playerbody.current_health > Global.playerbody.max_health:
+			Global.playerbody.current_health = Global.playerbody.max_health
+		print("Post-Wave Heal applied! Current Health:", Global.playerbody.current_health)
+
+
+func _on_spawn_timer_timeout():
 	if spawn_queue.is_empty():
 		spawn_timer.stop()
 		return
@@ -114,6 +151,7 @@ func _on_spawn_timer_timeout() -> void:
 		)
 
 	var spawn_point: Node2D = null
+
 	if scene == spider_scene:
 		spawn_point = spider_spawn_points.pick_random()
 	elif scene == moth_scene:
@@ -131,44 +169,72 @@ func _on_spawn_timer_timeout() -> void:
 	add_child(enemy)
 	enemies_alive += 1
 
-func _on_enemy_died() -> void:
+
+func _on_enemy_died():
 	if enemies_alive <= 0:
 		return
 
 	enemies_alive -= 1
 	print("Enemy died. Remaining:", enemies_alive)
 
-	# Wave ends only when nothing is alive AND nothing left to spawn
 	if enemies_alive == 0 and spawn_queue.size() == 0:
 		wave_in_progress = false
+		emit_signal("wave_completed", current_wave)  # emit first
+		start_next_wave()  # only once
 
-		# Wave rewards (skill points, post-wave heal skill)
-		_on_wave_completed()
 
-		# Optional: your Player.gd has heal_after_wave(amount)
-		if Global.playerbody:
-			Global.playerbody.heal_after_wave(10)
+		
+func _process(_delta: float) -> void:
+	run_time += _delta
+	if _wave_manager == null:
+		return
 
-		# This is what FruitSpawner listens to
-		emit_signal("wave_completed", current_wave)
-
-		# Start the next wave after listeners run (fruit drop timing, etc.)
-		call_deferred("start_next_wave")
+	# Watch the WaveManager's current_wave
+	var w := int(_wave_manager.get("current_wave"))
+	if w != _last_wave:
+		_last_wave = w
+		spawn_for_wave(w)
 
 func get_enemy_hp_multiplier() -> float:
 	var wave_bonus := current_wave * hp_per_wave
 	var time_bonus := (run_time / 60.0) * hp_per_minute
 	return base_enemy_hp_multiplier + wave_bonus + time_bonus
 
-func _on_wave_completed() -> void:
-	print("Wave", current_wave, "completed!")
+func spawn_for_wave(_wave_index: int) -> void:
+	if fruit_pickups.is_empty() or fruit_spawn_points.is_empty():
+		return
 
-	# Add 1 skill point for finishing the wave
-	SkillManager.add_skill_points(1)
+func _on_wave_completed(wave_number: int) -> void:
+	_spawn_for_wave(wave_number)
+	if _alive_fruits >= max_fruits_alive:
+		return
 
-	# Apply Post-Wave Heal if unlocked (1 heart)
-	if SkillManager.post_wave_heal_active and Global.playerbody:
-		Global.playerbody.current_health += 1
-		if Global.playerbody.current_health > Global.playerbody.max_health:
-			Global.playerbody.current_health = Global.playerbody.max_health
-		print("Post-Wave Heal applied! Current Health:", Global.playerbody.current_health)
+	var count: int = randi_range(min_spawn_per_wave, max_spawn_per_wave)
+	var capacity: int = max_fruits_alive - _alive_fruits
+	count = min(count, capacity)
+
+	for i in range(count):
+		_spawn_one()
+
+
+func _spawn_one() -> void:
+	var scene: PackedScene = fruit_pickups.pick_random() as PackedScene
+	if scene == null:
+		return
+	if Global.playerbody == null: 
+
+	var point: Node2D = fruit_spawn_points.pick_random() as Node2D
+	if point == null:
+		return
+
+	var inst: Node2D = scene.instantiate() as Node2D
+	if inst == null:
+		return
+
+	get_tree().current_scene.add_child(inst)
+	inst.global_position = point.global_position
+
+	_alive_fruits += 1
+	inst.tree_exited.connect(func() -> void:
+		_alive_fruits = max(0, _alive_fruits - 1)
+	)
