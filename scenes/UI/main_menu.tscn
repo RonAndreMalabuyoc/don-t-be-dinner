@@ -1,10 +1,12 @@
 [gd_scene load_steps=41 format=3 uid="uid://chmoglvo2vfa3"]
 
-[ext_resource type="Script" uid="uid://lgqriyb5u4bf" path="res://scenes/UI/main_menu.gd" id="1_bqqt6"]
+[ext_resource type="Script" path="res://scenes/UI/main_menu.gd" id="1_bqqt6"]
 [ext_resource type="Texture2D" uid="uid://cf50w2qen4xh6" path="res://assets/UI/background-Sheet.png" id="2_gqbxs"]
 [ext_resource type="Texture2D" uid="uid://xanptg41wsdu" path="res://assets/House.png" id="3_d6l81"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="3_mf7fl"]
 [ext_resource type="Texture2D" uid="uid://ctah6r8v6fn56" path="res://assets/UI/play_button-normal.png" id="3_ngj32"]
+[ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="4_54m0d"]
+[ext_resource type="Script" path="res://scenes/UI/bgaudio.gd" id="4_abwx5"]
 [ext_resource type="Texture2D" uid="uid://d2ey5hux64487" path="res://assets/UI/play_button-pressed.png" id="4_bm8t2"]
 [ext_resource type="Texture2D" uid="uid://bp1rtgl5p1idk" path="res://assets/UI/play_button-hovered.png" id="5_5d4ag"]
 [ext_resource type="Texture2D" uid="uid://d17bpx40lr45" path="res://assets/UI/exit_button-normal.png" id="6_um6dh"]
@@ -143,8 +145,8 @@ texture = ExtResource("3_d6l81")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="sprites"]
 texture_filter = 1
-position = Vector2(213, 456)
-scale = Vector2(16.687498, 13.000001)
+position = Vector2(206, 532)
+scale = Vector2(8.815505, 7.6260767)
 sprite_frames = SubResource("SpriteFrames_scr1a")
 animation = &"idle"
 autoplay = "idle"

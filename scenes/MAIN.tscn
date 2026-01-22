@@ -1,8 +1,10 @@
-[gd_scene load_steps=50 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=54 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="Texture2D" uid="uid://cdhby2iat3dde" path="res://assets/Background/flowers n dirt-Sheet.png" id="2_cli15"]
 [ext_resource type="Texture2D" uid="uid://chpqec1vnal8c" path="res://assets/Background/clothes-Sheet.png" id="3_1c2kf"]
+[ext_resource type="Script" path="res://scenes/UI/bgaudio.gd" id="3_eyrxi"]
+[ext_resource type="PackedScene" uid="uid://b01pge2lskpu7" path="res://wave_ui.tscn" id="4_3o5ht"]
 [ext_resource type="Texture2D" uid="uid://xm0elcmwy1dh" path="res://assets/Background/final tree-Sheet.png" id="4_27wxa"]
 [ext_resource type="Texture2D" uid="uid://dtlgj3xed5x7c" path="res://assets/Background/grass ig-Sheet.png" id="5_idstl"]
 [ext_resource type="Texture2D" uid="uid://b2j2qpkebu08e" path="res://assets/Background/House-Sheet.png" id="6_v426v"]
@@ -33,6 +35,7 @@
 [ext_resource type="Script" uid="uid://l4jq1hrhpf2a" path="res://scenes/skill_connections.gd" id="27_03e8k"]
 [ext_resource type="Texture2D" uid="uid://ufwxcxto433d" path="res://assets/Background/1_big_heart.png" id="27_eyrxi"]
 [ext_resource type="Texture2D" uid="uid://iiu4g1tlyjt6" path="res://assets/Wooden Shed.png" id="27_njcny"]
+[ext_resource type="PackedScene" uid="uid://cj3ff8l5lpe2c" path="res://scenes/game_ui.tscn" id="28_8dwnc"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="28_cvanf"]
 [ext_resource type="Texture2D" uid="uid://2mogll6p1qfh" path="res://assets/Background/1_big_hollow_heart.png" id="28_sskcy"]
 
@@ -943,6 +946,7 @@ shape = SubResource("WorldBoundaryShape2D_nr8wp")
 
 [node name="WaveManager" parent="." node_paths=PackedStringArray("wasp_spawn_points", "spider_spawn_points", "moth_spawn_points") instance=ExtResource("16_fr04l")]
 moth_scene = ExtResource("17_cli15")
+wave_ui_scene = ExtResource("4_3o5ht")
 wasp_spawn_points = [NodePath("wasp_spawn_point1"), NodePath("wasp_spawn_point2")]
 spider_spawn_points = [NodePath("spider_spawn_points"), NodePath("spider_spawn_points2"), NodePath("spider_spawn_points3")]
 moth_spawn_points = [NodePath("moth_spawn_points"), NodePath("moth_spawn_points2")]
@@ -998,6 +1002,8 @@ position = Vector2(387, 440)
 
 [node name="SpawnPoint2" type="Marker2D" parent="FruitSpawner/FruitSpawnPoints"]
 position = Vector2(700, 437)
+
+[node name="GameUI" parent="." instance=ExtResource("28_8dwnc")]
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
