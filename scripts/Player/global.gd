@@ -6,6 +6,20 @@ var current_health: float = 100.0
 var player_alive: bool = true
 var playerbody: CharacterBody2D
 
+var health: int = 30
+var run_time: float = 0.0
+var enemies_defeated: int = 0
+var waves_survived: int = 0
+var current_score: int = 0
+
+func reset_run_stats():
+	run_time = 0.0
+	enemies_defeated = 0
+	waves_survived = 0
+	current_score = 0
+	# Reset health for fresh start
+	if "max_health" in playerbody:
+		health = playerbody.max_health
 # Function to handle damage from ANY source
 func take_damage(amount: float):
 	current_health -= amount

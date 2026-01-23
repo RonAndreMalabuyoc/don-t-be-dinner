@@ -110,9 +110,10 @@ func update_effects(delta: float) -> void:
 			cur = cur.next
 
 func die():
+	Global.enemies_defeated += 1
 	if is_dead:
 		return
-
+	
 	is_dead = true
 	emit_signal("enemy_died")
 	queue_free()

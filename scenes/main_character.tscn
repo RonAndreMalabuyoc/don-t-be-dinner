@@ -170,7 +170,7 @@ func _ready():
 # ───────── PHYSICS LOOP ─────────
 func _physics_process(delta):
 	if is_dead: return
-
+	Global.run_time += delta
 	# 1. HANDLE HURT KNOCKBACK
 	if is_hurt:
 		velocity.y += gravity * delta
