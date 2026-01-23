@@ -116,6 +116,13 @@ var quack_timer := 0.0
 
 # ───────── INITIALIZATION ─────────
 func _ready():
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	
+	# Force disable resizing
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_RESIZE_DISABLED, true)
+	
+	# Optional: Force your specific resolution (e.g., 1280x720)
+	get_window().size = Vector2i(1152, 648)
 	print(\"PLAYER READY:\", get_path())
 	print(\"----- HEALTH DEBUG -----\")
 	print(\"Base Hearts Setting: \", base_hearts)

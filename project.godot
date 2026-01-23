@@ -20,6 +20,11 @@ config/features=PackedStringArray("4.5", "Forward Plus")
 Global="*res://scripts/Player/global.gd"
 SkillManager="*res://scripts/skills/data/SkillManager.gd"
 
+[display]
+
+window/size/resizable=false
+window/size/maximize_disabled=true
+
 [input]
 
 Left={
