@@ -1,4 +1,4 @@
-[gd_scene load_steps=55 format=3 uid="uid://dl6d3lwiivjxg"]
+[gd_scene load_steps=56 format=3 uid="uid://dl6d3lwiivjxg"]
 
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
@@ -15,6 +15,7 @@
 [ext_resource type="AudioStream" uid="uid://ddcww4fbcms5e" path="res://SFX/jump_land.wav" id="13_8rh4e"]
 [ext_resource type="AudioStream" uid="uid://e5pg3sge6mv7" path="res://SFX/walk_player.wav" id="14_is85u"]
 [ext_resource type="AudioStream" uid="uid://7pdn5m3xkmnn" path="res://SFX/Fruit_collect.wav" id="14_wtvrk"]
+[ext_resource type="AudioStream" uid="uid://dl3bp2lwggooe" path="res://SFX/The Duck Song.wav" id="16_is85u"]
 
 [sub_resource type="GDScript" id="GDScript_48ufq"]
 resource_name = "Movement"
@@ -109,18 +110,27 @@ var is_emoting := false
 @onready var land_player = $LandPlayer
 @onready var walk_player = $WalkPlayer
 @onready var pickup_player = $PickupPlayer
-
+@onready var dance_player = $DancePlayer
+var bg_music_node: AudioStreamPlayer = null
 var quack_timer := 0.0
 
 # ───────── INITIALIZATION ─────────
 func _ready():
 	print(\"PLAYER READY:\", get_path())
-	
+	print(\"----- HEALTH DEBUG -----\")
+	print(\"Base Hearts Setting: \", base_hearts)
+	print(\"Calculated Max HP: \", max_health)
+	print(\"Current HP: \", current_health)
+	print(\"------------------------\")
 	# Global Setup
 	Global.node_creation_parent = self
 	Global.playerbody = self
 	Global.player_alive = true
 	
+	bg_music_node = get_tree().current_scene.get_node_or_null(\"MusicPlayer\")
+	if bg_music_node == null:
+		# Fallback in case it's named differently
+		bg_music_node = get_tree().current_scene.get_node_or_null(\"AudioStreamPlayer\")
 	# Skill Setup
 	SkillManager.apply_existing_skills_to_player()
 	
@@ -132,6 +142,13 @@ func _ready():
 	# Initialize HP
 	current_health = max_health
 	
+	if \"health\" in Global:
+		Global.health = max_health
+	elif \"current_health\" in Global:
+		Global.current_health = max_health
+	elif \"hp\" in Global:
+		Global.hp = max_health
+		
 	if SkillManager.dash_mastery_active:
 		apply_dash_mastery()
 	
@@ -173,18 +190,26 @@ func _physics_process(delta):
 			stop_dash()
 		return # Skip other controls while dashing
 
-	# 3. HANDLE EMOTES
+	# 3. HANDLE EMOTES (FIXED)
 	if Input.is_action_just_pressed(\"dance\"):
 		is_emoting = !is_emoting
-	
+		
+		# Play audio ONCE when button is pressed
+		if is_emoting:
+			if dance_player: dance_player.play(3.50)
+			if bg_music_node: bg_music_node.stream_paused = true
+		else:
+			if dance_player: dance_player.stop()
+			if dance_player: dance_player.stop()
+			if bg_music_node: bg_music_node.stream_paused = false
 	if is_emoting:
 		velocity.x = 0
 		velocity.y += gravity * delta
 		handle_animations()
 		move_and_slide()
-		return
+		return # Stop here only if dancing. If not dancing, continue down!
 
-	# 4. STANDARD MOVEMENT
+	# 4. STANDARD MOVEMENT (Now this code will actually run!)
 	# Gravity
 	if not is_on_floor():
 		velocity.y += gravity * delta
@@ -223,10 +248,10 @@ func _physics_process(delta):
 	handle_animations()
 	sprite.flip_h = not facing_right
 	move_and_slide()
+	
 	# SFX Updates
 	_handle_audio_process(delta)
 	
-
 func _handle_audio_process(delta):
 	# ─── 1. LANDING SFX ───
 	# Logic: If not on floor previous frame, but on floor now = Landed
@@ -400,7 +425,8 @@ func push_powerup(item_id: String, _duration: float = -1.0, _auto_fire: bool = f
 	elif reserve_fruit == \"\": reserve_fruit = item_id
 	else: reserve_fruit = item_id # Replace reserve if full
 	
-	if pickup_player: pickup_player.play()
+	if pickup_player: 
+		pickup_player.play(3.58)
 	_update_fruit_ui()
 
 func _update_fruit_ui() -> void:
@@ -425,15 +451,30 @@ func _on_hitbox_area_entered(area):
 func take_damage(amount: int):
 	if is_dead or is_hurt or is_invulnerable: return
 
+	# 1. VISUALS / AUDIO
+	if is_emoting:
+		is_emoting = false
+		if dance_player: dance_player.stop()
+		if bg_music_node: bg_music_node.stream_paused = false 
+	print(\"DEBUG: Enemy hit for \", amount, \" damage. Current HP: \", current_health)
+
 	current_health -= amount
+	
+	# 4. SYNC TO GLOBAL
+	# We force Global to match our local health
+	if \"health\" in Global: Global.health = current_health
+	elif \"current_health\" in Global: Global.current_health = current_health
+	elif \"hp\" in Global: Global.hp = current_health
+	
 	health_changed.emit(current_health, max_health)
-	Global.take_damage(amount) # Update global state
+	
+	Global.take_damage(0) 
 
 	if current_health <= 0:
 		die()
 	else:
 		start_hurt_and_invincibility()
-
+		
 func start_hurt_and_invincibility():
 	is_hurt = true
 	is_invulnerable = true
@@ -475,11 +516,20 @@ func update_max_health():
 	health_changed.emit(current_health, max_health)
 
 func heal(amount: int):
+	# Cap health at max
 	if current_health >= max_health: return
+	
 	current_health = min(current_health + amount, max_health)
 	
-	# Visual/Audio feedback
-	# if pickup_player: pickup_player.play() 
+	if \"health\" in Global:
+		Global.health = current_health
+	elif \"current_health\" in Global:
+		Global.current_health = current_health
+	elif \"hp\" in Global:
+		Global.hp = current_health
+		
+	print(\"Healed! New HP:\", current_health)
+	health_changed.emit(current_health, max_health) 
 	health_changed.emit(current_health, max_health)
 
 func on_wave_completed():
@@ -921,5 +971,8 @@ stream = ExtResource("14_is85u")
 
 [node name="PickupPlayer" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("14_wtvrk")
+
+[node name="DancePlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("16_is85u")
 
 [connection signal="timeout" from="Reload_speed" to="." method="_on_timer_timeout"]
