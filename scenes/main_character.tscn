@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3 uid="uid://dl6d3lwiivjxg"]
+[gd_scene load_steps=53 format=3 uid="uid://dl6d3lwiivjxg"]
 
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="1_2q423"]
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="1_48ufq"]
@@ -8,14 +8,11 @@
 [ext_resource type="Texture2D" uid="uid://dcku5knbb872k" path="res://assets/Duck/24_hurtduck_left-Sheet.png" id="4_0d0nc"]
 [ext_resource type="Texture2D" uid="uid://xfs8i5sosg3v" path="res://assets/shoot_right_duck-Sheet.png" id="6_2v62t"]
 [ext_resource type="AudioStream" uid="uid://eudp7igamm7n" path="res://SFX/Quack 1.wav" id="8_pvtuh"]
-[ext_resource type="Script" path="res://scenes/camera_2d.gd" id="8_qoi8n"]
+[ext_resource type="Script" uid="uid://c1jhbscky8a3u" path="res://scenes/camera_2d.gd" id="8_qoi8n"]
 [ext_resource type="AudioStream" uid="uid://cxsj25mtfcsfi" path="res://SFX/hurt_quack.wav" id="9_8rh4e"]
 [ext_resource type="AudioStream" uid="uid://ce87l57f5k2f4" path="res://SFX/Shoot.wav" id="10_is85u"]
 [ext_resource type="AudioStream" uid="uid://bqp7v03q2heb1" path="res://SFX/Dash.wav" id="11_o67j2"]
-[ext_resource type="Texture2D" uid="uid://bw0d4gs8ww4c4" path="res://assets/UI/exit_button-exitbutton.png" id="13_8rh4e"]
-[ext_resource type="Texture2D" uid="uid://cra1l6axwk7sj" path="res://assets/UI/exit_button-buttonexitpressed.png" id="14_is85u"]
 [ext_resource type="AudioStream" uid="uid://7pdn5m3xkmnn" path="res://SFX/Fruit_collect.wav" id="14_wtvrk"]
-[ext_resource type="AudioStream" uid="uid://dn2crounonnsf" path="res://SFX/Main_menu_Button_press.wav" id="15_o67j2"]
 
 [sub_resource type="GDScript" id="GDScript_48ufq"]
 resource_name = "Movement"
@@ -922,28 +919,6 @@ position = Vector2(0, -141)
 position_smoothing_enabled = true
 script = ExtResource("8_qoi8n")
 
-[node name="ButtonManager" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="exit_button" type="TextureButton" parent="ButtonManager"]
-texture_filter = 1
-layout_mode = 0
-offset_left = 512.0
-offset_top = -448.0
-offset_right = 560.0
-offset_bottom = -398.0
-texture_normal = ExtResource("13_8rh4e")
-texture_pressed = ExtResource("14_is85u")
-texture_hover = ExtResource("14_is85u")
-stretch_mode = 0
-
-[node name="SFX_button3" type="AudioStreamPlayer" parent="ButtonManager/exit_button"]
-stream = ExtResource("15_o67j2")
-volume_db = 5.0
-
 [node name="Reload_speed" type="Timer" parent="."]
 wait_time = 0.75
 autostart = true
@@ -971,5 +946,4 @@ stream = ExtResource("11_o67j2")
 [node name="PickupPlayer" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("14_wtvrk")
 
-[connection signal="pressed" from="ButtonManager/exit_button" to="." method="_on_exitbutton_pressed"]
 [connection signal="timeout" from="Reload_speed" to="." method="_on_timer_timeout"]
