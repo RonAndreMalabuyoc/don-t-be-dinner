@@ -1,13 +1,13 @@
 extends Node
 
 # ───────── CONFIG ─────────
-@export var starting_skill_points := 20
+@export var starting_skill_points := 0
 
 # ───────── STATE ─────────
 var skill_points := 0
 var unlocked_skills: Array[String] = []
 var all_skills: Dictionary = {}
-
+signal points_changed(new_amount)
 # ───────── SKILL FLAGS ─────────
 var dash_mastery_active := false
 var swift_feet_active := false
@@ -69,6 +69,7 @@ func has_skill(skill_id: String) -> bool:
 	return skill_id in unlocked_skills
 
 # ───────── UNLOCK LOGIC (FIXED) ─────────
+# ───────── UNLOCK LOGIC (FIXED) ─────────
 func unlock_skill(skill_id: String) -> bool:
 	# 1. Check if Skill Exists
 	if not all_skills.has(skill_id):
@@ -80,31 +81,37 @@ func unlock_skill(skill_id: String) -> bool:
 		print("Already unlocked:", skill_id)
 		return false
 
+	# 3. DEFINE "SKILL" VARIABLE (This fixes your error!)
 	var skill = all_skills[skill_id]
 
-	# 3. Check Prerequisites (THIS WAS MISSING)
+	# 4. Check Prerequisites
 	for prereq in skill.prerequisites:
 		if not has_skill(prereq):
 			print("Locked! You need prerequisite:", prereq)
 			return false
 
-	# 4. Check Cost
+	# 5. Check Cost
 	if skill_points < skill.cost:
 		print("Not enough points! Have:", skill_points, " Need:", skill.cost)
 		return false
 
-	# 5. Success: Deduct Points & Save
+	# 6. Success: Deduct Points & Save
 	skill_points -= skill.cost
 	unlocked_skills.append(skill_id)
 	
+	# --- SIGNAL UPDATE HERE ---
+	points_changed.emit(skill_points)
+	# --------------------------
+	
 	print("Unlocked:", skill_id, " | Remaining Points:", skill_points)
 
-	# 6. Apply Effect
+	# 7. Apply Effect
 	apply_skill_effect(skill_id)
 	return true
 
 func add_skill_points(amount: int):
 	skill_points += amount
+	points_changed.emit(skill_points)
 
 # ───────── APPLY EXISTING SKILLS (ON SPAWN) ─────────
 func apply_existing_skills_to_player():

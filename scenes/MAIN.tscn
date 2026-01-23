@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=60 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="PackedScene" uid="uid://cj3ff8l5lpe2c" path="res://scenes/game_ui.tscn" id="2_8dwnc"]
@@ -857,6 +857,10 @@ sources/2 = SubResource("TileSetAtlasSource_1c2kf")
 default_font = ExtResource("34_7l6ry")
 default_font_size = 0
 
+[sub_resource type="LabelSettings" id="LabelSettings_kb1j8"]
+font = ExtResource("34_7l6ry")
+font_size = 23
+
 [node name="Main" type="Node"]
 script = ExtResource("1_0tikr")
 
@@ -1081,6 +1085,14 @@ offset_left = -646.0
 offset_top = 99.0
 offset_right = -606.0
 offset_bottom = 139.0
+
+[node name="PointsLabel" type="Label" parent="HUD/SkillTree"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 484.0
+offset_right = 54.0
+offset_bottom = 501.0
+label_settings = SubResource("LabelSettings_kb1j8")
 
 [node name="FruitUI" type="Control" parent="HUD"]
 layout_mode = 3

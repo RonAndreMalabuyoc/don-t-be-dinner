@@ -30,9 +30,7 @@ var wave_in_progress := false
 var spawn_queue: Array = []
 
 var waves = [
-	{ "spider": 3 },
-	{ "spider": 5 },
-	{ "spider": 7 },
+
 	
 	{ "moth": 3 },
 	{ "moth": 5 },
