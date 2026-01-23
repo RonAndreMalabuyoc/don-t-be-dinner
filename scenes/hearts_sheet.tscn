@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://crlf4qr13j7ln"]
+
+[ext_resource type="Texture2D" uid="uid://dm2srmomk167f" path="res://assets/Background/hearts-Sheet (1).png" id="1_4lu3c"]
+
+[node name="HeartsSheet(1)2" type="Sprite2D"]
+scale = Vector2(3.75, 3.2)
+texture = ExtResource("1_4lu3c")
+region_enabled = true
+region_rect = Rect2(137, 0, 28, 50)

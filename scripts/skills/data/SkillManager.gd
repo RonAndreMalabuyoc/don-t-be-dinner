@@ -1,7 +1,7 @@
 extends Node
 
 # ───────── CONFIG ─────────
-@export var starting_skill_points := 0
+@export var starting_skill_points := 20
 
 # ───────── STATE ─────────
 var skill_points := 0

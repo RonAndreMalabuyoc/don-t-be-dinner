@@ -94,16 +94,16 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_k5hg5"]
-radius = 13.518345
+radius = 12.726661
 
 [node name="Spider" type="CharacterBody2D"]
 scale = Vector2(1.492929, 1.6565105)
-collision_layer = 2
-collision_mask = 13
+collision_layer = 33
+collision_mask = 12
 script = ExtResource("1_k5hg5")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(24.300072, 0.22575116)
+position = Vector2(5.722046e-06, 0.6036787)
 scale = Vector2(1.9978226, 2.061036)
 sprite_frames = SubResource("SpriteFrames_8qx0x")
 animation = &"jump"
@@ -111,5 +111,5 @@ autoplay = "walk"
 frame_progress = 0.9934063
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(23.443848, -1.2073573)
+position = Vector2(2.679297, -0.6036787)
 shape = SubResource("CircleShape2D_k5hg5")

@@ -33,7 +33,7 @@ var waves = [
 	{ "spider": 3 },
 	{ "spider": 5 },
 	{ "spider": 7 },
-	# Phase 2 — Air melee only
+	
 	{ "moth": 3 },
 	{ "moth": 5 },
 	{ "moth": 7 },
@@ -157,9 +157,6 @@ func _on_enemy_died() -> void:
 		# Wave rewards (skill points, post-wave heal skill)
 		_on_wave_completed()
 
-		if Global.playerbody:
-			Global.playerbody.heal_after_wave(10)
-
 		emit_signal("wave_completed", current_wave)
 
 		call_deferred("start_next_wave")
@@ -171,10 +168,12 @@ func get_enemy_hp_multiplier() -> float:
 
 func _on_wave_completed() -> void:
 	print("Wave", current_wave, "completed!")
+	
+	# 1. Give Skill Point
 	SkillManager.add_skill_points(1)
 
-	if SkillManager.post_wave_heal_active and Global.playerbody:
-		Global.playerbody.current_health += 1
-		if Global.playerbody.current_health > Global.playerbody.max_health:
-			Global.playerbody.current_health = Global.playerbody.max_health
-		print("Post-Wave Heal applied! Current Health:", Global.playerbody.current_health)
+	# 2. Trigger Player Wave Logic
+	# This tells the player: "Wave is done, check your skills!"
+	# The Player script will check SkillManager.wave_recovery_active itself.
+	if Global.playerbody and Global.playerbody.has_method("on_wave_completed"):
+		Global.playerbody.on_wave_completed()

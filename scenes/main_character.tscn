@@ -104,27 +104,28 @@ var can_shoot_fruit := true
 var quack_timer := 0.0
 
 # ───────── READY ─────────
+# In Player.gd
+
 func _ready():
 	Global.node_creation_parent = self
 	Global.playerbody = self
+	# Move Skill Application UP before we calculate health
 	SkillManager.apply_existing_skills_to_player()
+	
 	Global.player_alive = true
 	
-	max_health = base_hearts * HP_PER_HEART
+	if SkillManager.health_boost_active:
+		max_health = (base_hearts + 1) * HP_PER_HEART
+	else:
+		max_health = base_hearts * HP_PER_HEART
+		
+	# Now set current health to full
 	current_health = max_health
 	
-	# ─── 2. NOTIFY UI ───
-	# Wait one frame to ensure UI is ready to receive signal
+	# ─── 3. NOTIFY UI ───
 	await get_tree().process_frame
 	health_changed.emit(current_health, max_health)
-
-	# ─── 3. SKILLS ───
-	if SkillManager.swift_feet_active: apply_swift_feet()
-	if SkillManager.double_jump_active: apply_double_jump()
-	if SkillManager.sharp_blows_active: apply_sharp_blows()
-	if SkillManager.quick_recovery_active: apply_quick_recovery()
-	if SkillManager.dash_mastery_active: apply_dash_mastery()
-
+	
 	# ─── 4. CONNECTIONS ───
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 	hitbox.area_entered.connect(_on_hitbox_area_entered)
@@ -323,11 +324,11 @@ func start_shoot():
 
 # ───────── POWERUPS ─────────
 func apply_swift_feet():
-	speed *= 1
+	speed = int(speed * 1.2)
 	print(\"Swift Feet applied! New speed:\", speed)
 	
 func apply_sharp_blows():
-	base_damage = int(base_damage * 1.5)
+	base_damage = int(base_damage * 2.0)
 	print(\"Sharp Blows applied! New damage:\", base_damage)
 
 func apply_quick_recovery():
@@ -576,19 +577,26 @@ func _update_fruit_ui() -> void:
 # Call this function immediately after you unlock the \"+1 Heart\" skill!
 # In Player.gd
 
+# In Player.gd
+
 func update_max_health():
+	print(\"--- DEBUG: Updating Max Health ---\")
+	print(\"BEFORE: HP = \", current_health, \" / \", max_health)
+	
+	# 1. Increase Max HP
 	max_health += HP_PER_HEART
-	# choose ONE behavior:
-
-	# OPTION A: fill new heart
-	current_health += HP_PER_HEART
-
-	# OPTION B: leave new heart empty
-	# current_health = min(current_health, max_health)
-
+	
+	# 2. CRITICAL CHECK: We do NOT add to current_health here.
+	# If you see \"+10\" in the console below, we know the line is still active somewhere.
+	
+	# 3. Clamp (Safety only)
 	current_health = clamp(current_health, 0, max_health)
+	
+	print(\"AFTER: HP = \", current_health, \" / \", max_health)
+	print(\"--------------------------------\")
+
 	health_changed.emit(current_health, max_health)
-		
+	
 func _on_exitbutton_pressed() -> void:
 	var sfx = $ButtonManager/exit_button/SFX_button3
 	sfx.play()  # play the quit sound effect
@@ -881,14 +889,16 @@ animations = [{
 "speed": 6.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_ogw1n"]
-radius = 36.124783
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qoi8n"]
+size = Vector2(36, 94)
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_0d0nc"]
-radius = 37.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pvtuh"]
+size = Vector2(36, 94)
 
 [node name="Player" type="CharacterBody2D"]
 z_index = 5
+collision_layer = 33
+collision_mask = 33
 script = SubResource("GDScript_48ufq")
 jump_force = -900
 gravity = 1800
@@ -904,12 +914,12 @@ frame = 2
 frame_progress = 1.0
 
 [node name="Hitbox" type="Area2D" parent="."]
-collision_layer = 0
-collision_mask = 4
+collision_layer = 33
+collision_mask = 33
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2(1, 5)
-shape = SubResource("CircleShape2D_ogw1n")
+position = Vector2(-3, -8)
+shape = SubResource("RectangleShape2D_qoi8n")
 
 [node name="ShootPoint" type="Marker2D" parent="."]
 position = Vector2(-31, -29)
@@ -924,8 +934,8 @@ wait_time = 0.75
 autostart = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(1, 5)
-shape = SubResource("CircleShape2D_0d0nc")
+position = Vector2(-3, -8)
+shape = SubResource("RectangleShape2D_pvtuh")
 
 [node name="QuackPlayer" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("8_pvtuh")

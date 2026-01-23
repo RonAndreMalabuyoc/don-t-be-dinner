@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=59 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="PackedScene" uid="uid://cj3ff8l5lpe2c" path="res://scenes/game_ui.tscn" id="2_8dwnc"]
@@ -39,6 +39,10 @@
 [ext_resource type="Texture2D" uid="uid://iiu4g1tlyjt6" path="res://assets/Wooden Shed.png" id="27_njcny"]
 [ext_resource type="Texture2D" uid="uid://bm4f1qcplojas" path="res://assets/Laundry.png" id="28_cvanf"]
 [ext_resource type="Texture2D" uid="uid://2mogll6p1qfh" path="res://assets/Background/1_big_hollow_heart.png" id="28_sskcy"]
+[ext_resource type="Texture2D" uid="uid://dm2srmomk167f" path="res://assets/Background/hearts-Sheet (1).png" id="29_ufgw8"]
+[ext_resource type="FontFile" uid="uid://c0rnk3k06angv" path="res://assets/Background/ARCADECLASSIC.TTF" id="34_7l6ry"]
+[ext_resource type="Texture2D" uid="uid://b87rk0hx50hkx" path="res://assets/Background/pixil-frame-0 (2).png" id="36_kb1j8"]
+[ext_resource type="Texture2D" uid="uid://bds1511uul075" path="res://assets/UI/plant_sheet.png" id="38_jxfwq"]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_cvanf"]
 b = Vector2(11, 1426)
@@ -849,10 +853,12 @@ sources/2 = SubResource("TileSetAtlasSource_1c2kf")
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_nr8wp"]
 
+[sub_resource type="Theme" id="Theme_kb1j8"]
+default_font = ExtResource("34_7l6ry")
+default_font_size = 0
+
 [node name="Main" type="Node"]
 script = ExtResource("1_0tikr")
-
-[node name="GameUI" parent="." instance=ExtResource("2_8dwnc")]
 
 [node name="bg_music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_ryxhv")
@@ -907,19 +913,19 @@ texture = ExtResource("8_cvanf")
 
 [node name="TextureRect" type="TextureRect" parent="TileMap/TextureRect"]
 layout_mode = 0
-offset_left = 2.9733548
-offset_top = 21.124226
-offset_right = 322.97336
-offset_bottom = 213.12422
-scale = Vector2(0.9936623, 1.0049968)
+offset_left = 0.8672285
+offset_top = 18.257376
+offset_right = 320.86722
+offset_bottom = 210.25737
+scale = Vector2(1.0107144, 1.0049968)
 texture = ExtResource("9_03e8k")
 
 [node name="TextureRect" type="TextureRect" parent="TileMap/TextureRect/TextureRect"]
 layout_mode = 0
-offset_left = 1.3714714
-offset_top = 6.606045
-offset_right = 321.37146
-offset_bottom = 198.60605
+offset_left = -8.457767
+offset_top = 37.834564
+offset_right = 311.54224
+offset_bottom = 229.83456
 scale = Vector2(0.99610645, 0.86401296)
 texture = ExtResource("10_rqdy6")
 
@@ -999,7 +1005,6 @@ scale = Vector2(1.979006, 1.3733937)
 z_index = -13
 position = Vector2(1151, 131)
 scale = Vector2(1.0522232, 0.48075065)
-collision_layer = 1
 
 [node name="FruitSpawner" type="Node2D" parent="."]
 script = ExtResource("18_jgtwp")
@@ -1014,6 +1019,15 @@ position = Vector2(387, 440)
 position = Vector2(700, 437)
 
 [node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="HeartsSheet(1)" type="Sprite2D" parent="HUD"]
+position = Vector2(225, 630)
+scale = Vector2(2.9408917, 2.9364038)
+texture = ExtResource("29_ufgw8")
+region_enabled = true
+region_rect = Rect2(117, 0, 24, 50)
+
+[node name="GameUI" parent="HUD" instance=ExtResource("2_8dwnc")]
 
 [node name="HeartUI" type="HBoxContainer" parent="HUD"]
 offset_left = 19.0
@@ -1035,16 +1049,20 @@ offset_top = 112.0
 offset_right = 111.0
 offset_bottom = 512.0
 grow_horizontal = 0
+theme = SubResource("Theme_kb1j8")
 script = ExtResource("26_03e8k")
 
 [node name="ToggleButton" type="Button" parent="HUD/SkillTree"]
 layout_mode = 0
-offset_left = 109.0
-offset_top = -94.0
-offset_right = 187.0
-offset_bottom = -63.0
+offset_left = 112.0
+offset_top = 402.00003
+offset_right = 179.31284
+offset_bottom = 452.90784
+scale = Vector2(3.6397212, 3.084006)
 toggle_mode = true
-text = "Skill Tree"
+icon = ExtResource("36_kb1j8")
+flat = true
+expand_icon = true
 
 [node name="SkillArea" type="Control" parent="HUD/SkillTree"]
 anchors_preset = 0
@@ -1080,6 +1098,12 @@ layout_mode = 0
 offset_top = 35.0
 offset_right = 40.0
 offset_bottom = 58.0
+
+[node name="Clips" type="Label" parent="."]
+offset_left = 2017.0001
+offset_top = 471.00003
+offset_right = 2057.0
+offset_bottom = 494.00003
 
 [node name="Sprites" type="Label" parent="."]
 offset_left = 5.0
@@ -1139,6 +1163,13 @@ z_index = -11
 position = Vector2(1.9999998, -9)
 scale = Vector2(4.420137, 3.556138)
 collision_layer = 7
+
+[node name="PlantSheet4" type="Sprite2D" parent="Sprites"]
+position = Vector2(2012.0001, 276.00003)
+scale = Vector2(1.712231, 1.2676193)
+texture = ExtResource("38_jxfwq")
+region_enabled = true
+region_rect = Rect2(182, 0, 58, 70)
 
 [node name="ClothesSheet2" type="Sprite2D" parent="Sprites"]
 position = Vector2(681.00006, 71)
@@ -1209,8 +1240,34 @@ texture = ExtResource("28_cvanf")
 region_enabled = true
 region_rect = Rect2(60.701485, 0, 17.24266, 28)
 
+[node name="AnimatableBody2D2" parent="Sprites" instance=ExtResource("25_ue4rg")]
+z_index = 7
+position = Vector2(1627, 265.00003)
+scale = Vector2(2.3394022, 2.5677965)
+
 [node name="Laundry4" type="Sprite2D" parent="Sprites"]
 position = Vector2(1660, 65)
 texture = ExtResource("28_cvanf")
 region_enabled = true
 region_rect = Rect2(36.621223, 0, 20.810104, 28)
+
+[node name="PlantSheet" type="Sprite2D" parent="Sprites"]
+position = Vector2(-148.99988, 240)
+scale = Vector2(-2.164665, 1.9816364)
+texture = ExtResource("38_jxfwq")
+region_enabled = true
+region_rect = Rect2(0, 0, 63, 70)
+
+[node name="PlantSheet2" type="Sprite2D" parent="Sprites"]
+position = Vector2(578, 251)
+scale = Vector2(2.2556796, 1.6716075)
+texture = ExtResource("38_jxfwq")
+region_enabled = true
+region_rect = Rect2(60, 0, 65, 70)
+
+[node name="PlantSheet3" type="Sprite2D" parent="Sprites"]
+position = Vector2(632.00006, 253)
+scale = Vector2(2.4354298, 1.6037122)
+texture = ExtResource("38_jxfwq")
+region_enabled = true
+region_rect = Rect2(125, 0, 52, 70)
