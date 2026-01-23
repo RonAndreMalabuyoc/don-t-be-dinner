@@ -82,7 +82,7 @@ radius = 14.0
 
 [node name="Wasp" type="CharacterBody2D"]
 collision_layer = 2
-collision_mask = 15
+collision_mask = 12
 script = ExtResource("1_qpo7e")
 projectile_scene = ExtResource("2_fchng")
 
@@ -94,6 +94,8 @@ frame = 3
 frame_progress = 1.0
 
 [node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 12
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
 position = Vector2(3, 7)

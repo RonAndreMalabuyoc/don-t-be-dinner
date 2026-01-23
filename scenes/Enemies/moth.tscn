@@ -70,8 +70,8 @@ animations = [{
 radius = 22.69107
 
 [node name="Node2D" type="CharacterBody2D" groups=["Enemy"]]
-collision_layer = 2
-collision_mask = 15
+collision_layer = 3
+collision_mask = 12
 script = ExtResource("1_xwavj")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -81,7 +81,8 @@ sprite_frames = SubResource("SpriteFrames_otmr2")
 animation = &"fly"
 
 [node name="Hitbox" type="Area2D" parent="."]
-collision_mask = 6
+collision_layer = 3
+collision_mask = 12
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
 position = Vector2(-20.999996, 12)

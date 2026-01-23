@@ -1,6 +1,53 @@
-[gd_scene load_steps=2 format=3 uid="uid://bgh2c8r5lwoy3"]
+[gd_scene load_steps=17 format=3 uid="uid://bgh2c8r5lwoy3"]
 
 [ext_resource type="Script" uid="uid://dkyia4s05agmr" path="res://scenes/UI/death_screen.gd" id="1_jcrgr"]
+[ext_resource type="Texture2D" uid="uid://6ktjssf0js0l" path="res://assets/UI/Letters-n.png" id="2_lrkh8"]
+[ext_resource type="Texture2D" uid="uid://c2gwuuq1vevye" path="res://assets/UI/Letters-i.png" id="3_qv11g"]
+[ext_resource type="Texture2D" uid="uid://b6omuw0q0hsii" path="res://assets/UI/Letters-e.png" id="4_pdsqt"]
+[ext_resource type="Texture2D" uid="uid://cg7pbuuy8u6wo" path="res://assets/UI/Letters-r.png" id="5_m7qvl"]
+[ext_resource type="Texture2D" uid="uid://ch56n1te2xsa4" path="res://assets/UI/Letters-t.png" id="6_kea48"]
+[ext_resource type="Texture2D" uid="uid://c4csqnsbtvid3" path="res://assets/UI/pixil-frame-0 (3).png" id="7_xhopk"]
+[ext_resource type="Texture2D" uid="uid://xv8gjjnq4qx7" path="res://assets/Background/image_2026-01-23_144337422 - Edited.png" id="8_m1fps"]
+[ext_resource type="Texture2D" uid="uid://c5yxb7ytrei5n" path="res://assets/UI/Letters-d.png" id="9_ovcgg"]
+[ext_resource type="FontFile" uid="uid://c0rnk3k06angv" path="res://assets/Background/ARCADECLASSIC.TTF" id="10_2bgbc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lrkh8"]
+bg_color = Color(0, 0, 0, 0.5882353)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_lkobi"]
+font = ExtResource("10_2bgbc")
+font_size = 32
+font_color = Color(1, 0.8, 0, 1)
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_k5ps2"]
+font = ExtResource("10_2bgbc")
+font_size = 32
+font_color = Color(1, 0.8, 0, 1)
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_jw1qu"]
+font = ExtResource("10_2bgbc")
+font_size = 32
+font_color = Color(1, 0.8, 0, 1)
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Theme" id="Theme_f2myr"]
+default_font = ExtResource("10_2bgbc")
+
+[sub_resource type="Theme" id="Theme_0qr0o"]
+default_font = ExtResource("10_2bgbc")
 
 [node name="DeathScreen" type="CanvasLayer"]
 process_mode = 3
@@ -22,7 +69,106 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.2901961, 0, 0, 0.7058824)
+color = Color(0.2901961, 0, 0, 1)
+
+[node name="VBoxContainer2" type="PanelContainer" parent="LayoutRoot/ColorRect"]
+z_index = 19
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -47.0
+offset_top = -117.0
+offset_right = -7.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(1.2065455, 1.2253479)
+theme_override_styles/panel = SubResource("StyleBoxFlat_lrkh8")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LayoutRoot/ColorRect/VBoxContainer2"]
+layout_mode = 2
+
+[node name="WaveLabel" type="Label" parent="LayoutRoot/ColorRect/VBoxContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+label_settings = SubResource("LabelSettings_lkobi")
+
+[node name="KillsLabel" type="Label" parent="LayoutRoot/ColorRect/VBoxContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+label_settings = SubResource("LabelSettings_k5ps2")
+
+[node name="TimeLabel" type="Label" parent="LayoutRoot/ColorRect/VBoxContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+label_settings = SubResource("LabelSettings_jw1qu")
+
+[node name="Letters" type="Label" parent="LayoutRoot/ColorRect"]
+z_index = 11
+layout_mode = 0
+offset_left = 82.0
+offset_top = 20.0
+offset_right = 122.0
+offset_bottom = 43.0
+
+[node name="LettersN3" type="Sprite2D" parent="LayoutRoot/ColorRect/Letters"]
+position = Vector2(535, 132)
+scale = Vector2(6.285716, 6.3999987)
+texture = ExtResource("2_lrkh8")
+
+[node name="LettersI" type="Sprite2D" parent="LayoutRoot/ColorRect/Letters"]
+position = Vector2(376.99997, 131)
+scale = Vector2(7.928576, 5.647062)
+texture = ExtResource("3_qv11g")
+
+[node name="LettersE2" type="Sprite2D" parent="LayoutRoot/ColorRect/Letters/LettersI"]
+position = Vector2(30.018002, -0.17708397)
+scale = Vector2(0.7567555, 1.1156242)
+texture = ExtResource("4_pdsqt")
+
+[node name="LettersN2" type="Sprite2D" parent="LayoutRoot/ColorRect/Letters/LettersI"]
+position = Vector2(8.576572, 0.17708206)
+scale = Vector2(0.79279256, 1.1333325)
+texture = ExtResource("2_lrkh8")
+
+[node name="LettersR" type="Sprite2D" parent="LayoutRoot/ColorRect/Letters/LettersI"]
+position = Vector2(39.60358, 0.17708206)
+scale = Vector2(0.8255529, 1.1274296)
+texture = ExtResource("5_m7qvl")
+
+[node name="LettersT" type="Sprite2D" parent="LayoutRoot/ColorRect/Letters"]
+position = Vector2(393, 230)
+scale = Vector2(7.272721, 5.4375005)
+texture = ExtResource("6_kea48")
+
+[node name="LettersI2" type="Sprite2D" parent="LayoutRoot/ColorRect/Letters/LettersT"]
+position = Vector2(8.078133, 0.18391418)
+scale = Vector2(0.95267856, 0.99526715)
+texture = ExtResource("3_qv11g")
+
+[node name="PixilFrame0(3)" type="Sprite2D" parent="LayoutRoot/ColorRect/Letters/LettersT"]
+position = Vector2(16.500023, 0.73563004)
+scale = Vector2(0.26400012, 0.3807731)
+texture = ExtResource("7_xhopk")
+
+[node name="LettersE3" type="Sprite2D" parent="LayoutRoot/ColorRect/Letters/LettersT"]
+position = Vector2(26.950012, 0.36781693)
+scale = Vector2(0.8249998, 1.1586204)
+texture = ExtResource("4_pdsqt")
+
+[node name="LettersD" type="Sprite2D" parent="LayoutRoot/ColorRect/Letters"]
+z_index = 5
+position = Vector2(304, 133.00002)
+scale = Vector2(9.000463, 6.513207)
+texture = ExtResource("9_ovcgg")
+
+[node name="Image20260123144337422Edited" type="Sprite2D" parent="LayoutRoot/ColorRect"]
+position = Vector2(593.00006, 208)
+scale = Vector2(0.9121472, 0.78270525)
+texture = ExtResource("8_m1fps")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="LayoutRoot/ColorRect"]
 layout_mode = 1
@@ -31,20 +177,23 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -28.5
-offset_top = -25.0
-offset_right = 28.5
-offset_bottom = 25.0
+offset_left = -68.99997
+offset_top = 13.0000305
+offset_right = 1.0
+offset_bottom = 67.00003
 grow_horizontal = 2
 grow_vertical = 2
+scale = Vector2(1.9016701, 1.7163535)
 alignment = 1
 
 [node name="Restart" type="Button" parent="LayoutRoot/ColorRect/VBoxContainer"]
 layout_mode = 2
+theme = SubResource("Theme_f2myr")
 text = "Restart"
 
 [node name="Quit" type="Button" parent="LayoutRoot/ColorRect/VBoxContainer"]
 layout_mode = 2
+theme = SubResource("Theme_0qr0o")
 text = "Quit"
 
 [connection signal="pressed" from="LayoutRoot/ColorRect/VBoxContainer/Restart" to="." method="_on_restart_pressed"]

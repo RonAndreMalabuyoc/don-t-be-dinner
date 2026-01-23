@@ -110,9 +110,10 @@ func update_effects(delta: float) -> void:
 			cur = cur.next
 
 func die():
+	Global.enemies_defeated += 1
 	if is_dead:
 		return
-
+	
 	is_dead = true
 	emit_signal("enemy_died")
 	queue_free()
@@ -162,36 +163,26 @@ func _physics_process(delta):
 	if player == null:
 		player = Global.playerbody
 		return
+		
 	if dash_cooldown_left > 0:
 		dash_cooldown_left -= delta
 
-	# APPLY GRAVITY
+	# 1. APPLY GRAVITY
 	if not is_on_floor():
 		velocity.y += gravity * delta
 
+	# 2. STATE MACHINE (Only run one logic block per frame)
 	if is_dashing:
 		_dash_process(delta)
 	elif is_retreating:
-		pass
+		# Retreat logic was missing movement code in your snippet, 
+		# but velocity is set in end_dash, so we just slide.
+		pass 
 	else:
+		# If not dashing or retreating, we are Chasing/Patrolling
 		_chase_process(delta)
-
-	var plant = get_tree().get_first_node_in_group("POI")
-	var move_target = plant if is_instance_valid(plant) else player
 	
-	if is_instance_valid(move_target):
-		var dist = global_position.distance_to(move_target.global_position)
-		
-		# 2. Distance Check: Stop 55 pixels away so you don't jitter against the plant
-		if dist > 55.0:
-			var direction = (move_target.global_position - global_position).normalized()
-			velocity.x = direction.x * walk_speed
-		else:
-			# Stop moving and let the AttackTimer do the work
-			velocity.x = 0
-	else:
-		velocity.x = 0
-
+	# 3. MOVEMENT (Actually move the spider)
 	move_and_slide()
 	
 	if is_jumping and is_on_floor():

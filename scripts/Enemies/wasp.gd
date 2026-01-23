@@ -21,7 +21,7 @@ var strafe_timer := 0.0
 @export var shoot_cooldown := 1.2
 @export var projectile_scene: PackedScene
 @export var projectile_speed := 450.0
-@export var damage_amount := 8
+@export var damage_amount := 10
 @onready var attack_timer: Timer = $AttackTimer # Create a Timer node in your enemy scene
 
 # ---------------- VARIABLES ----------------
@@ -309,6 +309,7 @@ func take_damage(amount: int) -> void:
 
 # ---------------- DEATH ----------------
 func die() -> void:
+	Global.enemies_defeated += 1
 	if is_dead:
 		return
 	is_dead = true

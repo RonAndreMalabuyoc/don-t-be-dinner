@@ -281,6 +281,7 @@ func take_damage(amount: int) -> void:
 
 # ---------------- DEATH ----------------
 func die() -> void:
+	Global.enemies_defeated += 1
 	if is_dead:
 		return
 	is_dead = true

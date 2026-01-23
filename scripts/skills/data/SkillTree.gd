@@ -3,6 +3,7 @@ extends Control
 @onready var toggle_button := $ToggleButton
 @onready var skills_node: Control = $SkillArea/Skills 
 @onready var connections: Node2D = $SkillArea/SkillConnections
+@onready var points_label: Label = $PointsLabel
 
 const NODE_W := 160
 const NODE_H := 48
@@ -14,7 +15,7 @@ var is_open := false
 func _ready():
 	skills_node.visible = false
 	connections.visible = false
-	
+	SkillManager.points_changed.connect(_on_points_changed)
 	# --- FIX START: PREVENT SPACEBAR FROM TOGGLING THE BUTTON ---
 	toggle_button.focus_mode = Control.FOCUS_NONE
 	# --- FIX END ---
@@ -30,10 +31,14 @@ func _on_toggle_toggled(button_pressed: bool):
 	skills_node.visible = is_open
 	connections.visible = is_open
 	if is_open:
+		_update_ui() 
+		# 2. Redraw lines
 		connections.queue_redraw()
 
 func _update_ui():
-	# 1. Clear old buttons
+	# --- NEW LINE HERE ---
+	_update_points_display()
+		
 	for c in skills_node.get_children():
 		c.queue_free()
 
@@ -137,3 +142,16 @@ func _on_skill_pressed(skill_id: String) -> void:
 			Global.playerbody.update_max_health()
 	
 	_update_ui()
+	
+func _update_points_display():
+	if points_label:
+		points_label.text = "Skill Points: " + str(SkillManager.skill_points)
+		
+func _on_points_changed(new_amount: int):
+	# Update the text immediately
+	if points_label:
+		points_label.text = "Skill Points: " + str(new_amount)
+	
+	# Optional: Refresh button colors (green/white) immediately too
+	if is_open:
+		_update_ui()

@@ -4,6 +4,11 @@ extends Node2D
 @export var moth_scene: PackedScene
 @export var wasp_scene: PackedScene
 
+# --- NEW: Drag your WaveUI.tscn here in the Inspector ---
+@export var wave_ui_scene: PackedScene 
+var wave_ui_instance = null
+# -------------------------------------------------------
+
 @export var wasp_spawn_points: Array[Node2D]
 @export var spider_spawn_points: Array[Node2D]
 @export var moth_spawn_points: Array[Node2D]
@@ -28,29 +33,42 @@ var waves = [
 	{ "spider": 3 },
 	{ "spider": 5 },
 	{ "spider": 7 },
-
-	# Phase 2 — Air melee only
+	
 	{ "moth": 3 },
 	{ "moth": 5 },
 	{ "moth": 7 },
-
 	# Phase 3 — Land + Air melee
 	{ "spider": 4, "moth": 3 },
 	{ "spider": 6, "moth": 4 },
 	{ "spider": 8, "moth": 5 },
-
 	# Phase 4 — Wasp intro
 	{ "wasp": 2 },
 	{ "wasp": 4 },
 	{ "wasp": 6 },
-
 	# Phase 5 — Air combo
 	{ "wasp": 3, "moth": 3 },
 	{ "wasp": 5, "moth": 5 },
 	{ "wasp": 7, "moth": 7 },
-
 	# Phase 6 — Full mix
 	{ "spider": 6, "moth": 4, "wasp": 3 },
+	{ "spider": 7, "moth": 5, "wasp": 4 },
+	{ "spider": 8, "moth": 6, "wasp": 5 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 10, "moth": 10, "wasp": 10 },
+	
 ]
 
 func _ready() -> void:
@@ -58,6 +76,12 @@ func _ready() -> void:
 	spawn_timer.wait_time = spawn_delay
 	spawn_timer.one_shot = false
 	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
+
+	# --- NEW: Instantiate the UI if it exists ---
+	if wave_ui_scene:
+		wave_ui_instance = wave_ui_scene.instantiate()
+		add_child(wave_ui_instance)
+	# --------------------------------------------
 
 	start_next_wave()
 
@@ -85,6 +109,12 @@ func start_next_wave() -> void:
 	spawn_queue.clear()
 
 	print("Starting wave", current_wave)
+	
+	# --- NEW: Trigger the UI Animation and WAIT for it ---
+	if wave_ui_instance:
+		# We use 'await' so monsters don't spawn while the text is sliding
+		await wave_ui_instance.show_wave(current_wave)
+	# -----------------------------------------------------
 
 	var wave_data = waves[current_wave - 1]
 
@@ -145,14 +175,8 @@ func _on_enemy_died() -> void:
 		# Wave rewards (skill points, post-wave heal skill)
 		_on_wave_completed()
 
-		# Optional: your Player.gd has heal_after_wave(amount)
-		if Global.playerbody:
-			Global.playerbody.heal_after_wave(10)
-
-		# This is what FruitSpawner listens to
 		emit_signal("wave_completed", current_wave)
 
-		# Start the next wave after listeners run (fruit drop timing, etc.)
 		call_deferred("start_next_wave")
 
 func get_enemy_hp_multiplier() -> float:
@@ -162,13 +186,12 @@ func get_enemy_hp_multiplier() -> float:
 
 func _on_wave_completed() -> void:
 	print("Wave", current_wave, "completed!")
-
-	# Add 1 skill point for finishing the wave
+	
+	# 1. Give Skill Point
 	SkillManager.add_skill_points(1)
 
-	# Apply Post-Wave Heal if unlocked (1 heart)
-	if SkillManager.post_wave_heal_active and Global.playerbody:
-		Global.playerbody.current_health += 1
-		if Global.playerbody.current_health > Global.playerbody.max_health:
-			Global.playerbody.current_health = Global.playerbody.max_health
-		print("Post-Wave Heal applied! Current Health:", Global.playerbody.current_health)
+	# 2. Trigger Player Wave Logic
+	# This tells the player: "Wave is done, check your skills!"
+	# The Player script will check SkillManager.wave_recovery_active itself.
+	if Global.playerbody and Global.playerbody.has_method("on_wave_completed"):
+		Global.playerbody.on_wave_completed()

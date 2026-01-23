@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://b24tj1r88ew7v" path="res://assets/idle_right-Sheet.png" id="3_mf7fl"]
 [ext_resource type="Texture2D" uid="uid://ctah6r8v6fn56" path="res://assets/UI/play_button-normal.png" id="3_ngj32"]
 [ext_resource type="Texture2D" uid="uid://bm5w7ih0ujtsx" path="res://assets/winning_dance-Sheet.png" id="4_54m0d"]
-[ext_resource type="Script" uid="uid://d07kdawtj0j70" path="res://scenes/UI/bgaudio.gd" id="4_abwx5"]
+[ext_resource type="Script" path="res://scenes/UI/bgaudio.gd" id="4_abwx5"]
 [ext_resource type="Texture2D" uid="uid://d2ey5hux64487" path="res://assets/UI/play_button-pressed.png" id="4_bm8t2"]
 [ext_resource type="Texture2D" uid="uid://bp1rtgl5p1idk" path="res://assets/UI/play_button-hovered.png" id="5_5d4ag"]
 [ext_resource type="Texture2D" uid="uid://d17bpx40lr45" path="res://assets/UI/exit_button-normal.png" id="6_um6dh"]
@@ -199,8 +199,8 @@ texture = ExtResource("3_d6l81")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="sprites"]
 texture_filter = 1
-position = Vector2(213, 456)
-scale = Vector2(16.687498, 13.000001)
+position = Vector2(217, 506)
+scale = Vector2(9.175021, 9.266274)
 sprite_frames = SubResource("SpriteFrames_scr1a")
 animation = &"dance"
 autoplay = "dance"
@@ -338,7 +338,7 @@ scale = Vector2(5.7142863, 5.8)
 texture = ExtResource("19_1ss0f")
 
 [node name="Letters!" type="Sprite2D" parent="."]
-position = Vector2(560, 104)
+position = Vector2(565, 106)
 scale = Vector2(5.2499967, 4.694444)
 texture = ExtResource("20_54m0d")
 

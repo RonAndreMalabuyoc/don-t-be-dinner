@@ -1,0 +1,194 @@
+[gd_scene load_steps=22 format=3 uid="uid://cj3ff8l5lpe2c"]
+
+[ext_resource type="Script" uid="uid://cis6vi0ddqyfs" path="res://game_ui.gd" id="1_yubou"]
+[ext_resource type="Texture2D" uid="uid://cra1l6axwk7sj" path="res://assets/UI/exit_button-buttonexitpressed.png" id="2_x8pta"]
+[ext_resource type="Texture2D" uid="uid://bw0d4gs8ww4c4" path="res://assets/UI/exit_button-exitbutton.png" id="3_2rmtt"]
+[ext_resource type="Texture2D" uid="uid://ctah6r8v6fn56" path="res://assets/UI/play_button-normal.png" id="4_0dnje"]
+[ext_resource type="Texture2D" uid="uid://d2ey5hux64487" path="res://assets/UI/play_button-pressed.png" id="5_lab56"]
+[ext_resource type="Texture2D" uid="uid://bp1rtgl5p1idk" path="res://assets/UI/play_button-hovered.png" id="6_gj1yn"]
+[ext_resource type="Texture2D" uid="uid://d17bpx40lr45" path="res://assets/UI/exit_button-normal.png" id="7_5kjus"]
+[ext_resource type="Texture2D" uid="uid://bup8e7y80wcb6" path="res://assets/UI/exit_button-pressed.png" id="8_bj1rn"]
+[ext_resource type="Texture2D" uid="uid://boii51euhbqq" path="res://assets/UI/exit_button-hovered.png" id="9_36vcn"]
+[ext_resource type="Texture2D" uid="uid://c5yxb7ytrei5n" path="res://assets/UI/Letters-d.png" id="10_2yflp"]
+[ext_resource type="Texture2D" uid="uid://vt5j0mc3c7xb" path="res://assets/UI/Letters-o.png" id="11_n74c5"]
+[ext_resource type="Texture2D" uid="uid://6ktjssf0js0l" path="res://assets/UI/Letters-n.png" id="12_5v8bm"]
+[ext_resource type="Texture2D" uid="uid://d1idq7r63uwfy" path="res://assets/UI/Letters-!.png" id="13_8wu16"]
+[ext_resource type="Texture2D" uid="uid://ch56n1te2xsa4" path="res://assets/UI/Letters-t.png" id="14_sdeak"]
+[ext_resource type="Texture2D" uid="uid://c80hyc6okyg5i" path="res://assets/UI/Letters-b.png" id="15_32nla"]
+[ext_resource type="Texture2D" uid="uid://b6omuw0q0hsii" path="res://assets/UI/Letters-e.png" id="16_h8a34"]
+[ext_resource type="Texture2D" uid="uid://c2gwuuq1vevye" path="res://assets/UI/Letters-i.png" id="17_wbo4m"]
+[ext_resource type="Texture2D" uid="uid://cg7pbuuy8u6wo" path="res://assets/UI/Letters-r.png" id="18_nlan2"]
+[ext_resource type="Texture2D" uid="uid://kufkocg04bk3" path="res://assets/UI/vol_2 (1).png" id="19_lab56"]
+[ext_resource type="Texture2D" uid="uid://crs1mjomuewjr" path="res://assets/UI/play_5 (1).png" id="20_gj1yn"]
+[ext_resource type="Texture2D" uid="uid://xp1x40wj6aaj" path="res://assets/UI/x_2.png" id="21_5kjus"]
+
+[node name="GameUI" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_yubou")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="MainUI" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SettingsButton" type="TextureButton" parent="CanvasLayer/MainUI"]
+process_mode = 3
+layout_mode = 0
+offset_left = 1089.0
+offset_top = 5.999977
+offset_right = 1129.0
+offset_bottom = 45.999977
+scale = Vector2(4.445433, 3.9482327)
+texture_normal = ExtResource("2_x8pta")
+texture_pressed = ExtResource("3_2rmtt")
+texture_hover = ExtResource("2_x8pta")
+
+[node name="SettingsMenu" type="Control" parent="CanvasLayer/MainUI"]
+process_mode = 3
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 463.0
+offset_top = 346.00003
+offset_right = 503.0
+offset_bottom = 386.00003
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(4.611847, 5.0315685)
+
+[node name="Panel" type="Panel" parent="CanvasLayer/MainUI/SettingsMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -39.51496
+offset_top = -30.136011
+offset_right = -13.967405
+offset_bottom = -5.018774
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2.945135, 2.4845881)
+
+[node name="Letters" type="Label" parent="CanvasLayer/MainUI/SettingsMenu"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="LettersO" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(-15.178299, -47.301353)
+scale = Vector2(1.3009968, 1.1394722)
+texture = ExtResource("11_n74c5")
+
+[node name="LettersD" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(-32.524918, -47.25167)
+scale = Vector2(1.576966, 1.1328474)
+texture = ExtResource("10_2yflp")
+
+[node name="LettersD2" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(-23.851608, -27.426842)
+scale = Vector2(1.576966, 1.2719692)
+texture = ExtResource("10_2yflp")
+
+[node name="LettersE2" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(44.667572, -27.277771)
+scale = Vector2(1.3009955, 1.2520944)
+texture = ExtResource("16_h8a34")
+
+[node name="LettersN3" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(27.375153, -27.45168)
+scale = Vector2(1.3552052, 1.2686572)
+texture = ExtResource("12_5v8bm")
+
+[node name="LettersE" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(68.085526, -47.400726)
+scale = Vector2(1.3009956, 1.152722)
+texture = ExtResource("16_h8a34")
+
+[node name="LettersB" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(50.73889, -47.301353)
+scale = Vector2(1.4192683, 1.1394713)
+texture = ExtResource("15_32nla")
+
+[node name="LettersT" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(28.188278, -47.400726)
+scale = Vector2(1.576965, 1.080677)
+texture = ExtResource("14_sdeak")
+
+[node name="Letters!" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(15.395134, -52.468735)
+scale = Vector2(1.1383718, 0.9329981)
+texture = ExtResource("13_8wu16")
+
+[node name="X2" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(-9.323812, 39.947773)
+scale = Vector2(0.88066214, 0.8179923)
+texture = ExtResource("21_5kjus")
+
+[node name="Play5(1)" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(-10.624809, 1.3912125)
+scale = Vector2(1.0408406, 0.8414166)
+texture = ExtResource("20_gj1yn")
+
+[node name="Vol2(1)" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(-9.974312, 20.6695)
+scale = Vector2(0.64937377, 0.6104139)
+texture = ExtResource("19_lab56")
+
+[node name="LettersR" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(60.27954, -27.377144)
+scale = Vector2(1.4192704, 1.2653438)
+texture = ExtResource("18_nlan2")
+
+[node name="LettersN" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(2.1683273, -47.40073)
+scale = Vector2(1.239045, 1.152722)
+texture = ExtResource("12_5v8bm")
+
+[node name="LettersN2" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(8.239647, -27.426846)
+scale = Vector2(1.3629498, 1.2719688)
+texture = ExtResource("12_5v8bm")
+
+[node name="LettersI" type="Sprite2D" parent="CanvasLayer/MainUI/SettingsMenu/Letters"]
+position = Vector2(-7.914398, -27.42683)
+scale = Vector2(2.0753999, 1.1223263)
+texture = ExtResource("17_wbo4m")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MainUI/SettingsMenu"]
+layout_mode = 0
+offset_left = 6.07132
+offset_top = -4.1736546
+offset_right = 46.07132
+offset_bottom = 47.826347
+
+[node name="PlayButton" type="TextureButton" parent="CanvasLayer/MainUI/SettingsMenu/VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("4_0dnje")
+texture_pressed = ExtResource("5_lab56")
+texture_hover = ExtResource("6_gj1yn")
+
+[node name="VolumeSlider" type="HSlider" parent="CanvasLayer/MainUI/SettingsMenu/VBoxContainer"]
+layout_mode = 2
+
+[node name="ExitButton" type="TextureButton" parent="CanvasLayer/MainUI/SettingsMenu/VBoxContainer"]
+layout_mode = 2
+texture_normal = ExtResource("7_5kjus")
+texture_pressed = ExtResource("8_bj1rn")
+texture_hover = ExtResource("9_36vcn")
+
+[connection signal="pressed" from="CanvasLayer/MainUI/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MainUI/SettingsMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="value_changed" from="CanvasLayer/MainUI/SettingsMenu/VBoxContainer/VolumeSlider" to="." method="_on_volume_slider_value_changed"]
+[connection signal="pressed" from="CanvasLayer/MainUI/SettingsMenu/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
