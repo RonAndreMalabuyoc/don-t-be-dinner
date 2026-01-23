@@ -30,7 +30,9 @@ var wave_in_progress := false
 var spawn_queue: Array = []
 
 var waves = [
-
+	{ "spider": 3 },
+	{ "spider": 5 },
+	{ "spider": 7 },
 	
 	{ "moth": 3 },
 	{ "moth": 5 },
@@ -49,6 +51,24 @@ var waves = [
 	{ "wasp": 7, "moth": 7 },
 	# Phase 6 — Full mix
 	{ "spider": 6, "moth": 4, "wasp": 3 },
+	{ "spider": 7, "moth": 5, "wasp": 4 },
+	{ "spider": 8, "moth": 6, "wasp": 5 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 9, "moth": 7, "wasp": 6 },
+	{ "spider": 10, "moth": 10, "wasp": 10 },
+	
 ]
 
 func _ready() -> void:

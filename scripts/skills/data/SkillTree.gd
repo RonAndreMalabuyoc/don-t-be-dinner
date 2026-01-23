@@ -11,13 +11,7 @@ const GAP_X := 20   # Horizontal space between neighbor branches
 const GAP_Y := 100  # Vertical space between tiers
 
 var is_open := false
-func _process(_delta):
-	# Press "P" to verify the counter works
-	if Input.is_action_just_pressed("ui_accept") or Input.is_key_pressed(KEY_P):
-		SkillManager.skill_points += 1
-		_update_ui()
-		print("CHEAT: Added 10 points. Total: ", SkillManager.skill_points)
-			
+
 func _ready():
 	skills_node.visible = false
 	connections.visible = false
