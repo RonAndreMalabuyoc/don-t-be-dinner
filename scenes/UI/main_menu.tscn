@@ -199,8 +199,8 @@ texture = ExtResource("3_d6l81")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="sprites"]
 texture_filter = 1
-position = Vector2(206, 551)
-scale = Vector2(6.374999, 6.3437514)
+position = Vector2(217, 506)
+scale = Vector2(9.175021, 9.266274)
 sprite_frames = SubResource("SpriteFrames_scr1a")
 animation = &"dance"
 autoplay = "dance"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=4 uid="uid://bmlbg8vdwq538"]
+[gd_scene load_steps=54 format=4 uid="uid://bmlbg8vdwq538"]
 
 [ext_resource type="Script" uid="uid://dexdb74ct510t" path="res://scenes/main.gd" id="1_0tikr"]
 [ext_resource type="PackedScene" uid="uid://cj3ff8l5lpe2c" path="res://scenes/game_ui.tscn" id="2_8dwnc"]
@@ -27,6 +27,7 @@
 [ext_resource type="PackedScene" uid="uid://d3kv1drkuxprx" path="res://scenes/Pickups/pomegranate_pickup.tscn" id="19_vkg1p"]
 [ext_resource type="PackedScene" uid="uid://v0jy8lu50ja" path="res://scenes/Pickups/coconut_pickup.tscn" id="20_cli15"]
 [ext_resource type="PackedScene" uid="uid://dsq147a63qiui" path="res://scenes/Pickups/banana_pickup.tscn" id="21_1c2kf"]
+[ext_resource type="PackedScene" uid="uid://b01pge2lskpu7" path="res://wave_ui.tscn" id="21_3o5ht"]
 [ext_resource type="PackedScene" uid="uid://ba72iadkq2qr2" path="res://scenes/Pickups/orange_pickup.tscn" id="22_27wxa"]
 [ext_resource type="Texture2D" uid="uid://7xxckyjpus8u" path="res://assets/Background/Just_fence.png" id="23_cli15"]
 [ext_resource type="PackedScene" uid="uid://dj83aqshd8uax" path="res://scenes/barrel.tscn" id="25_ue4rg"]
@@ -855,7 +856,8 @@ script = ExtResource("1_0tikr")
 
 [node name="bg_music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_ryxhv")
-volume_db = -15.0
+volume_db = -35.037
+autoplay = true
 playback_type = 1
 script = ExtResource("3_eyrxi")
 
@@ -954,6 +956,7 @@ shape = SubResource("WorldBoundaryShape2D_nr8wp")
 
 [node name="WaveManager" parent="." node_paths=PackedStringArray("wasp_spawn_points", "spider_spawn_points", "moth_spawn_points") instance=ExtResource("16_fr04l")]
 moth_scene = ExtResource("17_cli15")
+wave_ui_scene = ExtResource("21_3o5ht")
 wasp_spawn_points = [NodePath("wasp_spawn_point1"), NodePath("wasp_spawn_point2")]
 spider_spawn_points = [NodePath("spider_spawn_points"), NodePath("spider_spawn_points2"), NodePath("spider_spawn_points3")]
 moth_spawn_points = [NodePath("moth_spawn_points"), NodePath("moth_spawn_points2")]
