@@ -91,7 +91,9 @@ func _process(delta: float) -> void:
 func start_next_wave() -> void:
 	if wave_in_progress:
 		return
-
+		
+	current_wave += 1
+	Global.waves_survived = current_wave
 	# Infinite scaling waves after the designed list
 	if current_wave >= waves.size():
 		var wave_scale := current_wave - waves.size() + 1
@@ -103,7 +105,6 @@ func start_next_wave() -> void:
 			"wasp": 3 + int(wave_scale * 0.6)
 		})
 
-	current_wave += 1
 	wave_in_progress = true
 	enemies_alive = 0
 	spawn_queue.clear()
