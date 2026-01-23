@@ -1030,10 +1030,10 @@ layout_mode = 3
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -261.0
-offset_top = 126.0
-offset_right = 139.0
-offset_bottom = 526.0
+offset_left = -289.0
+offset_top = 112.0
+offset_right = 111.0
+offset_bottom = 512.0
 grow_horizontal = 0
 script = ExtResource("26_03e8k")
 
